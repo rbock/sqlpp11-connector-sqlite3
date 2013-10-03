@@ -44,11 +44,14 @@ int main()
 
 	sql::connection db(config);
 	//db.execute("CREATE TABLE tab_sample (alpha bigint);");
-	db.execute("CREATE TABLE tab_sample (\
-		alpha bigint(20) DEFAULT NULL,\
-			beta bool DEFAULT NULL,\
-			gamma varchar(255) DEFAULT NULL\
-			)");
+	db.execute(R"(CREATE TABLE tab_sample (
+		alpha bigint(20) DEFAULT NULL,
+			beta bool DEFAULT NULL,
+			gamma varchar(255) DEFAULT NULL
+			))");
+	db.execute(R"(CREATE TABLE tab_foo (
+		omega bigint(20) DEFAULT NULL
+			))");
 
 	TabSample tab;
 	// clear the table
@@ -89,11 +92,15 @@ int main()
 	std::cerr << "Can do that again, no problem: " << result.begin()->alpha << std::endl;
 
 	auto tx = start_transaction(db);
-	if (const auto& row = *db.run(select(all_of(tab), select(max(tab.alpha)).from(tab)).from(tab)).begin())
+	TabFoo foo;
+	foo.serialize(std::cerr, db);
+	select(max(foo.omega)).from(foo).where(foo.omega > tab.alpha).serialize(std::cerr, db);
+	for (const auto& row : db.run(
+				select(all_of(tab), select(max(foo.omega)).from(foo).where(foo.omega > tab.alpha)).from(tab)))
 	{
 		int x = row.alpha;
 		int a = row.max;
-		std::cerr << "-----------------------------" << row.beta << std::endl;
+		//std::cerr << "-----------------------------" << row.beta << std::endl;
 	}
 	tx.commit();
 
