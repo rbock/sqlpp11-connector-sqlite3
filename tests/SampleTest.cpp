@@ -55,17 +55,17 @@ int main()
 	db.run(remove_from(tab));
 
 	// explicit all_of(tab)
-	for(const auto& row : sqlpp::select(all_of(tab)).from(tab).run(db))
+	for(const auto& row : select(all_of(tab)).from(tab).run(db))
 	{
 		std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
 	};
 	// selecting a table implicitly expands to all_of(tab)
-	for(const auto& row : sqlpp::select(tab).from(tab).run(db))
+	for(const auto& row : select(all_of(tab)).from(tab).run(db))
 	{
 		std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
 	};
 	// selecting two multicolumns
-	for(const auto& row : sqlpp::select(multi_column(left, tab.alpha, tab.beta, tab.gamma), multi_column(tab, tab)).from(tab).run(db))
+	for(const auto& row : select(multi_column(left, tab.alpha, tab.beta, tab.gamma), multi_column(tab, all_of(tab))).from(tab).run(db))
 	{
 		std::cerr << "row.left.alpha: " << row.left.alpha << ", row.left.beta: " << row.left.beta << ", row.left.gamma: " << row.left.gamma <<  std::endl;
 		std::cerr << "row.tabSample.alpha: " << row.tabSample.alpha << ", row.tabSample.beta: " << row.tabSample.beta << ", row.tabSample.gamma: " << row.tabSample.gamma <<  std::endl;
@@ -84,12 +84,12 @@ int main()
 	db.run(remove_from(tab).where(tab.alpha == tab.alpha + 3));
 
 
-	auto result = db.run(select(tab).from(tab));
+	auto result = db.run(select(all_of(tab)).from(tab));
 	std::cerr << "Accessing a field directly from the result (using the current row): " << result.begin()->alpha << std::endl;
 	std::cerr << "Can do that again, no problem: " << result.begin()->alpha << std::endl;
 
 	auto tx = start_transaction(db);
-	if (const auto& row = *db.run(select(tab, select(max(tab.alpha)).from(tab)).from(tab)).begin())
+	if (const auto& row = *db.run(select(all_of(tab), select(max(tab.alpha)).from(tab)).from(tab)).begin())
 	{
 		int x = row.alpha;
 		int a = row.max;
