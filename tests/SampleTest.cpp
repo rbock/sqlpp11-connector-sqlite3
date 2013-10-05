@@ -43,7 +43,6 @@ int main()
 	config->debug = true;
 
 	sql::connection db(config);
-	//db.execute("CREATE TABLE tab_sample (alpha bigint);");
 	db.execute(R"(CREATE TABLE tab_sample (
 		alpha bigint(20) DEFAULT NULL,
 			beta bool DEFAULT NULL,
@@ -103,6 +102,16 @@ int main()
 		//std::cerr << "-----------------------------" << row.beta << std::endl;
 	}
 	tx.commit();
+
+	for (const auto& row : db.run(select(tab.alpha).from(tab.join(foo).on(tab.alpha == foo.omega))))
+	{
+		std::cerr << row.alpha << std::endl;
+	}
+
+	for (const auto& row : db.run(select(tab.alpha).from(tab.left_outer_join(foo).on(tab.alpha == foo.omega))))
+	{
+		std::cerr << row.alpha << std::endl;
+	}
 
 	return 0;
 }
