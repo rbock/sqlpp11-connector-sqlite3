@@ -86,7 +86,8 @@ int main()
 	db.run(remove_from(tab).where(tab.alpha == tab.alpha + 3));
 
 
-	auto result = db.run(select(all_of(tab)).from(tab));
+	decltype(db.run(select(all_of(tab)))) result;
+	result = db.run(select(all_of(tab)).from(tab));
 	std::cerr << "Accessing a field directly from the result (using the current row): " << result.begin()->alpha << std::endl;
 	std::cerr << "Can do that again, no problem: " << result.begin()->alpha << std::endl;
 
