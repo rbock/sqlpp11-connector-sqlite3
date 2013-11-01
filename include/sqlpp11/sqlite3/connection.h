@@ -55,6 +55,23 @@ namespace sqlpp
 			static constexpr bool _supports_right_outer_join = false;
 
 			// functions
+			static constexpr bool _supports_avg = true;
+			static constexpr bool _supports_count = true;
+			static constexpr bool _supports_exists = true;
+			static constexpr bool _supports_like = true;
+			static constexpr bool _supports_in = true;
+			static constexpr bool _supports_max = true;
+			static constexpr bool _supports_min = true;
+			static constexpr bool _supports_not_in = true;
+			static constexpr bool _supports_sum = true;
+
+			// select
+			static constexpr bool _supports_group_by = true;
+			static constexpr bool _supports_having = true;
+			static constexpr bool _supports_limit = true;
+			static constexpr bool _supports_order_by = true;
+			static constexpr bool _supports_select_as_table = true;
+
 			static constexpr bool _supports_some = false;
 			static constexpr bool _supports_any = false;
 			static constexpr bool _use_concat_operator = true;
