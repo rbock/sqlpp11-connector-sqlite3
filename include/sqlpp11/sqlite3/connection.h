@@ -48,6 +48,18 @@ namespace sqlpp
 			bool _transaction_active = false;
 
 		public:
+			// join types
+			static constexpr bool _supports_inner_join = true;
+			static constexpr bool _supports_outer_join = false;
+			static constexpr bool _supports_left_outer_join = true;
+			static constexpr bool _supports_right_outer_join = false;
+
+			// functions
+			static constexpr bool _supports_some = false;
+			static constexpr bool _supports_any = false;
+			static constexpr bool _use_concat_operator = true;
+			static constexpr bool _use_concat_function = false;
+
 			using _result_t = ::sqlpp::sqlite3::result;
 			connection(const std::shared_ptr<connection_config>& config);
 			~connection();

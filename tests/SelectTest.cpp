@@ -50,11 +50,11 @@ int main()
 
 	sql::connection db(config);
 	//db.execute("CREATE TABLE tab_sample (alpha bigint);");
-	db.execute("CREATE TABLE tab_sample (\
-		alpha bigint(20) DEFAULT NULL,\
-			beta bool DEFAULT NULL,\
-			gamma varchar(255) DEFAULT NULL\
-			)");
+	db.execute(R"(CREATE TABLE tab_sample (
+		alpha bigint(20) DEFAULT NULL,
+			beta varchar(255) DEFAULT NULL,
+			gamma bool DEFAULT NULL
+			))");
 
 	TabSample tab;
 
@@ -90,9 +90,9 @@ int main()
 	//db.run(select(not_exists(select(tab.alpha).from(tab).where(tab.alpha > 7))).from(tab));
 	//db.run(select(all_of(tab)).from(tab).where(tab.alpha == any(select(tab.alpha).from(tab).where(tab.alpha < 3))));
 
-	//db.run(select(all_of(tab)).from(tab).where(tab.alpha + tab.alpha > 3));
-	//db.run(select(all_of(tab)).from(tab).where((tab.beta + tab.beta) == ""));
-	//db.run(select(all_of(tab)).from(tab).where((tab.beta + tab.beta).like("%'\"%")));
+	db.run(select(all_of(tab)).from(tab).where((tab.alpha + tab.alpha) > 3));
+	db.run(select(all_of(tab)).from(tab).where((tab.beta + tab.beta) == ""));
+	db.run(select(all_of(tab)).from(tab).where((tab.beta + tab.beta).like(R"(%'\"%)")));
 
 	// insert
 	db.run(insert_into(tab).set(tab.gamma = true));

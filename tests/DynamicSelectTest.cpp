@@ -59,7 +59,7 @@ int main()
 	TabSample tab;
 
 	// explicit all_of(tab)
-	for(const auto& row : dynamic_select(db, tab.alpha).dynamic_columns().add_column(tab.beta).from(tab).run(db))
+	for(const auto& row : db.run(dynamic_select(db, tab.alpha).dynamic_columns().add_column(tab.beta).from(tab)))
 	{
 		std::cerr << "row.alpha: " << row.alpha << "row.beta" << row.at("beta") << std::endl;
 	};
