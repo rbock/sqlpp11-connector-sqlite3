@@ -77,6 +77,7 @@ int main()
 	std::cerr << "no of required columns: " << TabSample::_required_insert_columns::size::value << std::endl;
 	db.run(insert_into(tab));
 	db.run(insert_into(tab).set(tab.gamma = true));
+	db.run(dynamic_insert_into(db, tab).dynamic_set(tab.gamma = true).add_set(tab.alpha = 7));
 
 	// update
 	db.run(update(tab).set(tab.gamma = false).where(tab.alpha.in(1)));
