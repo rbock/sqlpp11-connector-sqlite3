@@ -33,6 +33,14 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	set(CMAKE_CXX_FLAGS "-std=c++11")
 endif ()
 
+set(SQLPP11_INCLUDE_DIR "../sqlpp11/include" CACHE FILEPATH "Path to sqlpp11 includes")
+
+if(NOT EXISTS ${SQLPP11_INCLUDE_DIR}/sqlpp11/exception.h)
+  message(SEND_ERROR "Can't find header.h in ${SQLPP11_INCLUDE_DIR}")
+endif()
+
+message(SEND_MESSAGE "including sqlpp11 from ${SQLPP11_INCLUDE_DIR}")
+include_directories("${SQLPP11_INCLUDE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}/include")
 add_subdirectory(src)
 add_subdirectory(tests)
