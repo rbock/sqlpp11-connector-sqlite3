@@ -43,7 +43,7 @@ namespace sqlpp
 					std::cerr << "Sqlite3 debug: Preparing: '" << query << "'" << std::endl;
 
 				const char* unused_tail;
-				detail::result_handle result(nullptr);
+				detail::result_handle result(nullptr, handle.config->debug);
 
 				auto rc = sqlite3_prepare_v2(
 						handle.sqlite,
@@ -85,14 +85,19 @@ namespace sqlpp
 		{
 		}
 
-		connection::_result_t connection::select(const std::string& query)
+		char_result_t connection::select_impl(const std::string& query)
 		{
-			std::unique_ptr<detail::result_handle> result(new detail::result_handle(prepare_query(*_handle, query)));
+			std::unique_ptr<detail::result_handle> result_handle(new detail::result_handle(prepare_query(*_handle, query)));
+			if (!result_handle)
+			{
+				throw sqlpp::exception("Sqlite3 error: Could not store result set");
+			}
 
-			return {std::move(result), _handle->config->debug};
+
+			return {std::move(result_handle)};
 		}
 
-		size_t connection::insert(const std::string& query)
+		size_t connection::insert_impl(const std::string& query)
 		{
 			execute_query(*_handle, query);
 
@@ -104,13 +109,13 @@ namespace sqlpp
 			execute_query(*_handle, command);
 		}
 
-		size_t connection::update(const std::string& query)
+		size_t connection::update_impl(const std::string& query)
 		{
 			execute_query(*_handle, query);
 			return sqlite3_changes(_handle->sqlite);
 		}
 
-		size_t connection::remove(const std::string& query)
+		size_t connection::remove_impl(const std::string& query)
 		{
 			execute_query(*_handle, query);
 			return sqlite3_changes(_handle->sqlite);

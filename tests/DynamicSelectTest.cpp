@@ -24,6 +24,7 @@
  */
 
 #include "TabSample.h"
+#include <sqlpp11/alias_provider.h>
 #include <sqlpp11/select.h>
 #include <sqlpp11/insert.h>
 #include <sqlpp11/update.h>
@@ -38,7 +39,7 @@
 #include <vector>
 
 
-SQLPP_ALIAS_PROVIDER_GENERATOR(left);
+SQLPP_ALIAS_PROVIDER(left);
 
 namespace sql = sqlpp::sqlite3;
 int main()
@@ -59,7 +60,7 @@ int main()
 	TabSample tab;
 
 	// explicit all_of(tab)
-	for(const auto& row : db.run(dynamic_select(db, tab.alpha).dynamic_columns().add_column(tab.beta).from(tab)))
+	for(const auto& row : db.run(dynamic_select(db).dynamic_columns(tab.alpha).add_column(tab.beta).from(tab).where(true)))
 	{
 		std::cerr << "row.alpha: " << row.alpha << "row.beta" << row.at("beta") << std::endl;
 	};

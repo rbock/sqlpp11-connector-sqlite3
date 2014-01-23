@@ -24,48 +24,42 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef SQLPP_SQLITE3_INTERPRETER_H
+#define SQLPP_SQLITE3_INTERPRETER_H
 
-#ifndef SQLPP_SQLITE3_DETAIL_RESULT_HANDLE_H
-#define SQLPP_SQLITE3_DETAIL_RESULT_HANDLE_H
-
-#include <sqlite3.h>
+#include <sqlpp11/any.h>
+#include <sqlpp11/some.h>
 
 namespace sqlpp
 {
-	namespace sqlite3
+	namespace vendor
 	{
-		namespace detail
-		{
-			struct result_handle
+		template<typename Select>
+			struct interpreter_t<sqlite3::serializer_t, any_t<Select>>
 			{
-				sqlite3_stmt* sqlite_statement;
-				bool debug;
+				using T = any_t<Select>;
 
-				result_handle(sqlite3_stmt* statement, bool debug_):
-					sqlite_statement(statement),
-					debug(debug_)
-				{}
-
-				result_handle(const result_handle&) = delete;
-				result_handle(result_handle&&) = default;
-				result_handle& operator=(const result_handle&) = delete;
-				result_handle& operator=(result_handle&&) = default;
-
-				~result_handle()
+				static void _(const T& t, sqlite3::serializer_t& context)
 				{
-					if (sqlite_statement)
-						sqlite3_finalize(sqlite_statement);
-				}
-
-				bool operator!() const
-				{
-					return !sqlite_statement;
+					static_assert(::sqlpp::detail::wrong<Select>::value, "No support for any()");
 				}
 			};
-		}
+
+		template<typename Select>
+			struct interpreter_t<sqlite3::serializer_t, some_t<Select>>
+			{
+				using T = some_t<Select>;
+
+				static void _(const T& t, sqlite3::serializer_t& context)
+				{
+					static_assert(::sqlpp::detail::wrong<Select>::value, "No support for some()");
+				}
+			};
+
+
+#warning: need to prevent outer_join and right oute join
+
 	}
 }
 
 #endif
-
-

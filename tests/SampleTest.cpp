@@ -32,7 +32,7 @@
 #include <vector>
 
 
-SQLPP_ALIAS_PROVIDER_GENERATOR(left);
+SQLPP_ALIAS_PROVIDER(left);
 
 namespace sql = sqlpp::sqlite3;
 int main()
@@ -54,20 +54,20 @@ int main()
 
 	TabSample tab;
 	// clear the table
-	db.run(remove_from(tab));
+	db.run(remove_from(tab).where(true));
 
 	// explicit all_of(tab)
-	for(const auto& row : select(all_of(tab)).from(tab).run(db))
+	for(const auto& row : select(all_of(tab)).from(tab).where(true).run(db))
 	{
 		std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
 	};
 	// selecting a table implicitly expands to all_of(tab)
-	for(const auto& row : select(all_of(tab)).from(tab).run(db))
+	for(const auto& row : select(all_of(tab)).from(tab).where(true).run(db))
 	{
 		std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
 	};
 	// selecting two multicolumns
-	for(const auto& row : select(multi_column(left, tab.alpha, tab.beta, tab.gamma), multi_column(tab, all_of(tab))).from(tab).run(db))
+	for(const auto& row : select(multi_column(left, tab.alpha, tab.beta, tab.gamma), multi_column(tab, all_of(tab))).from(tab).where(true).run(db))
 	{
 		std::cerr << "row.left.alpha: " << row.left.alpha << ", row.left.beta: " << row.left.beta << ", row.left.gamma: " << row.left.gamma <<  std::endl;
 		std::cerr << "row.tabSample.alpha: " << row.tabSample.alpha << ", row.tabSample.beta: " << row.tabSample.beta << ", row.tabSample.gamma: " << row.tabSample.gamma <<  std::endl;
@@ -75,7 +75,7 @@ int main()
 
 	// insert
 	std::cerr << "no of required columns: " << TabSample::_required_insert_columns::size::value << std::endl;
-	db.run(insert_into(tab));
+	db.run(insert_into(tab).default_values());
 	db.run(insert_into(tab).set(tab.gamma = true));
 	db.run(dynamic_insert_into(db, tab).dynamic_set(tab.gamma = true).add_set(tab.alpha = 7));
 
@@ -88,16 +88,14 @@ int main()
 
 
 	decltype(db.run(select(all_of(tab)))) result;
-	result = db.run(select(all_of(tab)).from(tab));
+	result = db.run(select(all_of(tab)).from(tab).where(true));
 	std::cerr << "Accessing a field directly from the result (using the current row): " << result.begin()->alpha << std::endl;
 	std::cerr << "Can do that again, no problem: " << result.begin()->alpha << std::endl;
 
 	auto tx = start_transaction(db);
 	TabFoo foo;
-	foo.serialize(std::cerr, db);
-	select(max(foo.omega)).from(foo).where(foo.omega > tab.alpha).serialize(std::cerr, db);
 	for (const auto& row : db.run(
-				select(all_of(tab), select(max(foo.omega)).from(foo).where(foo.omega > tab.alpha)).from(tab)))
+				select(all_of(tab), select(max(foo.omega)).from(foo).where(foo.omega > tab.alpha)).from(tab).where(true)))
 	{
 		int x = row.alpha;
 		int a = row.max;
@@ -105,12 +103,12 @@ int main()
 	}
 	tx.commit();
 
-	for (const auto& row : db.run(select(tab.alpha).from(tab.join(foo).on(tab.alpha == foo.omega))))
+	for (const auto& row : db.run(select(tab.alpha).from(tab.join(foo).on(tab.alpha == foo.omega)).where(true)))
 	{
 		std::cerr << row.alpha << std::endl;
 	}
 
-	for (const auto& row : db.run(select(tab.alpha).from(tab.left_outer_join(foo).on(tab.alpha == foo.omega))))
+	for (const auto& row : db.run(select(tab.alpha).from(tab.left_outer_join(foo).on(tab.alpha == foo.omega)).where(true)))
 	{
 		std::cerr << row.alpha << std::endl;
 	}

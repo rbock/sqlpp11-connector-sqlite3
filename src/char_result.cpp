@@ -26,7 +26,7 @@
 
 
 #include <iostream>
-#include <sqlpp11/sqlite3/result.h>
+#include <sqlpp11/sqlite3/char_result.h>
 #include <sqlpp11/exception.h>
 #include "detail/result_handle.h"
 
@@ -35,28 +35,28 @@ namespace sqlpp
 {
 	namespace sqlite3
 	{
-		result::result(): 
-			_debug(false)
+		char_result_t::char_result_t():
+			_char_result_row({nullptr, nullptr})
 		{}
 
-		result::result(std::unique_ptr<detail::result_handle>&& handle, const bool debug):
+		char_result_t::char_result_t(std::unique_ptr<detail::result_handle>&& handle):
 			_handle(std::move(handle)),
-			_debug(debug)
+			_char_result_row({nullptr, nullptr})
 		{
-			if (_debug)
-				std::cerr << "Sqlite3 debug: Constructing result, using handle at " << _handle.get() << std::endl;
+			if (_handle and _handle->debug)
+				std::cerr << "Sqlite3 debug: Constructing char_result_t, using handle at " << _handle.get() << std::endl;
 
 			_raw_fields.resize(num_cols());
 			_raw_sizes.resize(num_cols());
 		}
 
-		result::~result() = default;
-		result::result(result&& rhs) = default;
-		result& result::operator=(result&&) = default;
+		char_result_t::~char_result_t() = default;
+		char_result_t::char_result_t(char_result_t&& rhs) = default;
+		char_result_t& char_result_t::operator=(char_result_t&&) = default;
 
-		raw_result_row_t result::next()
+		void char_result_t::next_impl()
 		{
-			if (_debug)
+			if (_handle->debug)
 				std::cerr << "Sqlite3 debug: Accessing next row of handle at " << _handle.get() << std::endl;
 
 			auto rc = sqlite3_step(_handle->sqlite_statement);
@@ -66,19 +66,22 @@ namespace sqlpp
 				{
 					for (size_t i = 0; i < num_cols(); ++i)
 					{
-						_raw_fields[i] = reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, i));
+						_raw_fields[i] = const_cast<char*>(reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, i)));
 						_raw_sizes[i] = sqlite3_column_bytes(_handle->sqlite_statement, i);
 					}
-					return raw_result_row_t{ _raw_fields.data(), _raw_sizes.data() };
+					_char_result_row.data = _raw_fields.data();
+					_char_result_row.len = _raw_sizes.data();
+					return;
 				}
 				break;
 			case SQLITE_DONE:
-				return raw_result_row_t{ nullptr, nullptr };
+				_char_result_row.data = nullptr;
+				_char_result_row.len = nullptr;
 			}
 			throw sqlpp::exception("Sqlite3 error: Could not get next row: " + std::string(sqlite3_errmsg(sqlite3_db_handle(_handle->sqlite_statement))));
 		}
 
-		size_t result::num_cols() const
+		size_t char_result_t::num_cols() const
 		{
 			return _handle
 				? sqlite3_column_count(_handle->sqlite_statement)

@@ -29,8 +29,11 @@
 #define SQLPP_SQLITE3_CONNECTION_H
 
 #include <string>
+#include <sstream>
 #include <sqlpp11/connection.h>
-#include <sqlpp11/sqlite3/result.h>
+#include <sqlpp11/sqlite3/char_result.h>
+//#include <sqlpp11/sqlite3/prepared_query.h>
+//#include <sqlpp11/sqlite3/bind_result.h>
 #include <sqlpp11/sqlite3/connection_config.h>
 
 namespace sqlpp
@@ -42,44 +45,53 @@ namespace sqlpp
 			class connection_handle;
 		}
 
+		class connection;
+
+		struct serializer_t
+		{
+			serializer_t(const connection& db):
+				_db(db)
+			{}
+
+			template<typename T>
+				std::ostream& operator<<(T t)
+				{
+					return _os << t;
+				}
+
+			std::string escape(std::string arg);
+
+			std::string str() const
+			{
+				return _os.str();
+			}
+
+			const connection& _db;
+			std::stringstream _os;
+		};
+
 		class connection: public sqlpp::connection
 		{
 			std::unique_ptr<detail::connection_handle> _handle;
 			bool _transaction_active = false;
 
+			// direct execution
+			char_result_t select_impl(const std::string& query);
+			size_t insert_impl(const std::string& query);
+			size_t update_impl(const std::string& query);
+			size_t remove_impl(const std::string& query);
+
 		public:
+			// FIXME: Add prepared query
+			using _context_t = serializer_t;
 			// join types
-			static constexpr bool _supports_inner_join = true;
 			static constexpr bool _supports_outer_join = false;
-			static constexpr bool _supports_left_outer_join = true;
 			static constexpr bool _supports_right_outer_join = false;
 
-			// functions
-			static constexpr bool _supports_avg = true;
-			static constexpr bool _supports_count = true;
-			static constexpr bool _supports_exists = true;
-			static constexpr bool _supports_like = true;
-			static constexpr bool _supports_in = true;
-			static constexpr bool _supports_is_null = true;
-			static constexpr bool _supports_is_not_null = true;
-			static constexpr bool _supports_max = true;
-			static constexpr bool _supports_min = true;
-			static constexpr bool _supports_not_in = true;
-			static constexpr bool _supports_sum = true;
-
 			// select
-			static constexpr bool _supports_group_by = true;
-			static constexpr bool _supports_having = true;
-			static constexpr bool _supports_limit = true;
-			static constexpr bool _supports_order_by = true;
-			static constexpr bool _supports_select_as_table = true;
-
 			static constexpr bool _supports_some = false;
 			static constexpr bool _supports_any = false;
-			static constexpr bool _use_concat_operator = true;
-			static constexpr bool _use_concat_function = false;
 
-			using _result_t = ::sqlpp::sqlite3::result;
 			connection(const std::shared_ptr<connection_config>& config);
 			~connection();
 			connection(const connection&) = delete;
@@ -88,16 +100,40 @@ namespace sqlpp
 			connection& operator=(connection&&) = delete;
 
 			//! select returns a result (which can be iterated row by row)
-			_result_t select(const std::string& query);
+			template<typename Select>
+			char_result_t select(const Select& s)
+			{
+				_context_t context(*this);
+				interpret(s, context);
+				return select_impl(context.str());
+			}
 
 			//! insert returns the last auto_incremented id (or zero, if there is none)
-			size_t insert(const std::string& query);
+			template<typename Insert>
+			size_t insert(const Insert& i)
+			{
+				_context_t context(*this);
+				interpret(i, context);
+				return insert_impl(context.str());
+			}
 
 			//! update returns the number of affected rows
-			size_t update(const std::string& query);
+			template<typename Update>
+			size_t update(const Update& u)
+			{
+				_context_t context(*this);
+				interpret(u, context);
+				return update_impl(context.str());
+			}
 
 			//! remove returns the number of removed rows
-			size_t remove(const std::string& query);
+			template<typename Remove>
+			size_t remove(const Remove& r)
+			{
+				_context_t context(*this);
+				interpret(r, context);
+				return remove_impl(context.str());
+			}
 
 			//! execute arbitrary command (e.g. create a table)
 			void execute(const std::string& command);
@@ -112,6 +148,15 @@ namespace sqlpp
 					return t.run(*this);
 				}
 
+			//! call prepare on the argument
+			/*
+			template<typename T>
+				auto prepare(const T& t) -> decltype(t.prepare(*this))
+				{
+					return t.prepare(*this);
+				}
+				*/
+
 			//! start transaction
 			void start_transaction();
 
@@ -125,6 +170,14 @@ namespace sqlpp
 			void report_rollback_failure(const std::string message) noexcept;
 		};
 
+		inline std::string serializer_t::escape(std::string arg)
+		{
+			return _db.escape(arg);
+		}
+
 	}
 }
+
+#include <sqlpp11/sqlite3/interpreter.h>
+
 #endif
