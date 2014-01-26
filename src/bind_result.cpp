@@ -26,8 +26,8 @@
 
 
 #include <iostream>
-#include <sqlpp11/sqlite3/char_result.h>
 #include <sqlpp11/exception.h>
+#include <sqlpp11/sqlite3/bind_result.h>
 #include "detail/prepared_statement_handle.h"
 
 
@@ -35,59 +35,57 @@ namespace sqlpp
 {
 	namespace sqlite3
 	{
-		char_result_t::char_result_t():
-			_char_result_row({nullptr, nullptr})
-		{}
-
-		char_result_t::char_result_t(std::unique_ptr<detail::prepared_statement_handle>&& handle):
-			_handle(std::move(handle)),
-			_char_result_row({nullptr, nullptr})
+		bind_result_t::bind_result_t(const std::shared_ptr<detail::prepared_statement_handle>& handle): // FIXME: rename to prepared_statement_handle_t
+			_handle(handle)
 		{
 			if (_handle and _handle->debug)
-				std::cerr << "Sqlite3 debug: Constructing char_result_t, using handle at " << _handle.get() << std::endl;
-
-			_raw_fields.resize(num_cols());
-			_raw_sizes.resize(num_cols());
+				std::cerr << "Sqlite3 debug: Constructing bind result, using handle at " << _handle.get() << std::endl;
 		}
 
-		char_result_t::~char_result_t() = default;
-		char_result_t::char_result_t(char_result_t&& rhs) = default;
-		char_result_t& char_result_t::operator=(char_result_t&&) = default;
+		void bind_result_t::bind_boolean_result(size_t index, signed char* value, bool* is_null)
+		{
+			if (_handle->debug)
+				std::cerr << "binding boolean result " << *value << " at index: " << index << std::endl;
 
-		void char_result_t::next_impl()
+			*value = sqlite3_column_int(_handle->sqlite_statement, index);
+			*is_null = sqlite3_column_type(_handle->sqlite_statement, index) == SQLITE_NULL;
+		}
+
+		void bind_result_t::bind_integral_result(size_t index, int64_t* value, bool* is_null)
+		{
+			if (_handle->debug)
+				std::cerr << "binding integral result " << *value << " at index: " << index << std::endl;
+
+			*value = sqlite3_column_int64(_handle->sqlite_statement, index);
+			*is_null = sqlite3_column_type(_handle->sqlite_statement, index) == SQLITE_NULL;
+		}
+
+		void bind_result_t::bind_text_result(size_t index, char** value, size_t* len)
+		{
+			if (_handle->debug)
+				std::cerr << "binding text result at index: " << index << std::endl;
+
+			*value = const_cast<char*>(reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, index)));
+			*len = sqlite3_column_bytes(_handle->sqlite_statement, index);
+		}
+
+		bool bind_result_t::next_impl()
 		{
 			if (_handle->debug)
 				std::cerr << "Sqlite3 debug: Accessing next row of handle at " << _handle.get() << std::endl;
 
 			auto rc = sqlite3_step(_handle->sqlite_statement);
+
 			switch(rc)
 			{
 			case SQLITE_ROW:
-				{
-					for (size_t i = 0; i < num_cols(); ++i)
-					{
-						_raw_fields[i] = const_cast<char*>(reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, i)));
-						_raw_sizes[i] = sqlite3_column_bytes(_handle->sqlite_statement, i);
-					}
-					_char_result_row.data = _raw_fields.data();
-					_char_result_row.len = _raw_sizes.data();
-					return;
-				}
-				break;
+				return true;
 			case SQLITE_DONE:
-				_char_result_row.data = nullptr;
-				_char_result_row.len = nullptr;
+				return false;
+			default:
+				throw sqlpp::exception("Unexpected return value for sqlite3_step()");
 			}
-			throw sqlpp::exception("Sqlite3 error: Could not get next row: " + std::string(sqlite3_errmsg(sqlite3_db_handle(_handle->sqlite_statement))));
 		}
-
-		size_t char_result_t::num_cols() const
-		{
-			return _handle
-				? sqlite3_column_count(_handle->sqlite_statement)
-				: 0;
-		}
-
 	}
 }
 

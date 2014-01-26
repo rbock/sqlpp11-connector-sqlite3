@@ -25,58 +25,46 @@
  */
 
 
-#ifndef SQLPP_SQLITE3_CHAR_RESULT_H
-#define SQLPP_SQLITE3_CHAR_RESULT_H
+#ifndef SQLPP_SQLITE3_PREPARED_QUERY_H
+#define SQLPP_SQLITE3_PREPARED_QUERY_H
 
 #include <memory>
-#include <vector>
-#include <sqlpp11/vendor/char_result_row.h>
+#include <string>
 
 namespace sqlpp
 {
 	namespace sqlite3
 	{
+		struct connection;
+
 		namespace detail
 		{
 			struct prepared_statement_handle;
 		}
 
-		class char_result_t
+		class prepared_query_t
 		{
-			std::unique_ptr<detail::prepared_statement_handle> _handle;
-			std::vector<char*> _raw_fields;
-			std::vector<size_t> _raw_sizes;
-			char_result_row_t _char_result_row;
+			friend ::sqlpp::sqlite3::connection;
+			std::shared_ptr<detail::prepared_statement_handle> _handle;
 
 		public:
-			char_result_t();
-			char_result_t(std::unique_ptr<detail::prepared_statement_handle>&& handle);
-			char_result_t(const char_result_t&) = delete;
-			char_result_t(char_result_t&& rhs);
-			char_result_t& operator=(const char_result_t&) = delete;
-			char_result_t& operator=(char_result_t&&);
-			~char_result_t();
+			prepared_query_t() = delete;
+			prepared_query_t(std::shared_ptr<detail::prepared_statement_handle>&& handle);
+			prepared_query_t(const prepared_query_t&) = delete;
+			prepared_query_t(prepared_query_t&& rhs) = default;
+			prepared_query_t& operator=(const prepared_query_t&) = delete;
+			prepared_query_t& operator=(prepared_query_t&&) = default;
+			~prepared_query_t() = default;
 
-			bool operator==(const char_result_t& rhs) const
+			bool operator==(const prepared_query_t& rhs) const
 			{
 				return _handle == rhs._handle;
 			}
 
-			template<typename ResultRow>
-			void next(ResultRow& result_row)
-			{
-				next_impl();
-				if (_char_result_row.data)
-					result_row = _char_result_row;
-				else
-					result_row.invalidate();
-			};
-
-		private:
-			void next_impl();
-			size_t num_cols() const;
+			void bind_boolean_parameter(size_t index, const signed char* value, bool is_null);
+			void bind_integral_parameter(size_t index, const int64_t* value, bool is_null);
+			void bind_text_parameter(size_t index, const std::string* value, bool is_null);
 		};
-
 	}
 }
 #endif

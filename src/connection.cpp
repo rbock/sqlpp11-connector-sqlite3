@@ -28,7 +28,7 @@
 #include <iostream>
 #include <sqlpp11/exception.h>
 #include <sqlpp11/sqlite3/connection.h>
-#include "detail/result_handle.h"
+#include "detail/prepared_statement_handle.h"
 #include "detail/connection_handle.h"
 
 namespace sqlpp
@@ -37,20 +37,19 @@ namespace sqlpp
 	{
 		namespace
 		{
-			detail::result_handle prepare_query(detail::connection_handle& handle, const std::string& query)
+			detail::prepared_statement_handle prepare_query(detail::connection_handle& handle, const std::string& query)
 			{
 				if (handle.config->debug)
 					std::cerr << "Sqlite3 debug: Preparing: '" << query << "'" << std::endl;
 
-				const char* unused_tail;
-				detail::result_handle result(nullptr, handle.config->debug);
+				detail::prepared_statement_handle result(nullptr, handle.config->debug);
 
 				auto rc = sqlite3_prepare_v2(
 						handle.sqlite,
 						query.c_str(),
 						query.size(),
 						&result.sqlite_statement,
-						&unused_tail);
+						nullptr);
 
 				if (rc != SQLITE_OK)
         {
@@ -87,14 +86,14 @@ namespace sqlpp
 
 		char_result_t connection::select_impl(const std::string& query)
 		{
-			std::unique_ptr<detail::result_handle> result_handle(new detail::result_handle(prepare_query(*_handle, query)));
-			if (!result_handle)
+			std::unique_ptr<detail::prepared_statement_handle> prepared_statement_handle(new detail::prepared_statement_handle(prepare_query(*_handle, query)));
+			if (!prepared_statement_handle)
 			{
 				throw sqlpp::exception("Sqlite3 error: Could not store result set");
 			}
 
 
-			return {std::move(result_handle)};
+			return {std::move(prepared_statement_handle)};
 		}
 
 		size_t connection::insert_impl(const std::string& query)

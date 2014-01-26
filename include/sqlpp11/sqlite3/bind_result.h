@@ -25,12 +25,10 @@
  */
 
 
-#ifndef SQLPP_SQLITE3_CHAR_RESULT_H
-#define SQLPP_SQLITE3_CHAR_RESULT_H
+#ifndef SQLPP_SQLITE3_BIND_RESULT_H
+#define SQLPP_SQLITE3_BIND_RESULT_H
 
 #include <memory>
-#include <vector>
-#include <sqlpp11/vendor/char_result_row.h>
 
 namespace sqlpp
 {
@@ -41,23 +39,20 @@ namespace sqlpp
 			struct prepared_statement_handle;
 		}
 
-		class char_result_t
+		class bind_result_t
 		{
-			std::unique_ptr<detail::prepared_statement_handle> _handle;
-			std::vector<char*> _raw_fields;
-			std::vector<size_t> _raw_sizes;
-			char_result_row_t _char_result_row;
+			std::shared_ptr<detail::prepared_statement_handle> _handle;
 
 		public:
-			char_result_t();
-			char_result_t(std::unique_ptr<detail::prepared_statement_handle>&& handle);
-			char_result_t(const char_result_t&) = delete;
-			char_result_t(char_result_t&& rhs);
-			char_result_t& operator=(const char_result_t&) = delete;
-			char_result_t& operator=(char_result_t&&);
-			~char_result_t();
+			bind_result_t() = default;
+			bind_result_t(const std::shared_ptr<detail::prepared_statement_handle>& handle);
+			bind_result_t(const bind_result_t&) = delete;
+			bind_result_t(bind_result_t&& rhs) = default;
+			bind_result_t& operator=(const bind_result_t&) = delete;
+			bind_result_t& operator=(bind_result_t&&) = default;
+			~bind_result_t() = default;
 
-			bool operator==(const char_result_t& rhs) const
+			bool operator==(const bind_result_t& rhs) const
 			{
 				return _handle == rhs._handle;
 			}
@@ -65,16 +60,33 @@ namespace sqlpp
 			template<typename ResultRow>
 			void next(ResultRow& result_row)
 			{
-				next_impl();
-				if (_char_result_row.data)
-					result_row = _char_result_row;
-				else
+				if (!_handle)
+				{
 					result_row.invalidate();
+					return;
+				}
+
+				if (next_impl())
+				{
+					if (not result_row)
+					{
+						result_row.validate();
+					}
+					result_row._bind(*this);
+				}
+				else
+				{
+					if (result_row)
+						result_row.invalidate();
+				}
 			};
 
+			void bind_boolean_result(size_t index, signed char* value, bool* is_null);
+			void bind_integral_result(size_t index, int64_t* value, bool* is_null);
+			void bind_text_result(size_t index, char** text, size_t* len);
+
 		private:
-			void next_impl();
-			size_t num_cols() const;
+			bool next_impl();
 		};
 
 	}

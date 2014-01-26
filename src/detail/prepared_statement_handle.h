@@ -25,8 +25,8 @@
  */
 
 
-#ifndef SQLPP_SQLITE3_DETAIL_RESULT_HANDLE_H
-#define SQLPP_SQLITE3_DETAIL_RESULT_HANDLE_H
+#ifndef SQLPP_SQLITE3_DETAIL_PREPARED_STATEMENT_HANDLE_H
+#define SQLPP_SQLITE3_DETAIL_PREPARED_STATEMENT_HANDLE_H
 
 #include <sqlite3.h>
 
@@ -36,22 +36,22 @@ namespace sqlpp
 	{
 		namespace detail
 		{
-			struct result_handle
+			struct prepared_statement_handle
 			{
 				sqlite3_stmt* sqlite_statement;
 				bool debug;
 
-				result_handle(sqlite3_stmt* statement, bool debug_):
+				prepared_statement_handle(sqlite3_stmt* statement, bool debug_):
 					sqlite_statement(statement),
 					debug(debug_)
 				{}
 
-				result_handle(const result_handle&) = delete;
-				result_handle(result_handle&&) = default;
-				result_handle& operator=(const result_handle&) = delete;
-				result_handle& operator=(result_handle&&) = default;
+				prepared_statement_handle(const prepared_statement_handle&) = delete;
+				prepared_statement_handle(prepared_statement_handle&&) = default;
+				prepared_statement_handle& operator=(const prepared_statement_handle&) = delete;
+				prepared_statement_handle& operator=(prepared_statement_handle&&) = default;
 
-				~result_handle()
+				~prepared_statement_handle()
 				{
 					if (sqlite_statement)
 						sqlite3_finalize(sqlite_statement);

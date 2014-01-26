@@ -29,11 +29,25 @@
 
 #include <sqlpp11/any.h>
 #include <sqlpp11/some.h>
+#include <sqlpp11/parameter.h>
 
 namespace sqlpp
 {
 	namespace vendor
 	{
+		template<typename ValueType, typename NameType>
+			struct interpreter_t<sqlite3::serializer_t, parameter_t<ValueType, NameType>>
+			{
+				using T = parameter_t<ValueType, NameType>;
+
+				static sqlite3::serializer_t& _(const T& t, sqlite3::serializer_t& context)
+				{
+					context << "?" << context.count();
+					context.pop_count();
+					return context;
+				}
+			};
+
 		template<typename Select>
 			struct interpreter_t<sqlite3::serializer_t, any_t<Select>>
 			{

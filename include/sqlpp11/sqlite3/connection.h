@@ -32,7 +32,7 @@
 #include <sstream>
 #include <sqlpp11/connection.h>
 #include <sqlpp11/sqlite3/char_result.h>
-//#include <sqlpp11/sqlite3/prepared_query.h>
+#include <sqlpp11/sqlite3/prepared_query.h>
 //#include <sqlpp11/sqlite3/bind_result.h>
 #include <sqlpp11/sqlite3/connection_config.h>
 
@@ -50,7 +50,8 @@ namespace sqlpp
 		struct serializer_t
 		{
 			serializer_t(const connection& db):
-				_db(db)
+				_db(db),
+				_count(1)
 			{}
 
 			template<typename T>
@@ -66,8 +67,19 @@ namespace sqlpp
 				return _os.str();
 			}
 
+			size_t count() const
+			{
+				return _count;
+			}
+
+			void pop_count()
+			{
+				++_count;
+			}
+
 			const connection& _db;
 			std::stringstream _os;
+			size_t _count;
 		};
 
 		class connection: public sqlpp::connection
@@ -81,16 +93,14 @@ namespace sqlpp
 			size_t update_impl(const std::string& query);
 			size_t remove_impl(const std::string& query);
 
-		public:
-			// FIXME: Add prepared query
-			using _context_t = serializer_t;
-			// join types
-			static constexpr bool _supports_outer_join = false;
-			static constexpr bool _supports_right_outer_join = false;
+			// prepared execution
+			prepared_query_t prepare_impl(const std::string& query, size_t no_of_parameters, size_t no_of_columns);
+			//bind_result_t run_prepared_select_impl(prepared_query_t& prepared_query);
+			size_t run_prepared_insert_impl(prepared_query_t& prepared_query);
 
-			// select
-			static constexpr bool _supports_some = false;
-			static constexpr bool _supports_any = false;
+		public:
+			using _context_t = serializer_t;
+			using _prepared_query_t = prepared_query_t;
 
 			connection(const std::shared_ptr<connection_config>& config);
 			~connection();
@@ -115,6 +125,21 @@ namespace sqlpp
 				_context_t context(*this);
 				interpret(i, context);
 				return insert_impl(context.str());
+			}
+
+			template<typename Insert>
+			_prepared_query_t prepare_insert(Insert& i)
+			{
+				_context_t context(*this);
+				interpret(i, context);
+				return prepare_impl(context.str(), i._get_no_of_parameters(), 0);
+			}
+
+			template<typename PreparedInsert>
+			size_t run_prepared_insert(const PreparedInsert& i)
+			{
+				i._bind_params();
+				return run_prepared_insert_impl(i._prepared_query);
 			}
 
 			//! update returns the number of affected rows
@@ -149,13 +174,11 @@ namespace sqlpp
 				}
 
 			//! call prepare on the argument
-			/*
 			template<typename T>
 				auto prepare(const T& t) -> decltype(t.prepare(*this))
 				{
 					return t.prepare(*this);
 				}
-				*/
 
 			//! start transaction
 			void start_transaction();
