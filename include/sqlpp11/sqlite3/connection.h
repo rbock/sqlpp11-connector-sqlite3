@@ -32,7 +32,7 @@
 #include <sstream>
 #include <sqlpp11/connection.h>
 #include <sqlpp11/sqlite3/char_result.h>
-#include <sqlpp11/sqlite3/prepared_query.h>
+#include <sqlpp11/sqlite3/prepared_statement.h>
 //#include <sqlpp11/sqlite3/bind_result.h>
 #include <sqlpp11/sqlite3/connection_config.h>
 
@@ -88,19 +88,19 @@ namespace sqlpp
 			bool _transaction_active = false;
 
 			// direct execution
-			char_result_t select_impl(const std::string& query);
-			size_t insert_impl(const std::string& query);
-			size_t update_impl(const std::string& query);
-			size_t remove_impl(const std::string& query);
+			char_result_t select_impl(const std::string& statement);
+			size_t insert_impl(const std::string& statement);
+			size_t update_impl(const std::string& statement);
+			size_t remove_impl(const std::string& statement);
 
 			// prepared execution
-			prepared_query_t prepare_impl(const std::string& query, size_t no_of_parameters, size_t no_of_columns);
-			//bind_result_t run_prepared_select_impl(prepared_query_t& prepared_query);
-			size_t run_prepared_insert_impl(prepared_query_t& prepared_query);
+			prepared_statement_t prepare_impl(const std::string& statement, size_t no_of_parameters, size_t no_of_columns);
+			//bind_result_t run_prepared_select_impl(prepared_statement_t& prepared_statement);
+			size_t run_prepared_insert_impl(prepared_statement_t& prepared_statement);
 
 		public:
 			using _context_t = serializer_t;
-			using _prepared_query_t = prepared_query_t;
+			using _prepared_statement_t = prepared_statement_t;
 
 			connection(const std::shared_ptr<connection_config>& config);
 			~connection();
@@ -128,7 +128,7 @@ namespace sqlpp
 			}
 
 			template<typename Insert>
-			_prepared_query_t prepare_insert(Insert& i)
+			_prepared_statement_t prepare_insert(Insert& i)
 			{
 				_context_t context(*this);
 				interpret(i, context);
@@ -139,7 +139,7 @@ namespace sqlpp
 			size_t run_prepared_insert(const PreparedInsert& i)
 			{
 				i._bind_params();
-				return run_prepared_insert_impl(i._prepared_query);
+				return run_prepared_insert_impl(i._prepared_statement);
 			}
 
 			//! update returns the number of affected rows

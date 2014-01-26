@@ -38,19 +38,19 @@ namespace sqlpp
 	{
 		namespace detail
 		{
-			struct prepared_statement_handle;
+			struct prepared_statement_handle_t;
 		}
 
 		class char_result_t
 		{
-			std::unique_ptr<detail::prepared_statement_handle> _handle;
+			std::unique_ptr<detail::prepared_statement_handle_t> _handle;
 			std::vector<char*> _raw_fields;
 			std::vector<size_t> _raw_sizes;
 			char_result_row_t _char_result_row;
 
 		public:
 			char_result_t();
-			char_result_t(std::unique_ptr<detail::prepared_statement_handle>&& handle);
+			char_result_t(std::unique_ptr<detail::prepared_statement_handle_t>&& handle);
 			char_result_t(const char_result_t&) = delete;
 			char_result_t(char_result_t&& rhs);
 			char_result_t& operator=(const char_result_t&) = delete;

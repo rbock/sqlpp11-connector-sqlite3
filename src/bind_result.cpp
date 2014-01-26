@@ -35,7 +35,7 @@ namespace sqlpp
 {
 	namespace sqlite3
 	{
-		bind_result_t::bind_result_t(const std::shared_ptr<detail::prepared_statement_handle>& handle): // FIXME: rename to prepared_statement_handle_t
+		bind_result_t::bind_result_t(const std::shared_ptr<detail::prepared_statement_handle_t>& handle):
 			_handle(handle)
 		{
 			if (_handle and _handle->debug)

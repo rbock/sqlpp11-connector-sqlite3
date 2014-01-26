@@ -36,22 +36,22 @@ namespace sqlpp
 	{
 		namespace detail
 		{
-			struct prepared_statement_handle
+			struct prepared_statement_handle_t
 			{
 				sqlite3_stmt* sqlite_statement;
 				bool debug;
 
-				prepared_statement_handle(sqlite3_stmt* statement, bool debug_):
+				prepared_statement_handle_t(sqlite3_stmt* statement, bool debug_):
 					sqlite_statement(statement),
 					debug(debug_)
 				{}
 
-				prepared_statement_handle(const prepared_statement_handle&) = delete;
-				prepared_statement_handle(prepared_statement_handle&&) = default;
-				prepared_statement_handle& operator=(const prepared_statement_handle&) = delete;
-				prepared_statement_handle& operator=(prepared_statement_handle&&) = default;
+				prepared_statement_handle_t(const prepared_statement_handle_t&) = delete;
+				prepared_statement_handle_t(prepared_statement_handle_t&&) = default;
+				prepared_statement_handle_t& operator=(const prepared_statement_handle_t&) = delete;
+				prepared_statement_handle_t& operator=(prepared_statement_handle_t&&) = default;
 
-				~prepared_statement_handle()
+				~prepared_statement_handle_t()
 				{
 					if (sqlite_statement)
 						sqlite3_finalize(sqlite_statement);

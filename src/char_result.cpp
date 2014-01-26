@@ -39,7 +39,7 @@ namespace sqlpp
 			_char_result_row({nullptr, nullptr})
 		{}
 
-		char_result_t::char_result_t(std::unique_ptr<detail::prepared_statement_handle>&& handle):
+		char_result_t::char_result_t(std::unique_ptr<detail::prepared_statement_handle_t>&& handle):
 			_handle(std::move(handle)),
 			_char_result_row({nullptr, nullptr})
 		{

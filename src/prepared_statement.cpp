@@ -26,7 +26,7 @@
 
 
 #include <iostream>
-#include <sqlpp11/sqlite3/prepared_query.h>
+#include <sqlpp11/sqlite3/prepared_statement.h>
 #include "detail/prepared_statement_handle.h"
 
 
@@ -34,14 +34,14 @@ namespace sqlpp
 {
 	namespace sqlite3
 	{
-		prepared_query_t::prepared_query_t(std::shared_ptr<detail::prepared_statement_handle>&& handle):
+		prepared_statement_t::prepared_statement_t(std::shared_ptr<detail::prepared_statement_handle_t>&& handle):
 			_handle(std::move(handle))
 		{
 			if (_handle and _handle->debug)
-				std::cerr << "Sqlite3 debug: Constructing prepared_query, using handle at " << _handle.get() << std::endl;
+				std::cerr << "Sqlite3 debug: Constructing prepared_statement, using handle at " << _handle.get() << std::endl;
 		}
 
-		void prepared_query_t::bind_boolean_parameter(size_t index, const signed char* value, bool is_null)
+		void prepared_statement_t::bind_boolean_parameter(size_t index, const signed char* value, bool is_null)
 		{
 			if (_handle->debug)
 				std::cerr << "binding boolean parameter " << (*value ? "true":"false") << " at index: " << index << ", being " << (is_null? "" : "not ") << "null" << std::endl;
@@ -51,7 +51,7 @@ namespace sqlpp
 				sqlite3_bind_null(_handle->sqlite_statement, index + 1);
 		}
 
-		void prepared_query_t::bind_integral_parameter(size_t index, const int64_t* value, bool is_null)
+		void prepared_statement_t::bind_integral_parameter(size_t index, const int64_t* value, bool is_null)
 		{
 			if (_handle->debug)
 				std::cerr << "binding integral parameter " << *value << " at index: " << index << ", being " << (is_null? "" : "not ") << "null" << std::endl;
@@ -61,7 +61,7 @@ namespace sqlpp
 				sqlite3_bind_null(_handle->sqlite_statement, index + 1);
 		}
 
-		void prepared_query_t::bind_text_parameter(size_t index, const std::string* value, bool is_null)
+		void prepared_statement_t::bind_text_parameter(size_t index, const std::string* value, bool is_null)
 		{
 			if (_handle->debug)
 				std::cerr << "binding text parameter " << *value << " at index: " << index << ", being " << (is_null? "" : "not ") << "null" << std::endl;
