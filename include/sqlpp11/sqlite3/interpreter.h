@@ -30,6 +30,7 @@
 #include <sqlpp11/any.h>
 #include <sqlpp11/some.h>
 #include <sqlpp11/parameter.h>
+#include <sqlpp11/join.h>
 
 namespace sqlpp
 {
@@ -40,7 +41,7 @@ namespace sqlpp
 			{
 				using T = parameter_t<ValueType, NameType>;
 
-				static sqlite3::serializer_t& _(const T& t, sqlite3::serializer_t& context)
+				static void _(const T& t, sqlite3::serializer_t& context)
 				{
 					context << "?" << context.count();
 					context.pop_count();
@@ -71,8 +72,27 @@ namespace sqlpp
 			};
 
 
-#warning: need to prevent outer_join and right oute join
+		template<typename Lhs, typename Rhs, typename On>
+			struct interpreter_t<sqlite3::serializer_t, join_t<outer_join_t, Lhs, Rhs, On>>
+			{
+				using T = join_t<outer_join_t, Lhs, Rhs, On>;
 
+				static void _(const T& t, sqlite3::serializer_t& context)
+				{
+					static_assert(::sqlpp::detail::wrong<outer_join_t, Lhs, Rhs, On>::value, "No support for outer join");
+				}
+			};
+
+		template<typename Lhs, typename Rhs, typename On>
+			struct interpreter_t<sqlite3::serializer_t, join_t<right_outer_join_t, Lhs, Rhs, On>>
+			{
+				using T = join_t<right_outer_join_t, Lhs, Rhs, On>;
+
+				static void _(const T& t, sqlite3::serializer_t& context)
+				{
+					static_assert(::sqlpp::detail::wrong<right_outer_join_t, Lhs, Rhs, On>::value, "No support for right outer join");
+				}
+			};
 	}
 }
 
