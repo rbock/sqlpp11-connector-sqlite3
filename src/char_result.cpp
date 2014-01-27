@@ -86,7 +86,7 @@ namespace sqlpp
 
 		size_t char_result_t::num_cols() const
 		{
-			sqlite3_column_count(_handle->sqlite_statement);
+			return sqlite3_column_count(_handle->sqlite_statement);
 		}
 
 	}
