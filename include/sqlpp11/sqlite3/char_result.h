@@ -67,9 +67,14 @@ namespace sqlpp
 			{
 				next_impl();
 				if (_char_result_row.data)
+				{
 					result_row = _char_result_row;
+				}
 				else
-					result_row.invalidate();
+				{
+					if (result_row)
+						result_row.invalidate();
+				}
 			};
 
 		private:
