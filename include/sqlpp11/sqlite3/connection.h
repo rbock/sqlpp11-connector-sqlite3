@@ -33,7 +33,7 @@
 #include <sqlpp11/connection.h>
 #include <sqlpp11/sqlite3/char_result.h>
 #include <sqlpp11/sqlite3/prepared_statement.h>
-//#include <sqlpp11/sqlite3/bind_result.h>
+#include <sqlpp11/sqlite3/bind_result.h>
 #include <sqlpp11/sqlite3/connection_config.h>
 
 namespace sqlpp
@@ -95,7 +95,7 @@ namespace sqlpp
 
 			// prepared execution
 			prepared_statement_t prepare_impl(const std::string& statement);
-			//bind_result_t run_prepared_select_impl(prepared_statement_t& prepared_statement);
+			bind_result_t run_prepared_select_impl(prepared_statement_t& prepared_statement);
 			size_t run_prepared_insert_impl(prepared_statement_t& prepared_statement);
 			size_t run_prepared_update_impl(prepared_statement_t& prepared_statement);
 			size_t run_prepared_remove_impl(prepared_statement_t& prepared_statement);
@@ -118,6 +118,21 @@ namespace sqlpp
 				_context_t context(*this);
 				interpret(s, context);
 				return select_impl(context.str());
+			}
+
+			template<typename Select>
+			_prepared_statement_t prepare_select(Select& s)
+			{
+				_context_t context(*this);
+				interpret(s, context);
+				return prepare_impl(context.str());
+			}
+
+			template<typename PreparedSelect>
+			bind_result_t run_prepared_select(const PreparedSelect& s)
+			{
+				s._bind_params();
+				return run_prepared_select_impl(s._prepared_statement);
 			}
 
 			//! insert returns the last auto_incremented id (or zero, if there is none)

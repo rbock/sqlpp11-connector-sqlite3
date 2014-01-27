@@ -114,6 +114,35 @@ int main()
 		std::cerr << row.alpha << std::endl;
 	}
 
+	auto ps = db.prepare(select(all_of(tab)).from(tab).where(tab.alpha != parameter(tab.alpha) and tab.beta != parameter(tab.beta) and tab.gamma != parameter(tab.gamma)));
+	ps.params.alpha = 7;
+	ps.params.beta = "wurzelbrunft";
+	ps.params.gamma = true;
+	for (const auto& row: db.run(ps))
+	{
+		std::cerr << "bound result: alpha: " << row.alpha << std::endl;
+		std::cerr << "bound result: beta: " << row.beta << std::endl;
+		std::cerr << "bound result: gamma: " << row.gamma << std::endl;
+	}
+
+	std::cerr << "--------" << std::endl;
+	ps.params.gamma = "false";
+	for (const auto& row: db.run(ps))
+	{
+		std::cerr << "bound result: alpha: " << row.alpha << std::endl;
+		std::cerr << "bound result: beta: " << row.beta << std::endl;
+		std::cerr << "bound result: gamma: " << row.gamma << std::endl;
+	}
+
+	std::cerr << "--------" << std::endl;
+	ps.params.beta = "kaesekuchen";
+	for (const auto& row: db.run(ps))
+	{
+		std::cerr << "bound result: alpha: " << row.alpha << std::endl;
+		std::cerr << "bound result: beta: " << row.beta << std::endl;
+		std::cerr << "bound result: gamma: " << row.gamma << std::endl;
+	}
+
 	auto pi = db.prepare(insert_into(tab).set(tab.beta = parameter(tab.beta), tab.gamma = true));
 	pi.params.beta = "prepared cake";
 	std::cerr << "Inserted: " << db.run(pi) << std::endl;

@@ -87,8 +87,15 @@ namespace sqlpp
 				throw sqlpp::exception("Sqlite3 error: Could not store result set");
 			}
 
-
 			return {std::move(prepared)};
+		}
+
+		bind_result_t connection::run_prepared_select_impl(prepared_statement_t& prepared_statement)
+		{
+			sqlite3_reset(prepared_statement._handle->sqlite_statement);
+			execute_statement(*_handle, *prepared_statement._handle.get());
+
+			return { prepared_statement._handle };
 		}
 
 		size_t connection::insert_impl(const std::string& statement)
