@@ -37,18 +37,21 @@ namespace sqlpp
 	{
 		char_result_t::char_result_t():
 			_char_result_row({nullptr, nullptr})
-		{}
+			{}
 
 		char_result_t::char_result_t(std::unique_ptr<detail::prepared_statement_handle_t>&& handle):
 			_handle(std::move(handle)),
 			_char_result_row({nullptr, nullptr})
-		{
-			if (_handle and _handle->debug)
-				std::cerr << "Sqlite3 debug: Constructing char_result_t, using handle at " << _handle.get() << std::endl;
+			{
+				if (not _handle)
+					throw sqlpp::exception("constructed result with empty handle");
 
-			_raw_fields.resize(num_cols());
-			_raw_sizes.resize(num_cols());
-		}
+				if (_handle->debug)
+					std::cerr << "Sqlite3 debug: Constructing char_result_t, using handle at " << _handle.get() << std::endl;
+
+				_raw_fields.resize(num_cols());
+				_raw_sizes.resize(num_cols());
+			}
 
 		char_result_t::~char_result_t() = default;
 		char_result_t::char_result_t(char_result_t&& rhs) = default;
@@ -83,9 +86,7 @@ namespace sqlpp
 
 		size_t char_result_t::num_cols() const
 		{
-			return _handle
-				? sqlite3_column_count(_handle->sqlite_statement)
-				: 0;
+			sqlite3_column_count(_handle->sqlite_statement);
 		}
 
 	}

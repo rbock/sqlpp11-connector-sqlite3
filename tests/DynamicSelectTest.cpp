@@ -50,19 +50,24 @@ int main()
 	config->debug = true;
 
 	sql::connection db(config);
-	//db.execute("CREATE TABLE tab_sample (alpha bigint);");
 	db.execute("CREATE TABLE tab_sample (\
 		alpha bigint(20) DEFAULT NULL,\
-			beta bool DEFAULT NULL,\
-			gamma varchar(255) DEFAULT NULL\
+			beta varchar(255) DEFAULT NULL,\
+			gamma bool DEFAULT NULL\
 			)");
 
 	TabSample tab;
 
-	// explicit all_of(tab)
+	db.run(insert_into(tab).columns(tab.beta, tab.gamma)
+			.add_values(tab.beta = "rhabarbertorte", tab.gamma = false)
+			//.add_values(tab.beta = "cheesecake", tab.gamma = false)
+			//.add_values(tab.beta = "kaesekuchen", tab.gamma = true)
+			);
+
+	// select a static (alpha) and a dynamic column (beta)
 	for(const auto& row : db.run(dynamic_select(db).dynamic_columns(tab.alpha).add_column(tab.beta).from(tab).where(true)))
 	{
-		std::cerr << "row.alpha: " << row.alpha << "row.beta" << row.at("beta") << std::endl;
+		std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.at("beta") << std::endl;
 	};
 	return 0;
 }
