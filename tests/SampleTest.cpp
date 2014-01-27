@@ -61,6 +61,7 @@ int main()
 	{
 		std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
 	};
+	std::cerr << __FILE__ << ": " << __LINE__ << std::endl;
 	// selecting a table implicitly expands to all_of(tab)
 	for(const auto& row : select(all_of(tab)).from(tab).where(true).run(db))
 	{
@@ -112,6 +113,18 @@ int main()
 	{
 		std::cerr << row.alpha << std::endl;
 	}
+
+	auto pi = db.prepare(insert_into(tab).set(tab.beta = parameter(tab.beta), tab.gamma = true));
+	pi.params.beta = "prepared cake";
+	std::cerr << "Inserted: " << db.run(pi) << std::endl;
+
+	auto pu = db.prepare(update(tab).set(tab.gamma = parameter(tab.gamma)).where(tab.beta == "prepared cake"));
+	pu.params.gamma = false;
+	std::cerr << "Updated: " << db.run(pu) << std::endl;
+
+	auto pr = db.prepare(remove_from(tab).where(tab.beta != parameter(tab.beta)));
+	pr.params.beta = "prepared cake";
+	std::cerr << "Deleted lines: " << db.run(pr) << std::endl;
 
 	return 0;
 }

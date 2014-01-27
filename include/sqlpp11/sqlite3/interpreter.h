@@ -41,7 +41,7 @@ namespace sqlpp
 			{
 				using T = parameter_t<ValueType, NameType>;
 
-				static void _(const T& t, sqlite3::serializer_t& context)
+				static sqlite3::serializer_t& _(const T& t, sqlite3::serializer_t& context)
 				{
 					context << "?" << context.count();
 					context.pop_count();
@@ -49,6 +49,7 @@ namespace sqlpp
 				}
 			};
 
+		// disable some stuff that won't work with sqlite3
 		template<typename Select>
 			struct interpreter_t<sqlite3::serializer_t, any_t<Select>>
 			{

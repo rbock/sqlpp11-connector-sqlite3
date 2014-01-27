@@ -53,24 +53,19 @@ namespace sqlpp
 
 				if (rc != SQLITE_OK)
         {
-					throw sqlpp::exception("Sqlite3 error: Could not compile statement: " + std::string(sqlite3_errmsg(handle.sqlite)) + " (statement was >>" + statement + "<<\n");
+					throw sqlpp::exception("Sqlite3 error: Could not prepare statement: " + std::string(sqlite3_errmsg(handle.sqlite)) + " (statement was >>" + statement + "<<\n");
         }
 
 				return result;
 			}
 
-			void execute_statement(detail::connection_handle& handle, const std::string& statement)
+			void execute_statement(detail::connection_handle& handle, detail::prepared_statement_handle_t& prepared)
 			{
-				auto prepared = prepare_statement(handle, statement);
-
-				if (handle.config->debug)
-					std::cerr << "Sqlite3 debug: Executing: '" << statement << "'" << std::endl;
-
 				auto rc = sqlite3_step(prepared.sqlite_statement);
 				if (rc != SQLITE_OK and rc != SQLITE_DONE)
 				{
 					std::cerr << "return code: " << rc << std::endl;
-					throw sqlpp::exception("Sqlite3 error: Could not finish statement: " + std::string(sqlite3_errmsg(handle.sqlite)) + " (statement was >>" + statement + "<<\n");
+					throw sqlpp::exception("Sqlite3 error: Could not execute statement: " + std::string(sqlite3_errmsg(handle.sqlite)));
 				}
 			}
 		}
@@ -98,25 +93,58 @@ namespace sqlpp
 
 		size_t connection::insert_impl(const std::string& statement)
 		{
-			execute_statement(*_handle, statement);
+			auto prepared = prepare_statement(*_handle, statement);
+			execute_statement(*_handle, prepared);
 
 			return sqlite3_last_insert_rowid(_handle->sqlite);
 		}
 
-		void connection::execute(const std::string& command)
+		prepared_statement_t connection::prepare_impl(const std::string& statement)
 		{
-			execute_statement(*_handle, command);
+			return { std::unique_ptr<detail::prepared_statement_handle_t>(new detail::prepared_statement_handle_t(prepare_statement(*_handle, statement))) };
+		}
+
+		size_t connection::run_prepared_insert_impl(prepared_statement_t& prepared_statement)
+		{
+			sqlite3_reset(prepared_statement._handle->sqlite_statement);
+			execute_statement(*_handle, *prepared_statement._handle.get());
+
+			return sqlite3_last_insert_rowid(_handle->sqlite);
+		}
+
+		void connection::execute(const std::string& statement)
+		{
+			auto prepared = prepare_statement(*_handle, statement);
+			execute_statement(*_handle, prepared);
 		}
 
 		size_t connection::update_impl(const std::string& statement)
 		{
-			execute_statement(*_handle, statement);
+			auto prepared = prepare_statement(*_handle, statement);
+			execute_statement(*_handle, prepared);
+			return sqlite3_changes(_handle->sqlite);
+		}
+
+		size_t connection::run_prepared_update_impl(prepared_statement_t& prepared_statement)
+		{
+			sqlite3_reset(prepared_statement._handle->sqlite_statement);
+			execute_statement(*_handle, *prepared_statement._handle.get());
+
 			return sqlite3_changes(_handle->sqlite);
 		}
 
 		size_t connection::remove_impl(const std::string& statement)
 		{
-			execute_statement(*_handle, statement);
+			auto prepared = prepare_statement(*_handle, statement);
+			execute_statement(*_handle, prepared);
+			return sqlite3_changes(_handle->sqlite);
+		}
+
+		size_t connection::run_prepared_remove_impl(prepared_statement_t& prepared_statement)
+		{
+			sqlite3_reset(prepared_statement._handle->sqlite_statement);
+			execute_statement(*_handle, *prepared_statement._handle.get());
+
 			return sqlite3_changes(_handle->sqlite);
 		}
 
@@ -141,7 +169,8 @@ namespace sqlpp
 			{
 				throw sqlpp::exception("Cannot have more than one open transaction per connection");
 			}
-			execute_statement(*_handle, "BEGIN");
+			auto prepared = prepare_statement(*_handle, "BEGIN");
+			execute_statement(*_handle, prepared);
 			_transaction_active = true;
 		}
 
@@ -152,7 +181,8 @@ namespace sqlpp
 				throw sqlpp::exception("Cannot commit a finished or failed transaction");
 			}
 			_transaction_active = false;
-			execute_statement(*_handle, "COMMIT");
+			auto prepared = prepare_statement(*_handle, "COMMIT");
+			execute_statement(*_handle, prepared);
 		}
 
 		void connection::rollback_transaction(bool report)
@@ -166,7 +196,8 @@ namespace sqlpp
 				std::cerr << "Sqlite3 warning: Rolling back unfinished transaction" << std::endl;
 			}
 			_transaction_active = false;
-			execute_statement(*_handle, "ROLLBACK");
+			auto prepared = prepare_statement(*_handle, "ROLLBACK");
+			execute_statement(*_handle, prepared);
 		}
 
 		void connection::report_rollback_failure(const std::string message) noexcept

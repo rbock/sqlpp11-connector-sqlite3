@@ -71,12 +71,12 @@ namespace sqlpp
 					}
 					_char_result_row.data = _raw_fields.data();
 					_char_result_row.len = _raw_sizes.data();
-					return;
 				}
-				break;
+				return;
 			case SQLITE_DONE:
 				_char_result_row.data = nullptr;
 				_char_result_row.len = nullptr;
+				return;
 			}
 			throw sqlpp::exception("Sqlite3 error: Could not get next row: " + std::string(sqlite3_errmsg(sqlite3_db_handle(_handle->sqlite_statement))));
 		}

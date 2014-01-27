@@ -94,9 +94,11 @@ namespace sqlpp
 			size_t remove_impl(const std::string& statement);
 
 			// prepared execution
-			prepared_statement_t prepare_impl(const std::string& statement, size_t no_of_parameters, size_t no_of_columns);
+			prepared_statement_t prepare_impl(const std::string& statement);
 			//bind_result_t run_prepared_select_impl(prepared_statement_t& prepared_statement);
 			size_t run_prepared_insert_impl(prepared_statement_t& prepared_statement);
+			size_t run_prepared_update_impl(prepared_statement_t& prepared_statement);
+			size_t run_prepared_remove_impl(prepared_statement_t& prepared_statement);
 
 		public:
 			using _context_t = serializer_t;
@@ -132,7 +134,7 @@ namespace sqlpp
 			{
 				_context_t context(*this);
 				interpret(i, context);
-				return prepare_impl(context.str(), i._get_no_of_parameters(), 0);
+				return prepare_impl(context.str());
 			}
 
 			template<typename PreparedInsert>
@@ -151,6 +153,21 @@ namespace sqlpp
 				return update_impl(context.str());
 			}
 
+			template<typename Update>
+			_prepared_statement_t prepare_update(Update& u)
+			{
+				_context_t context(*this);
+				interpret(u, context);
+				return prepare_impl(context.str());
+			}
+
+			template<typename PreparedUpdate>
+			size_t run_prepared_update(const PreparedUpdate& u)
+			{
+				u._bind_params();
+				return run_prepared_update_impl(u._prepared_statement);
+			}
+
 			//! remove returns the number of removed rows
 			template<typename Remove>
 			size_t remove(const Remove& r)
@@ -158,6 +175,21 @@ namespace sqlpp
 				_context_t context(*this);
 				interpret(r, context);
 				return remove_impl(context.str());
+			}
+
+			template<typename Remove>
+			_prepared_statement_t prepare_remove(Remove& r)
+			{
+				_context_t context(*this);
+				interpret(r, context);
+				return prepare_impl(context.str());
+			}
+
+			template<typename PreparedRemove>
+			size_t run_prepared_remove(const PreparedRemove& r)
+			{
+				r._bind_params();
+				return run_prepared_remove_impl(r._prepared_statement);
 			}
 
 			//! execute arbitrary command (e.g. create a table)
