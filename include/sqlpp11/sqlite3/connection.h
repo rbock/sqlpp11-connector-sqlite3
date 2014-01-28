@@ -88,7 +88,7 @@ namespace sqlpp
 			bool _transaction_active = false;
 
 			// direct execution
-			char_result_t select_impl(const std::string& statement);
+			bind_result_t select_impl(const std::string& statement);
 			size_t insert_impl(const std::string& statement);
 			size_t update_impl(const std::string& statement);
 			size_t remove_impl(const std::string& statement);
@@ -113,7 +113,7 @@ namespace sqlpp
 
 			//! select returns a result (which can be iterated row by row)
 			template<typename Select>
-			char_result_t select(const Select& s)
+			bind_result_t select(const Select& s)
 			{
 				_context_t context(*this);
 				interpret(s, context);

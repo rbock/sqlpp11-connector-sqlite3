@@ -79,7 +79,7 @@ namespace sqlpp
 		{
 		}
 
-		char_result_t connection::select_impl(const std::string& statement)
+		bind_result_t connection::select_impl(const std::string& statement)
 		{
 			std::unique_ptr<detail::prepared_statement_handle_t> prepared(new detail::prepared_statement_handle_t(prepare_statement(*_handle, statement)));
 			if (!prepared)
