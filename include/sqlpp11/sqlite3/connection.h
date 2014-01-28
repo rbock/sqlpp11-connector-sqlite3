@@ -31,7 +31,6 @@
 #include <string>
 #include <sstream>
 #include <sqlpp11/connection.h>
-#include <sqlpp11/sqlite3/char_result.h>
 #include <sqlpp11/sqlite3/prepared_statement.h>
 #include <sqlpp11/sqlite3/bind_result.h>
 #include <sqlpp11/sqlite3/connection_config.h>
