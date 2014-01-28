@@ -25,48 +25,47 @@
  */
 
 
-#ifndef SQLPP_SQLITE3_RESULT_H
-#define SQLPP_SQLITE3_RESULT_H
+#ifndef SQLPP_SQLITE3_PREPARED_STATEMENT_H
+#define SQLPP_SQLITE3_PREPARED_STATEMENT_H
 
 #include <memory>
-#include <vector>
-#include <sqlpp11/raw_result_row.h>
+#include <string>
 
 namespace sqlpp
 {
 	namespace sqlite3
 	{
+		struct connection;
+
 		namespace detail
 		{
-			struct result_handle;
+			struct prepared_statement_handle_t;
 		}
 
-		class result
+		class prepared_statement_t
 		{
-			std::unique_ptr<detail::result_handle> _handle;
-			std::vector<const char*> _raw_fields;
-			std::vector<size_t> _raw_sizes;
-			bool _debug;
+			friend ::sqlpp::sqlite3::connection;
+			std::shared_ptr<detail::prepared_statement_handle_t> _handle;
 
 		public:
-			result();
-			result(std::unique_ptr<detail::result_handle>&& handle, const bool debug);
-			result(const result&) = delete;
-			result(result&& rhs);
-			result& operator=(const result&) = delete;
-			result& operator=(result&&);
-			~result();
+			prepared_statement_t() = delete;
+			prepared_statement_t(std::shared_ptr<detail::prepared_statement_handle_t>&& handle);
+			prepared_statement_t(const prepared_statement_t&) = delete;
+			prepared_statement_t(prepared_statement_t&& rhs) = default;
+			prepared_statement_t& operator=(const prepared_statement_t&) = delete;
+			prepared_statement_t& operator=(prepared_statement_t&&) = default;
+			~prepared_statement_t() = default;
 
-			bool operator==(const result& rhs) const
+			bool operator==(const prepared_statement_t& rhs) const
 			{
 				return _handle == rhs._handle;
 			}
 
-			//! return the next row from the result or nullptr, if there is no next row
-			raw_result_row_t next();
-			size_t num_cols() const;
+			void _bind_boolean_parameter(size_t index, const signed char* value, bool is_null);
+			void _bind_floating_point_parameter(size_t index, const double* value, bool is_null);
+			void _bind_integral_parameter(size_t index, const int64_t* value, bool is_null);
+			void _bind_text_parameter(size_t index, const std::string* value, bool is_null);
 		};
-
 	}
 }
 #endif
