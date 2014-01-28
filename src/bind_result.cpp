@@ -69,12 +69,12 @@ namespace sqlpp
 			*is_null = sqlite3_column_type(_handle->sqlite_statement, index) == SQLITE_NULL;
 		}
 
-		void bind_result_t::_bind_text_result(size_t index, char** value, size_t* len)
+		void bind_result_t::_bind_text_result(size_t index, const char** value, size_t* len)
 		{
 			if (_handle->debug)
 				std::cerr << "binding text result at index: " << index << std::endl;
 
-			*value = const_cast<char*>(reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, index)));
+			*value = (reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, index)));
 			*len = sqlite3_column_bytes(_handle->sqlite_statement, index);
 		}
 
