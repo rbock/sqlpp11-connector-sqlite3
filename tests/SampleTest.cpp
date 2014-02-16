@@ -68,7 +68,7 @@ int main()
 		std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
 	};
 	// selecting two multicolumns
-	for(const auto& row : db.run(select(multi_column(left, tab.alpha, tab.beta, tab.gamma), multi_column(tab, all_of(tab))).from(tab).where(true)))
+	for(const auto& row : db.run(select(multi_column(tab.alpha, tab.beta, tab.gamma).as(left), multi_column(all_of(tab)).as(tab)).from(tab).where(true)))
 	{
 		std::cerr << "row.left.alpha: " << row.left.alpha << ", row.left.beta: " << row.left.beta << ", row.left.gamma: " << row.left.gamma <<  std::endl;
 		std::cerr << "row.tabSample.alpha: " << row.tabSample.alpha << ", row.tabSample.beta: " << row.tabSample.beta << ", row.tabSample.gamma: " << row.tabSample.gamma <<  std::endl;
@@ -78,7 +78,9 @@ int main()
 	std::cerr << "no of required columns: " << TabSample::_required_insert_columns::size::value << std::endl;
 	db.run(insert_into(tab).default_values());
 	db.run(insert_into(tab).set(tab.gamma = true));
-	db.run(dynamic_insert_into(db, tab).dynamic_set(tab.gamma = true).add_set(tab.alpha = 7));
+	auto di = dynamic_insert_into(db, tab).dynamic_set(tab.gamma = true);
+	di.add_set(tab.alpha = 7);
+	db.run(di);
 
 	// update
 	db.run(update(tab).set(tab.gamma = false).where(tab.alpha.in(1)));
