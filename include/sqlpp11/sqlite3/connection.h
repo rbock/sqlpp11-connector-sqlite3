@@ -31,6 +31,7 @@
 #include <string>
 #include <sstream>
 #include <sqlpp11/connection.h>
+#include <sqlpp11/serialize.h>
 #include <sqlpp11/sqlite3/prepared_statement.h>
 #include <sqlpp11/sqlite3/bind_result.h>
 #include <sqlpp11/sqlite3/connection_config.h>
@@ -100,8 +101,22 @@ namespace sqlpp
 			size_t run_prepared_remove_impl(prepared_statement_t& prepared_statement);
 
 		public:
-			using _context_t = serializer_t;
 			using _prepared_statement_t = prepared_statement_t;
+			using _context_t = serializer_t;
+			using _serializer_context_t = _context_t;
+			using _interpreter_context_t = _context_t;
+
+			template<typename T>
+				static _context_t& _serialize_interpretable(const T& t, _context_t& context)
+				{
+					return ::sqlpp::serialize(t, context);
+				}
+
+			template<typename T>
+				static _context_t& _interpret_interpretable(const T& t, _context_t& context)
+				{
+					return ::sqlpp::serialize(t, context);
+				}
 
 			connection(const std::shared_ptr<connection_config>& config);
 			~connection();
@@ -115,7 +130,7 @@ namespace sqlpp
 			bind_result_t select(const Select& s)
 			{
 				_context_t context(*this);
-				interpret(s, context);
+				serialize(s, context);
 				return select_impl(context.str());
 			}
 
@@ -123,7 +138,7 @@ namespace sqlpp
 			_prepared_statement_t prepare_select(Select& s)
 			{
 				_context_t context(*this);
-				interpret(s, context);
+				serialize(s, context);
 				return prepare_impl(context.str());
 			}
 
@@ -139,7 +154,7 @@ namespace sqlpp
 			size_t insert(const Insert& i)
 			{
 				_context_t context(*this);
-				interpret(i, context);
+				serialize(i, context);
 				return insert_impl(context.str());
 			}
 
@@ -147,7 +162,7 @@ namespace sqlpp
 			_prepared_statement_t prepare_insert(Insert& i)
 			{
 				_context_t context(*this);
-				interpret(i, context);
+				serialize(i, context);
 				return prepare_impl(context.str());
 			}
 
@@ -163,7 +178,7 @@ namespace sqlpp
 			size_t update(const Update& u)
 			{
 				_context_t context(*this);
-				interpret(u, context);
+				serialize(u, context);
 				return update_impl(context.str());
 			}
 
@@ -171,7 +186,7 @@ namespace sqlpp
 			_prepared_statement_t prepare_update(Update& u)
 			{
 				_context_t context(*this);
-				interpret(u, context);
+				serialize(u, context);
 				return prepare_impl(context.str());
 			}
 
@@ -187,7 +202,7 @@ namespace sqlpp
 			size_t remove(const Remove& r)
 			{
 				_context_t context(*this);
-				interpret(r, context);
+				serialize(r, context);
 				return remove_impl(context.str());
 			}
 
@@ -195,7 +210,7 @@ namespace sqlpp
 			_prepared_statement_t prepare_remove(Remove& r)
 			{
 				_context_t context(*this);
-				interpret(r, context);
+				serialize(r, context);
 				return prepare_impl(context.str());
 			}
 
@@ -247,6 +262,6 @@ namespace sqlpp
 	}
 }
 
-#include <sqlpp11/sqlite3/interpreter.h>
+#include <sqlpp11/sqlite3/serializer.h>
 
 #endif
