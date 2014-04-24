@@ -79,7 +79,7 @@ int main()
 	db.run(insert_into(tab).default_values());
 	db.run(insert_into(tab).set(tab.gamma = true));
 	auto di = dynamic_insert_into(db, tab).dynamic_set(tab.gamma = true);
-	di.add_set(tab.alpha = 7);
+	di.add_set(tab.beta = "");
 	db.run(di);
 
 	// update
