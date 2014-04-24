@@ -24,8 +24,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SQLPP_SQLITE3_INTERPRETER_H
-#define SQLPP_SQLITE3_INTERPRETER_H
+#ifndef SQLPP_SQLITE3_SERIALIZER_H
+#define SQLPP_SQLITE3_SERIALIZER_H
 
 #include <sqlpp11/any.h>
 #include <sqlpp11/some.h>
@@ -37,7 +37,7 @@ namespace sqlpp
 	namespace vendor
 	{
 		template<typename ValueType, typename NameType>
-			struct interpreter_t<sqlite3::serializer_t, parameter_t<ValueType, NameType>>
+			struct serializer_t<sqlite3::serializer_t, parameter_t<ValueType, NameType>>
 			{
 				using T = parameter_t<ValueType, NameType>;
 
@@ -51,7 +51,7 @@ namespace sqlpp
 
 		// disable some stuff that won't work with sqlite3
 		template<typename Select>
-			struct interpreter_t<sqlite3::serializer_t, any_t<Select>>
+			struct serializer_t<sqlite3::serializer_t, any_t<Select>>
 			{
 				using T = any_t<Select>;
 
@@ -62,7 +62,7 @@ namespace sqlpp
 			};
 
 		template<typename Select>
-			struct interpreter_t<sqlite3::serializer_t, some_t<Select>>
+			struct serializer_t<sqlite3::serializer_t, some_t<Select>>
 			{
 				using T = some_t<Select>;
 
@@ -74,7 +74,7 @@ namespace sqlpp
 
 
 		template<typename Lhs, typename Rhs, typename On>
-			struct interpreter_t<sqlite3::serializer_t, join_t<outer_join_t, Lhs, Rhs, On>>
+			struct serializer_t<sqlite3::serializer_t, join_t<outer_join_t, Lhs, Rhs, On>>
 			{
 				using T = join_t<outer_join_t, Lhs, Rhs, On>;
 
@@ -85,7 +85,7 @@ namespace sqlpp
 			};
 
 		template<typename Lhs, typename Rhs, typename On>
-			struct interpreter_t<sqlite3::serializer_t, join_t<right_outer_join_t, Lhs, Rhs, On>>
+			struct serializer_t<sqlite3::serializer_t, join_t<right_outer_join_t, Lhs, Rhs, On>>
 			{
 				using T = join_t<right_outer_join_t, Lhs, Rhs, On>;
 

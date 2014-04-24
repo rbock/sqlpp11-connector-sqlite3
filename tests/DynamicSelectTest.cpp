@@ -58,14 +58,16 @@ int main()
 
 	TabSample tab;
 
-	db.run(insert_into(tab).columns(tab.beta, tab.gamma)
-			.add_values(tab.beta = "rhabarbertorte", tab.gamma = false)
-			//.add_values(tab.beta = "cheesecake", tab.gamma = false)
-			//.add_values(tab.beta = "kaesekuchen", tab.gamma = true)
-			);
+	auto i = insert_into(tab).columns(tab.beta, tab.gamma);
+	i.add_values(tab.beta = "rhabarbertorte", tab.gamma = false);
+	//i.add_values(tab.beta = "cheesecake", tab.gamma = false)
+	//i.add_values(tab.beta = "kaesekuchen", tab.gamma = true)
+	db.run(i);
 
 	// select a static (alpha) and a dynamic column (beta)
-	for(const auto& row : db.run(dynamic_select(db).dynamic_columns(tab.alpha).add_column(tab.beta).from(tab).where(true)))
+	auto s = dynamic_select(db).dynamic_columns(tab.alpha).from(tab).where(true);
+	s.add_column(tab.beta);
+	for(const auto& row : db.run(s))
 	{
 		std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.at("beta") << std::endl;
 	};
