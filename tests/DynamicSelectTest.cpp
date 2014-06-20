@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Roland Bock
+ * Copyright (c) 2013-2014, Roland Bock
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -59,14 +59,14 @@ int main()
 	TabSample tab;
 
 	auto i = insert_into(tab).columns(tab.beta, tab.gamma);
-	i.add_values(tab.beta = "rhabarbertorte", tab.gamma = false);
-	//i.add_values(tab.beta = "cheesecake", tab.gamma = false)
-	//i.add_values(tab.beta = "kaesekuchen", tab.gamma = true)
+	i.values.add(tab.beta = "rhabarbertorte", tab.gamma = false);
+	//i.values.add(tab.beta = "cheesecake", tab.gamma = false)
+	//i.values.add(tab.beta = "kaesekuchen", tab.gamma = true)
 	db.run(i);
 
 	// select a static (alpha) and a dynamic column (beta)
 	auto s = dynamic_select(db).dynamic_columns(tab.alpha).from(tab).where(true);
-	s.add_column(tab.beta);
+	s.selected_columns.add(tab.beta);
 	for(const auto& row : db.run(s))
 	{
 		std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.at("beta") << std::endl;
