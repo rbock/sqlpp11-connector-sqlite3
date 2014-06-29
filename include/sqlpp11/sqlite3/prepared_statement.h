@@ -35,7 +35,7 @@ namespace sqlpp
 {
 	namespace sqlite3
 	{
-		struct connection;
+		class connection;
 
 		namespace detail
 		{

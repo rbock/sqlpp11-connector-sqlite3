@@ -67,9 +67,10 @@ int main()
 	// select a static (alpha) and a dynamic column (beta)
 	auto s = dynamic_select(db).dynamic_columns(tab.alpha).from(tab).where(true);
 	s.selected_columns.add(tab.beta);
+	s.selected_columns.add(tab.gamma);
 	for(const auto& row : db.run(s))
 	{
-		std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.at("beta") << std::endl;
+		std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.at("beta") << ", row.gamma: " << row.at("gamma") << std::endl;
 	};
 	return 0;
 }

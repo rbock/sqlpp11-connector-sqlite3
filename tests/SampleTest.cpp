@@ -102,7 +102,7 @@ int main()
 	{
 		int x = row.alpha;
 		int a = row.max;
-		//std::cerr << "-----------------------------" << row.beta << std::endl;
+		std::cout << x << ", " << a << std::endl;
 	}
 	tx.commit();
 
