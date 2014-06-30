@@ -62,7 +62,7 @@ namespace sqlpp
 			{
 				if (!_handle)
 				{
-					result_row.invalidate();
+					result_row._invalidate();
 					return;
 				}
 
@@ -70,14 +70,14 @@ namespace sqlpp
 				{
 					if (not result_row)
 					{
-						result_row.validate();
+						result_row._validate();
 					}
 					result_row._bind(*this);
 				}
 				else
 				{
 					if (result_row)
-						result_row.invalidate();
+						result_row._invalidate();
 				}
 			};
 

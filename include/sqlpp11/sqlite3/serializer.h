@@ -34,67 +34,64 @@
 
 namespace sqlpp
 {
-	namespace vendor
-	{
-		template<typename ValueType, typename NameType>
-			struct serializer_t<sqlite3::serializer_t, parameter_t<ValueType, NameType>>
+	template<typename ValueType, typename NameType>
+		struct serializer_t<sqlite3::serializer_t, parameter_t<ValueType, NameType>>
+		{
+			using T = parameter_t<ValueType, NameType>;
+
+			static sqlite3::serializer_t& _(const T& t, sqlite3::serializer_t& context)
 			{
-				using T = parameter_t<ValueType, NameType>;
+				context << "?" << context.count();
+				context.pop_count();
+				return context;
+			}
+		};
 
-				static sqlite3::serializer_t& _(const T& t, sqlite3::serializer_t& context)
-				{
-					context << "?" << context.count();
-					context.pop_count();
-					return context;
-				}
-			};
+	// disable some stuff that won't work with sqlite3
+	template<typename Select>
+		struct serializer_t<sqlite3::serializer_t, any_t<Select>>
+		{
+			using T = any_t<Select>;
 
-		// disable some stuff that won't work with sqlite3
-		template<typename Select>
-			struct serializer_t<sqlite3::serializer_t, any_t<Select>>
+			static void _(const T& t, sqlite3::serializer_t& context)
 			{
-				using T = any_t<Select>;
+				static_assert(::sqlpp::wrong_t<Select>::value, "No support for any()");
+			}
+		};
 
-				static void _(const T& t, sqlite3::serializer_t& context)
-				{
-					static_assert(::sqlpp::vendor::wrong_t<Select>::value, "No support for any()");
-				}
-			};
+	template<typename Select>
+		struct serializer_t<sqlite3::serializer_t, some_t<Select>>
+		{
+			using T = some_t<Select>;
 
-		template<typename Select>
-			struct serializer_t<sqlite3::serializer_t, some_t<Select>>
+			static void _(const T& t, sqlite3::serializer_t& context)
 			{
-				using T = some_t<Select>;
-
-				static void _(const T& t, sqlite3::serializer_t& context)
-				{
-					static_assert(::sqlpp::vendor::wrong_t<Select>::value, "No support for some()");
-				}
-			};
+				static_assert(::sqlpp::wrong_t<Select>::value, "No support for some()");
+			}
+		};
 
 
-		template<typename Lhs, typename Rhs, typename On>
-			struct serializer_t<sqlite3::serializer_t, join_t<outer_join_t, Lhs, Rhs, On>>
+	template<typename Lhs, typename Rhs, typename On>
+		struct serializer_t<sqlite3::serializer_t, join_t<outer_join_t, Lhs, Rhs, On>>
+		{
+			using T = join_t<outer_join_t, Lhs, Rhs, On>;
+
+			static void _(const T& t, sqlite3::serializer_t& context)
 			{
-				using T = join_t<outer_join_t, Lhs, Rhs, On>;
+				static_assert(::sqlpp::wrong_t<outer_join_t, Lhs, Rhs, On>::value, "No support for outer join");
+			}
+		};
 
-				static void _(const T& t, sqlite3::serializer_t& context)
-				{
-					static_assert(::sqlpp::vendor::wrong_t<outer_join_t, Lhs, Rhs, On>::value, "No support for outer join");
-				}
-			};
+	template<typename Lhs, typename Rhs, typename On>
+		struct serializer_t<sqlite3::serializer_t, join_t<right_outer_join_t, Lhs, Rhs, On>>
+		{
+			using T = join_t<right_outer_join_t, Lhs, Rhs, On>;
 
-		template<typename Lhs, typename Rhs, typename On>
-			struct serializer_t<sqlite3::serializer_t, join_t<right_outer_join_t, Lhs, Rhs, On>>
+			static void _(const T& t, sqlite3::serializer_t& context)
 			{
-				using T = join_t<right_outer_join_t, Lhs, Rhs, On>;
-
-				static void _(const T& t, sqlite3::serializer_t& context)
-				{
-					static_assert(::sqlpp::vendor::wrong_t<right_outer_join_t, Lhs, Rhs, On>::value, "No support for right outer join");
-				}
-			};
-	}
+				static_assert(::sqlpp::wrong_t<right_outer_join_t, Lhs, Rhs, On>::value, "No support for right outer join");
+			}
+		};
 }
 
 #endif
