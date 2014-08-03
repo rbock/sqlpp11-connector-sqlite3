@@ -55,7 +55,7 @@ namespace sqlpp
 
 			static void _(const T& t, sqlite3::serializer_t& context)
 			{
-				static_assert(::sqlpp::wrong_t<Select>::value, "No support for any()");
+				static_assert(::sqlpp::wrong_t<serializer_t>::value, "No support for any()");
 			}
 		};
 
@@ -66,7 +66,7 @@ namespace sqlpp
 
 			static void _(const T& t, sqlite3::serializer_t& context)
 			{
-				static_assert(::sqlpp::wrong_t<Select>::value, "No support for some()");
+				static_assert(::sqlpp::wrong_t<serializer_t>::value, "No support for some()");
 			}
 		};
 
@@ -78,7 +78,7 @@ namespace sqlpp
 
 			static void _(const T& t, sqlite3::serializer_t& context)
 			{
-				static_assert(::sqlpp::wrong_t<outer_join_t, Lhs, Rhs, On>::value, "No support for outer join");
+				static_assert(::sqlpp::wrong_t<serializer_t>::value, "No support for outer join");
 			}
 		};
 
@@ -89,7 +89,7 @@ namespace sqlpp
 
 			static void _(const T& t, sqlite3::serializer_t& context)
 			{
-				static_assert(::sqlpp::wrong_t<right_outer_join_t, Lhs, Rhs, On>::value, "No support for right outer join");
+				static_assert(::sqlpp::wrong_t<serializer_t>::value, "No support for right outer join");
 			}
 		};
 }
