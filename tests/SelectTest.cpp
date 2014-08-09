@@ -39,10 +39,35 @@
 #include <iostream>
 #include <vector>
 
-
 SQLPP_ALIAS_PROVIDER(left);
 
 namespace sql = sqlpp::sqlite3;
+TabSample tab;
+
+void testSelectAll(sql::connection& db, size_t expectedRowCount)
+{
+	std::cerr << "--------------------------------------" << std::endl;
+	size_t i = 0;
+	for(const auto& row : db(sqlpp::select(all_of(tab)).from(tab).where(true)))
+	{
+		++i;
+		std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
+		assert(row.alpha == i);
+	};
+	assert(i == expectedRowCount);
+
+	auto preparedSelectAll = db.prepare(sqlpp::select(all_of(tab)).from(tab).where(true));
+	i = 0;
+	for(const auto& row : db(preparedSelectAll))
+	{
+		++i;
+		std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
+		assert(row.alpha == i);
+	};
+	assert(i == expectedRowCount);
+	std::cerr << "--------------------------------------" << std::endl;
+}
+
 int main()
 {
 	auto config = std::make_shared<sql::connection_config>();
@@ -52,50 +77,19 @@ int main()
 
 	sql::connection db(config);
 	db.execute(R"(CREATE TABLE tab_sample (
-		alpha bigint(20) DEFAULT NULL,
+		alpha INTEGER PRIMARY KEY,
 			beta varchar(255) DEFAULT NULL,
 			gamma bool DEFAULT NULL
 			))");
 
-	TabSample tab;
 
-	// empty database
-	std::cerr << "--------------------------------------" << std::endl;
-	size_t i = 0;
-	for(const auto& row : db(sqlpp::select(all_of(tab)).from(tab).where(true)))
-	{
-		++i;
-		std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
-	};
-	assert(i == 0);
-	std::cerr << "--------------------------------------" << std::endl;
-
+	testSelectAll(db, 0);
 	db(insert_into(tab).default_values());
-
-	// one row in database
-	std::cerr << "--------------------------------------" << std::endl;
-	i = 0;
-	for(const auto& row : db(sqlpp::select(all_of(tab)).from(tab).where(true)))
-	{
-		++i;
-		std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
-	};
-	assert(i == 1);
-	std::cerr << "--------------------------------------" << std::endl;
-
-	// insert
+	testSelectAll(db, 1);
 	db(insert_into(tab).set(tab.gamma = true, tab.beta = "cheesecake"));
-
-	// one row in database
-	std::cerr << "--------------------------------------" << std::endl;
-	i = 0;
-	for(const auto& row : db(sqlpp::select(all_of(tab)).from(tab).where(true)))
-	{
-		++i;
-		std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
-	};
-	assert(i == 2);
-	std::cerr << "--------------------------------------" << std::endl;
+	testSelectAll(db, 2);
+	db(insert_into(tab).set(tab.gamma = true, tab.beta = "cheesecake"));
+	testSelectAll(db, 3);
 
 
 	// selecting two multicolumns
