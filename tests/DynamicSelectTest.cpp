@@ -62,13 +62,13 @@ int main()
 	i.values.add(tab.beta = "rhabarbertorte", tab.gamma = false);
 	//i.values.add(tab.beta = "cheesecake", tab.gamma = false)
 	//i.values.add(tab.beta = "kaesekuchen", tab.gamma = true)
-	db.run(i);
+	db(i);
 
 	// select a static (alpha) and a dynamic column (beta)
 	auto s = dynamic_select(db).dynamic_columns(tab.alpha).from(tab).where(true);
 	s.selected_columns.add(tab.beta);
 	s.selected_columns.add(tab.gamma);
-	for(const auto& row : db.run(s))
+	for(const auto& row : db(s))
 	{
 		std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.at("beta") << ", row.gamma: " << row.at("gamma") << std::endl;
 	};
