@@ -63,14 +63,14 @@ namespace sqlpp
 		void prepared_statement_t::_reset()
 		{
 			if (_handle->debug)
-				std::cerr << "reseting prepared statement" << std::endl;
+				std::cerr << "Sqlite3 debug: reseting prepared statement" << std::endl;
 			sqlite3_reset(_handle->sqlite_statement);
 		}
 
 		void prepared_statement_t::_bind_boolean_parameter(size_t index, const signed char* value, bool is_null)
 		{
 			if (_handle->debug)
-				std::cerr << "binding boolean parameter " << (*value ? "true":"false") << " at index: " << index << ", being " << (is_null? "" : "not ") << "null" << std::endl;
+				std::cerr << "Sqlite3 debug: binding boolean parameter " << (*value ? "true":"false") << " at index: " << index << ", being " << (is_null? "" : "not ") << "null" << std::endl;
 
 			int result;
 			if (not is_null)
@@ -83,7 +83,7 @@ namespace sqlpp
 		void prepared_statement_t::_bind_floating_point_parameter(size_t index, const double* value, bool is_null)
 		{
 			if (_handle->debug)
-				std::cerr << "binding floating_point parameter " << *value << " at index: " << index << ", being " << (is_null? "" : "not ") << "null" << std::endl;
+				std::cerr << "Sqlite3 debug: binding floating_point parameter " << *value << " at index: " << index << ", being " << (is_null? "" : "not ") << "null" << std::endl;
 
 			int result;
 			if (not is_null)
@@ -96,7 +96,7 @@ namespace sqlpp
 		void prepared_statement_t::_bind_integral_parameter(size_t index, const int64_t* value, bool is_null)
 		{
 			if (_handle->debug)
-				std::cerr << "binding integral parameter " << *value << " at index: " << index << ", being " << (is_null? "" : "not ") << "null" << std::endl;
+				std::cerr << "Sqlite3 debug: binding integral parameter " << *value << " at index: " << index << ", being " << (is_null? "" : "not ") << "null" << std::endl;
 
 			int result;
 			if (not is_null)
@@ -109,7 +109,7 @@ namespace sqlpp
 		void prepared_statement_t::_bind_text_parameter(size_t index, const std::string* value, bool is_null)
 		{
 			if (_handle->debug)
-				std::cerr << "binding text parameter " << *value << " at index: " << index << ", being " << (is_null? "" : "not ") << "null" << std::endl;
+				std::cerr << "Sqlite3 debug: binding text parameter " << *value << " at index: " << index << ", being " << (is_null? "" : "not ") << "null" << std::endl;
 
 			int result;
 			if (not is_null)

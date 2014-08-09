@@ -45,7 +45,7 @@ namespace sqlpp
 		void bind_result_t::_bind_boolean_result(size_t index, signed char* value, bool* is_null)
 		{
 			if (_handle->debug)
-				std::cerr << "binding boolean result " << *value << " at index: " << index << std::endl;
+				std::cerr << "Sqlite3 debug: binding boolean result " << *value << " at index: " << index << std::endl;
 
 			*value = sqlite3_column_int(_handle->sqlite_statement, index);
 			*is_null = sqlite3_column_type(_handle->sqlite_statement, index) == SQLITE_NULL;
@@ -54,7 +54,7 @@ namespace sqlpp
 		void bind_result_t::_bind_floating_point_result(size_t index, double* value, bool* is_null)
 		{
 			if (_handle->debug)
-				std::cerr << "binding floating_point result " << *value << " at index: " << index << std::endl;
+				std::cerr << "Sqlite3 debug: binding floating_point result " << *value << " at index: " << index << std::endl;
 
 			*value = sqlite3_column_double(_handle->sqlite_statement, index);
 			*is_null = sqlite3_column_type(_handle->sqlite_statement, index) == SQLITE_NULL;
@@ -63,7 +63,7 @@ namespace sqlpp
 		void bind_result_t::_bind_integral_result(size_t index, int64_t* value, bool* is_null)
 		{
 			if (_handle->debug)
-				std::cerr << "binding integral result " << *value << " at index: " << index << std::endl;
+				std::cerr << "Sqlite3 debug: binding integral result " << *value << " at index: " << index << std::endl;
 
 			*value = sqlite3_column_int64(_handle->sqlite_statement, index);
 			*is_null = sqlite3_column_type(_handle->sqlite_statement, index) == SQLITE_NULL;
@@ -72,7 +72,7 @@ namespace sqlpp
 		void bind_result_t::_bind_text_result(size_t index, const char** value, size_t* len)
 		{
 			if (_handle->debug)
-				std::cerr << "binding text result at index: " << index << std::endl;
+				std::cerr << "Sqlite3 debug: binding text result at index: " << index << std::endl;
 
 			*value = (reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, index)));
 			*len = sqlite3_column_bytes(_handle->sqlite_statement, index);
@@ -92,7 +92,7 @@ namespace sqlpp
 			case SQLITE_DONE:
 				return false;
 			default:
-				throw sqlpp::exception("Unexpected return value for sqlite3_step()");
+				throw sqlpp::exception("Sqlite3 error: Unexpected return value for sqlite3_step()");
 			}
 		}
 	}
