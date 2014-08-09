@@ -65,6 +65,7 @@ namespace sqlpp
 				switch(rc)
 				{
 				case SQLITE_OK:
+				case SQLITE_ROW: // might occur if execute is called with a select
 				case SQLITE_DONE:
 					return;
 				default:
