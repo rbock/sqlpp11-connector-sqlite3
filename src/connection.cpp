@@ -62,8 +62,13 @@ namespace sqlpp
 			void execute_statement(detail::connection_handle& handle, detail::prepared_statement_handle_t& prepared)
 			{
 				auto rc = sqlite3_step(prepared.sqlite_statement);
-				if (rc != SQLITE_OK and rc != SQLITE_DONE)
+				switch(rc)
 				{
+				case SQLITE_OK:
+				case SQLITE_ROW:
+				case SQLITE_DONE:
+					return;
+				default:
 					std::cerr << "Sqlite3 debug: sqlite3_step return code: " << rc << std::endl;
 					throw sqlpp::exception("Sqlite3 error: Could not execute statement: " + std::string(sqlite3_errmsg(handle.sqlite)));
 				}
