@@ -150,6 +150,7 @@ namespace sqlpp
 			template<typename PreparedSelect>
 			bind_result_t run_prepared_select(const PreparedSelect& s)
 			{
+				s._prepared_statement._reset();
 				s._bind_params();
 				return run_prepared_select_impl(s._prepared_statement);
 			}
@@ -174,6 +175,7 @@ namespace sqlpp
 			template<typename PreparedInsert>
 			size_t run_prepared_insert(const PreparedInsert& i)
 			{
+				i._prepared_statement._reset();
 				i._bind_params();
 				return run_prepared_insert_impl(i._prepared_statement);
 			}
@@ -198,6 +200,7 @@ namespace sqlpp
 			template<typename PreparedUpdate>
 			size_t run_prepared_update(const PreparedUpdate& u)
 			{
+				u._prepared_statement._reset();
 				u._bind_params();
 				return run_prepared_update_impl(u._prepared_statement);
 			}
@@ -222,6 +225,7 @@ namespace sqlpp
 			template<typename PreparedRemove>
 			size_t run_prepared_remove(const PreparedRemove& r)
 			{
+				r._prepared_statement._reset();
 				r._bind_params();
 				return run_prepared_remove_impl(r._prepared_statement);
 			}
@@ -239,6 +243,13 @@ namespace sqlpp
 					return t._run(*this);
 				}
 
+			//! call run on the argument
+			template<typename T>
+				auto operator()(const T& t) -> decltype(t._run(*this))
+				{
+					return t._run(*this);
+				}
+
 			//! call prepare on the argument
 			template<typename T>
 				auto prepare(const T& t) -> decltype(t._prepare(*this))
@@ -249,7 +260,7 @@ namespace sqlpp
 			//! start transaction
 			void start_transaction();
 
-			//! commit transaction (or throw transaction if the transaction has been finished already)
+			//! commit transaction (or throw if the transaction has been finished already)
 			void commit_transaction();
 
 			//! rollback transaction with or without reporting the rollback (or throw if the transaction has been finished already)

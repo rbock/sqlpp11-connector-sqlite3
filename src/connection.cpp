@@ -62,9 +62,14 @@ namespace sqlpp
 			void execute_statement(detail::connection_handle& handle, detail::prepared_statement_handle_t& prepared)
 			{
 				auto rc = sqlite3_step(prepared.sqlite_statement);
-				if (rc != SQLITE_OK and rc != SQLITE_DONE)
+				switch(rc)
 				{
-					std::cerr << "return code: " << rc << std::endl;
+				case SQLITE_OK:
+				case SQLITE_ROW: // might occur if execute is called with a select
+				case SQLITE_DONE:
+					return;
+				default:
+					std::cerr << "Sqlite3 debug: sqlite3_step return code: " << rc << std::endl;
 					throw sqlpp::exception("Sqlite3 error: Could not execute statement: " + std::string(sqlite3_errmsg(handle.sqlite)));
 				}
 			}
@@ -92,9 +97,6 @@ namespace sqlpp
 
 		bind_result_t connection::run_prepared_select_impl(prepared_statement_t& prepared_statement)
 		{
-			sqlite3_reset(prepared_statement._handle->sqlite_statement);
-			execute_statement(*_handle, *prepared_statement._handle.get());
-
 			return { prepared_statement._handle };
 		}
 
@@ -113,7 +115,6 @@ namespace sqlpp
 
 		size_t connection::run_prepared_insert_impl(prepared_statement_t& prepared_statement)
 		{
-			sqlite3_reset(prepared_statement._handle->sqlite_statement);
 			execute_statement(*_handle, *prepared_statement._handle.get());
 
 			return sqlite3_last_insert_rowid(_handle->sqlite);
@@ -134,7 +135,6 @@ namespace sqlpp
 
 		size_t connection::run_prepared_update_impl(prepared_statement_t& prepared_statement)
 		{
-			sqlite3_reset(prepared_statement._handle->sqlite_statement);
 			execute_statement(*_handle, *prepared_statement._handle.get());
 
 			return sqlite3_changes(_handle->sqlite);
@@ -149,7 +149,6 @@ namespace sqlpp
 
 		size_t connection::run_prepared_remove_impl(prepared_statement_t& prepared_statement)
 		{
-			sqlite3_reset(prepared_statement._handle->sqlite_statement);
 			execute_statement(*_handle, *prepared_statement._handle.get());
 
 			return sqlite3_changes(_handle->sqlite);
@@ -174,7 +173,7 @@ namespace sqlpp
 		{
 			if (_transaction_active)
 			{
-				throw sqlpp::exception("Cannot have more than one open transaction per connection");
+				throw sqlpp::exception("Sqlite3 error: Cannot have more than one open transaction per connection");
 			}
 			auto prepared = prepare_statement(*_handle, "BEGIN");
 			execute_statement(*_handle, prepared);
@@ -185,7 +184,7 @@ namespace sqlpp
 		{
 			if (not _transaction_active)
 			{
-				throw sqlpp::exception("Cannot commit a finished or failed transaction");
+				throw sqlpp::exception("Sqlite3 error: Cannot commit a finished or failed transaction");
 			}
 			_transaction_active = false;
 			auto prepared = prepare_statement(*_handle, "COMMIT");
@@ -196,7 +195,7 @@ namespace sqlpp
 		{
 			if (not _transaction_active)
 			{
-				throw sqlpp::exception("Cannot rollback a finished or failed transaction");
+				throw sqlpp::exception("Sqlite3 error: Cannot rollback a finished or failed transaction");
 			}
 			if (report)
 			{

@@ -26,6 +26,7 @@
 
 
 #include <memory>
+#include <sqlpp11/exception.h>
 #include <sqlpp11/sqlite3/connection_config.h>
 #include "connection_handle.h"
 
@@ -48,7 +49,7 @@ namespace sqlpp
 				{
 					const std::string msg = sqlite3_errmsg(sqlite);
 					sqlite3_close(sqlite);
-					throw std::runtime_error(std::string("Sqlite3: Can't open database: ") + msg);
+					throw sqlpp::exception("Sqlite3 error: Can't open database: " + msg);
 				}
 			}
 
@@ -57,7 +58,7 @@ namespace sqlpp
 				auto rc = sqlite3_close(sqlite);
 				if (rc != SQLITE_OK)
 				{
-					std::cerr << "Sqlite3: Can't close database: " << sqlite3_errmsg(sqlite) << std::endl;
+					std::cerr << "Sqlite3 error: Can't close database: " << sqlite3_errmsg(sqlite) << std::endl;
 				}
 			}
 		}
