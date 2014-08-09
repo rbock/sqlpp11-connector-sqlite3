@@ -65,7 +65,6 @@ namespace sqlpp
 				switch(rc)
 				{
 				case SQLITE_OK:
-				case SQLITE_ROW:
 				case SQLITE_DONE:
 					return;
 				default:
@@ -97,9 +96,6 @@ namespace sqlpp
 
 		bind_result_t connection::run_prepared_select_impl(prepared_statement_t& prepared_statement)
 		{
-			sqlite3_reset(prepared_statement._handle->sqlite_statement);
-			execute_statement(*_handle, *prepared_statement._handle.get());
-
 			return { prepared_statement._handle };
 		}
 
@@ -118,7 +114,6 @@ namespace sqlpp
 
 		size_t connection::run_prepared_insert_impl(prepared_statement_t& prepared_statement)
 		{
-			sqlite3_reset(prepared_statement._handle->sqlite_statement);
 			execute_statement(*_handle, *prepared_statement._handle.get());
 
 			return sqlite3_last_insert_rowid(_handle->sqlite);
@@ -139,7 +134,6 @@ namespace sqlpp
 
 		size_t connection::run_prepared_update_impl(prepared_statement_t& prepared_statement)
 		{
-			sqlite3_reset(prepared_statement._handle->sqlite_statement);
 			execute_statement(*_handle, *prepared_statement._handle.get());
 
 			return sqlite3_changes(_handle->sqlite);
@@ -154,7 +148,6 @@ namespace sqlpp
 
 		size_t connection::run_prepared_remove_impl(prepared_statement_t& prepared_statement)
 		{
-			sqlite3_reset(prepared_statement._handle->sqlite_statement);
 			execute_statement(*_handle, *prepared_statement._handle.get());
 
 			return sqlite3_changes(_handle->sqlite);

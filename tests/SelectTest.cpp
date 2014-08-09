@@ -24,6 +24,7 @@
  */
 
 #include "TabSample.h"
+#include <cassert>
 #include <sqlpp11/alias_provider.h>
 #include <sqlpp11/select.h>
 #include <sqlpp11/insert.h>
@@ -50,7 +51,6 @@ int main()
 	config->debug = true;
 
 	sql::connection db(config);
-	//db.execute("CREATE TABLE tab_sample (alpha bigint);");
 	db.execute(R"(CREATE TABLE tab_sample (
 		alpha bigint(20) DEFAULT NULL,
 			beta varchar(255) DEFAULT NULL,
@@ -59,22 +59,52 @@ int main()
 
 	TabSample tab;
 
-	// explicit all_of(tab)
+	// empty database
+	std::cerr << "--------------------------------------" << std::endl;
+	size_t i = 0;
 	for(const auto& row : db(sqlpp::select(all_of(tab)).from(tab).where(true)))
 	{
-		std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
+		++i;
+		std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
 	};
-	// selecting a table implicitly expands to all_of(tab)
-	for(const auto& row : db(select(all_of(tab)).from(tab).where(true)))
+	assert(i == 0);
+	std::cerr << "--------------------------------------" << std::endl;
+
+	db(insert_into(tab).default_values());
+
+	// one row in database
+	std::cerr << "--------------------------------------" << std::endl;
+	i = 0;
+	for(const auto& row : db(sqlpp::select(all_of(tab)).from(tab).where(true)))
 	{
-		std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
+		++i;
+		std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
 	};
+	assert(i == 1);
+	std::cerr << "--------------------------------------" << std::endl;
+
+	// insert
+	db(insert_into(tab).set(tab.gamma = true, tab.beta = "cheesecake"));
+
+	// one row in database
+	std::cerr << "--------------------------------------" << std::endl;
+	i = 0;
+	for(const auto& row : db(sqlpp::select(all_of(tab)).from(tab).where(true)))
+	{
+		++i;
+		std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
+	};
+	assert(i == 2);
+	std::cerr << "--------------------------------------" << std::endl;
+
+
 	// selecting two multicolumns
 	for(const auto& row : db(select(multi_column(tab.alpha, tab.beta, tab.gamma).as(left), multi_column(all_of(tab)).as(tab)).from(tab).where(true)))
 	{
-		std::cerr << "row.left.alpha: " << row.left.alpha << ", row.left.beta: " << row.left.beta << ", row.left.gamma: " << row.left.gamma <<  std::endl;
-		std::cerr << "row.tabSample.alpha: " << row.tabSample.alpha << ", row.tabSample.beta: " << row.tabSample.beta << ", row.tabSample.gamma: " << row.tabSample.gamma <<  std::endl;
+		std::cerr << ">>> row.left.alpha: " << row.left.alpha << ", row.left.beta: " << row.left.beta << ", row.left.gamma: " << row.left.gamma <<  std::endl;
+		std::cerr << ">>> row.tabSample.alpha: " << row.tabSample.alpha << ", row.tabSample.beta: " << row.tabSample.beta << ", row.tabSample.gamma: " << row.tabSample.gamma <<  std::endl;
 	};
+	std::cerr << "--------------------------------------" << std::endl;
 
 	// test functions and operators
 	db(select(all_of(tab)).from(tab).where(tab.alpha.is_null()));
@@ -95,9 +125,6 @@ int main()
 	db(select(all_of(tab)).from(tab).where((tab.beta + tab.beta) == ""));
 	db(select(all_of(tab)).from(tab).where((tab.beta + tab.beta).like(R"(%'\"%)")));
 
-	// insert
-	db(insert_into(tab).set(tab.gamma = true));
-
 	// update
 	db(update(tab).set(tab.gamma = false).where(tab.alpha.in(1)));
 	db(update(tab).set(tab.gamma = false).where(tab.alpha.in(sqlpp::value_list(std::vector<int>{1, 2, 3, 4}))));
@@ -110,14 +137,16 @@ int main()
 	std::cerr << "Accessing a field directly from the result (using the current row): " << result.begin()->alpha << std::endl;
 	std::cerr << "Can do that again, no problem: " << result.begin()->alpha << std::endl;
 
+	std::cerr << "--------------------------------------" << std::endl;
 	auto tx = start_transaction(db);
 	if (const auto& row = *db(select(all_of(tab), select(max(tab.alpha)).from(tab)).from(tab).where(true)).begin())
 	{
 		int x = row.alpha;
 		int a = row.max;
-		std::cout << x << ", " << a << std::endl;
+		std::cout << ">>>" << x << ", " << a << std::endl;
 	}
 	tx.commit();
+	std::cerr << "--------------------------------------" << std::endl;
 
 	return 0;
 }
