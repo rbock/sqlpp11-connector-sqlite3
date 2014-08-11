@@ -157,5 +157,13 @@ int main()
 	pr.params.beta = "prepared cake";
 	std::cerr << "Deleted lines: " << db(pr) << std::endl;
 
+  // Check that a prepared select is default-constructible
+  {
+    auto s = select(all_of(tab)).from(tab).where((tab.beta.like(parameter(tab.beta)) and tab.alpha == parameter(tab.alpha)) or tab.gamma != parameter(tab.gamma));
+    using P = decltype(db.prepare(s));
+    P p; // You must not use this one yet!
+		p = db.prepare(s);
+  }
+
 	return 0;
 }
