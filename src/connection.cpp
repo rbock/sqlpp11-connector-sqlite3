@@ -47,7 +47,7 @@ namespace sqlpp
 				auto rc = sqlite3_prepare_v2(
 						handle.sqlite,
 						statement.c_str(),
-						statement.size(),
+						static_cast<int>(statement.size()),
 						&result.sqlite_statement,
 						nullptr);
 
