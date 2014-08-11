@@ -47,8 +47,8 @@ namespace sqlpp
 			if (_handle->debug)
 				std::cerr << "Sqlite3 debug: binding boolean result " << *value << " at index: " << index << std::endl;
 
-			*value = sqlite3_column_int(_handle->sqlite_statement, index);
-			*is_null = sqlite3_column_type(_handle->sqlite_statement, index) == SQLITE_NULL;
+			*value = static_cast<signed char>(sqlite3_column_int(_handle->sqlite_statement, static_cast<int>(index)));
+			*is_null = sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)) == SQLITE_NULL;
 		}
 
 		void bind_result_t::_bind_floating_point_result(size_t index, double* value, bool* is_null)
@@ -56,8 +56,8 @@ namespace sqlpp
 			if (_handle->debug)
 				std::cerr << "Sqlite3 debug: binding floating_point result " << *value << " at index: " << index << std::endl;
 
-			*value = sqlite3_column_double(_handle->sqlite_statement, index);
-			*is_null = sqlite3_column_type(_handle->sqlite_statement, index) == SQLITE_NULL;
+			*value = sqlite3_column_double(_handle->sqlite_statement, static_cast<int>(index));
+			*is_null = sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)) == SQLITE_NULL;
 		}
 
 		void bind_result_t::_bind_integral_result(size_t index, int64_t* value, bool* is_null)
@@ -65,8 +65,8 @@ namespace sqlpp
 			if (_handle->debug)
 				std::cerr << "Sqlite3 debug: binding integral result " << *value << " at index: " << index << std::endl;
 
-			*value = sqlite3_column_int64(_handle->sqlite_statement, index);
-			*is_null = sqlite3_column_type(_handle->sqlite_statement, index) == SQLITE_NULL;
+			*value = sqlite3_column_int64(_handle->sqlite_statement, static_cast<int>(index));
+			*is_null = sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)) == SQLITE_NULL;
 		}
 
 		void bind_result_t::_bind_text_result(size_t index, const char** value, size_t* len)
@@ -74,8 +74,8 @@ namespace sqlpp
 			if (_handle->debug)
 				std::cerr << "Sqlite3 debug: binding text result at index: " << index << std::endl;
 
-			*value = (reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, index)));
-			*len = sqlite3_column_bytes(_handle->sqlite_statement, index);
+			*value = (reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, static_cast<int>(index))));
+			*len = sqlite3_column_bytes(_handle->sqlite_statement, static_cast<int>(index));
 		}
 
 		bool bind_result_t::next_impl()
