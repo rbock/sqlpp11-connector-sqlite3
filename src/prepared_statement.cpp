@@ -74,9 +74,9 @@ namespace sqlpp
 
 			int result;
 			if (not is_null)
-				result = sqlite3_bind_int(_handle->sqlite_statement, index + 1, *value);
+				result = sqlite3_bind_int(_handle->sqlite_statement, static_cast<int>(index + 1), *value);
 			else
-				result = sqlite3_bind_null(_handle->sqlite_statement, index + 1);
+				result = sqlite3_bind_null(_handle->sqlite_statement, static_cast<int>(index + 1));
 			check_bind_result(result, "boolean");
 		}
 
@@ -87,9 +87,9 @@ namespace sqlpp
 
 			int result;
 			if (not is_null)
-				result = sqlite3_bind_double(_handle->sqlite_statement, index + 1, *value);
+				result = sqlite3_bind_double(_handle->sqlite_statement, static_cast<int>(index + 1), *value);
 			else
-				result = sqlite3_bind_null(_handle->sqlite_statement, index + 1);
+				result = sqlite3_bind_null(_handle->sqlite_statement, static_cast<int>(index + 1));
 			check_bind_result(result, "floating_point");
 		}
 
@@ -100,9 +100,9 @@ namespace sqlpp
 
 			int result;
 			if (not is_null)
-				result = sqlite3_bind_int64(_handle->sqlite_statement, index + 1, *value);
+				result = sqlite3_bind_int64(_handle->sqlite_statement, static_cast<int>(index + 1), *value);
 			else
-				result = sqlite3_bind_null(_handle->sqlite_statement, index + 1);
+				result = sqlite3_bind_null(_handle->sqlite_statement, static_cast<int>(index + 1));
 			check_bind_result(result, "integral");
 		}
 
@@ -113,9 +113,9 @@ namespace sqlpp
 
 			int result;
 			if (not is_null)
-				result = sqlite3_bind_text(_handle->sqlite_statement, index + 1, value->data(), value->size(), SQLITE_STATIC);
+				result = sqlite3_bind_text(_handle->sqlite_statement, static_cast<int>(index + 1), value->data(), static_cast<int>(value->size()), SQLITE_STATIC);
 			else
-				result = sqlite3_bind_null(_handle->sqlite_statement, index + 1);
+				result = sqlite3_bind_null(_handle->sqlite_statement, static_cast<int>(index + 1));
 			check_bind_result(result, "text");
 		}
 	}
