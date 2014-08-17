@@ -62,7 +62,12 @@ int main()
 	i.values.add(tab.beta = "rhabarbertorte", tab.gamma = false);
 	//i.values.add(tab.beta = "cheesecake", tab.gamma = false)
 	//i.values.add(tab.beta = "kaesekuchen", tab.gamma = true)
-	db(i);
+	auto last_insert_rowid = db(i);
+
+	std::cerr << "last insert rowid: " << last_insert_rowid << std::endl;
+
+	// Just to demonstrate that you can call basically any function
+	std::cerr << "last insert rowid: " << db(select(sqlpp::verbatim<sqlpp::integer>("last_insert_rowid()").as(tab.alpha))).front().alpha << std::endl;
 
 	// select a static (alpha) and a dynamic column (beta)
 	auto s = dynamic_select(db).dynamic_columns(tab.alpha).from(tab).where(true);
