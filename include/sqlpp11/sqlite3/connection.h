@@ -123,7 +123,7 @@ namespace sqlpp
 					return ::sqlpp::serialize(t, context);
 				}
 
-			connection(const std::shared_ptr<connection_config>& config);
+			connection(connection_config config);
 			~connection();
 			connection(const connection&) = delete;
 			connection(connection&&) = delete;

@@ -40,10 +40,10 @@ namespace sqlpp
 		{
 			struct connection_handle
 			{
-				const	std::shared_ptr<connection_config> config;
+				connection_config config;
 				::sqlite3* sqlite;
 
-				connection_handle(const std::shared_ptr<connection_config>& config);
+				connection_handle(connection_config config);
 				~connection_handle();
 				connection_handle(const connection_handle&) = delete;
 				connection_handle(connection_handle&&) = delete;

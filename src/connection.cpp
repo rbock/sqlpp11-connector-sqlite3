@@ -39,10 +39,10 @@ namespace sqlpp
 		{
 			detail::prepared_statement_handle_t prepare_statement(detail::connection_handle& handle, const std::string& statement)
 			{
-				if (handle.config->debug)
+				if (handle.config.debug)
 					std::cerr << "Sqlite3 debug: Preparing: '" << statement << "'" << std::endl;
 
-				detail::prepared_statement_handle_t result(nullptr, handle.config->debug);
+				detail::prepared_statement_handle_t result(nullptr, handle.config.debug);
 
 				auto rc = sqlite3_prepare_v2(
 						handle.sqlite,
@@ -75,7 +75,7 @@ namespace sqlpp
 			}
 		}
 
-		connection::connection(const std::shared_ptr<connection_config>& config):
+		connection::connection(connection_config config):
 			_handle(new detail::connection_handle(config))
 		{
 		}
