@@ -128,6 +128,7 @@ int main()
 	}
 
 	std::cerr << "--------" << std::endl;
+	ps.params.alpha = sqlpp::eval<sqlpp::integer>(db, "last_insert_rowid()");
 	ps.params.gamma = "false";
 	for (const auto& row: db(ps))
 	{
@@ -164,6 +165,7 @@ int main()
     P p; // You must not use this one yet!
 		p = db.prepare(s);
   }
+
 
 	return 0;
 }
