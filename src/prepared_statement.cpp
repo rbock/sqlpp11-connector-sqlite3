@@ -26,6 +26,7 @@
 
 
 #include <iostream>
+#include <string>
 #include <sqlpp11/exception.h>
 #include <sqlpp11/sqlite3/prepared_statement.h>
 #include "detail/prepared_statement_handle.h"
