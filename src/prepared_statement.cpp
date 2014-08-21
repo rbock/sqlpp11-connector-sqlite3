@@ -26,11 +26,27 @@
 
 
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <sqlpp11/exception.h>
 #include <sqlpp11/sqlite3/prepared_statement.h>
 #include "detail/prepared_statement_handle.h"
+
+#if defined(__CYGWIN__)
+#include <sstream>
+
+// Workaround because cygwin gcc does not define to_string
+namespace std
+{
+	template <typename T>
+	std::string to_string(T t)
+	{
+		std::ostringstream stream;
+
+		stream << t;
+		return stream.str();
+	}
+}
+#endif 
 
 
 namespace sqlpp
@@ -50,16 +66,7 @@ namespace sqlpp
 				case SQLITE_NOMEM:
 					throw sqlpp::exception("Sqlite3 error: " + std::string(type) + " bind out of memory");
 				default:
-				{
-					std::ostringstream stream;
-
-					stream 
-						<< "Sqlite3 error: " 
-						<< type 
-						<< " bind returned unexpected value: " 
-						<< result;
-					throw sqlpp::exception(stream.str());
-				}
+					throw sqlpp::exception("Sqlite3 error: " + std::string(type) + " bind returned unexpected value: " + std::to_string(result));
 				}
 			}
 		}
