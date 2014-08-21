@@ -52,7 +52,7 @@ void testSelectAll(sql::connection& db, size_t expectedRowCount)
 	{
 		++i;
 		std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
-		assert(row.alpha == i);
+		assert(static_cast<size_t>(row.alpha) == i);
 	};
 	assert(i == expectedRowCount);
 
@@ -62,7 +62,7 @@ void testSelectAll(sql::connection& db, size_t expectedRowCount)
 	{
 		++i;
 		std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
-		assert(row.alpha == i);
+		assert(static_cast<size_t>(row.alpha) == i);
 	};
 	assert(i == expectedRowCount);
 	std::cerr << "--------------------------------------" << std::endl;
