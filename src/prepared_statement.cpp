@@ -26,6 +26,8 @@
 
 
 #include <iostream>
+#include <sstream>
+#include <string>
 #include <sqlpp11/exception.h>
 #include <sqlpp11/sqlite3/prepared_statement.h>
 #include "detail/prepared_statement_handle.h"
@@ -48,7 +50,16 @@ namespace sqlpp
 				case SQLITE_NOMEM:
 					throw sqlpp::exception("Sqlite3 error: " + std::string(type) + " bind out of memory");
 				default:
-					throw sqlpp::exception("Sqlite3 error: " + std::string(type) + " bind returned unexpected value: " + std::to_string(result));
+				{
+					std::ostringstream stream;
+
+					stream 
+						<< "Sqlite3 error: " 
+						<< type 
+						<< " bind returned unexpected value: " 
+						<< result;
+					throw sqlpp::exception(stream.str());
+				}
 				}
 			}
 		}
