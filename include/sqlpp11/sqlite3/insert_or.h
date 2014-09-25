@@ -98,7 +98,7 @@ namespace sqlpp
 			}
 
 		template<typename Table>
-			constexpr auto insert_or_replace(Table table)
+			constexpr auto insert_or_replace_into(Table table)
 			-> decltype(blank_insert_or_replace_t<void>().into(table))
 			{
 				return { blank_insert_or_replace_t<void>().into(table) };
@@ -112,7 +112,7 @@ namespace sqlpp
 			}
 
 		template<typename Database, typename Table>
-			constexpr auto  dynamic_insert_or_replace(const Database&, Table table)
+			constexpr auto  dynamic_insert_or_replace_into(const Database&, Table table)
 			-> decltype(blank_insert_or_replace_t<Database>().into(table))
 			{
 				return { blank_insert_or_replace_t<Database>().into(table) };
@@ -125,7 +125,7 @@ namespace sqlpp
 			}
 
 		template<typename Table>
-			constexpr auto insert_or_ignore(Table table)
+			constexpr auto insert_or_ignore_into(Table table)
 			-> decltype(blank_insert_or_ignore_t<void>().into(table))
 			{
 				return { blank_insert_or_ignore_t<void>().into(table) };
@@ -139,7 +139,7 @@ namespace sqlpp
 			}
 
 		template<typename Database, typename Table>
-			constexpr auto  dynamic_insert_or_ignore(const Database&, Table table)
+			constexpr auto  dynamic_insert_or_ignore_into(const Database&, Table table)
 			-> decltype(blank_insert_or_ignore_t<Database>().into(table))
 			{
 				return { blank_insert_or_ignore_t<Database>().into(table) };
