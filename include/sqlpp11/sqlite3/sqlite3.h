@@ -29,6 +29,7 @@
 #define SQLPP_SQLITE3_H
 
 #include <sqlpp11/sqlite3/connection.h>
+#include <sqlpp11/sqlite3/insert_or.h>
 
 #endif
 
