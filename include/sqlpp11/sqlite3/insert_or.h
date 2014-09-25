@@ -41,8 +41,10 @@ namespace sqlpp
 	namespace sqlite3
 	{
 		struct insert_or_replace_name_t {};
+		struct insert_or_ignore_name_t {};
 
-		struct insert_or_replace_t: public statement_name_t<insert_or_replace_name_t>
+		template<typename InsertOrAlternative>
+		struct insert_or_t: public statement_name_t<InsertOrAlternative>
 		{
 			using _traits = make_traits<no_value_t, tag::is_return_value>;
 			struct _name_t {};
@@ -77,13 +79,19 @@ namespace sqlpp
 				};
 		};
 
-		template<typename Database>
-			using blank_insert_or_replace_t = statement_t<Database,
-						insert_or_replace_t,
+		template<typename Database, typename InsertOrAlternative>
+			using blank_insert_or_t = statement_t<Database,
+						insert_or_t<InsertOrAlternative>,
 						no_into_t, 
 						no_insert_value_list_t>;
 
-		inline auto insert()
+		template<typename Database>
+		using blank_insert_or_replace_t = blank_insert_or_t<Database, insert_or_replace_name_t>;
+
+		template<typename Database>
+		using blank_insert_or_ignore_t = blank_insert_or_t<Database, insert_or_ignore_name_t>;
+
+		inline auto insert_or_replace()
 			-> blank_insert_or_replace_t<void>
 			{
 				return { blank_insert_or_replace_t<void>() };
@@ -109,6 +117,33 @@ namespace sqlpp
 			{
 				return { blank_insert_or_replace_t<Database>().into(table) };
 			}
+
+		inline auto insert_or_ignore()
+			-> blank_insert_or_ignore_t<void>
+			{
+				return { blank_insert_or_ignore_t<void>() };
+			}
+
+		template<typename Table>
+			constexpr auto insert_or_ignore(Table table)
+			-> decltype(blank_insert_or_ignore_t<void>().into(table))
+			{
+				return { blank_insert_or_ignore_t<void>().into(table) };
+			}
+
+		template<typename Database>
+			constexpr auto  dynamic_insert_or_ignore(const Database&)
+			-> decltype(blank_insert_or_ignore_t<Database>())
+			{
+				return { blank_insert_or_ignore_t<Database>() };
+			}
+
+		template<typename Database, typename Table>
+			constexpr auto  dynamic_insert_or_ignore(const Database&, Table table)
+			-> decltype(blank_insert_or_ignore_t<Database>().into(table))
+			{
+				return { blank_insert_or_ignore_t<Database>().into(table) };
+			}
 	}
 
 	template<typename Context>
@@ -119,6 +154,19 @@ namespace sqlpp
 			static Context& _(const T& t, Context& context)
 			{
 				context << "INSERT OR REPLACE ";
+
+				return context;
+			}
+		};
+
+	template<typename Context>
+		struct serializer_t<Context, sqlite3::insert_or_ignore_name_t>
+		{
+			using T = sqlite3::insert_or_ignore_name_t;
+
+			static Context& _(const T& t, Context& context)
+			{
+				context << "INSERT OR IGNORE ";
 
 				return context;
 			}

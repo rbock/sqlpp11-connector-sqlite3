@@ -169,6 +169,9 @@ int main()
 	auto i = db(sqlpp::sqlite3::insert_or_replace(tab).set(tab.beta = "test", tab.gamma = true));
 	std::cerr << i << std::endl;
 
+	i = db(sqlpp::sqlite3::insert_or_ignore(tab).set(tab.beta = "test", tab.gamma = true));
+	std::cerr << i << std::endl;
+
 
 	return 0;
 }
