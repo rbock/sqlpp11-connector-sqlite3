@@ -232,7 +232,7 @@ namespace sqlpp
 			}
 
 			//! execute arbitrary command (e.g. create a table)
-			void execute(const std::string& command);
+			size_t execute(const std::string& command);
 
 			//! escape given string (does not quote, though)
 			std::string escape(const std::string& s) const;

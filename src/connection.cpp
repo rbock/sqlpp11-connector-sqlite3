@@ -125,10 +125,11 @@ namespace sqlpp
 			return sqlite3_last_insert_rowid(_handle->sqlite);
 		}
 
-		void connection::execute(const std::string& statement)
+		size_t connection::execute(const std::string& statement)
 		{
 			auto prepared = prepare_statement(*_handle, statement);
 			execute_statement(*_handle, prepared);
+			return sqlite3_changes(_handle->sqlite);
 		}
 
 		size_t connection::update_impl(const std::string& statement)
