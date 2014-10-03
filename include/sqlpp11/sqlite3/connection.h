@@ -35,6 +35,7 @@
 #include <sqlpp11/sqlite3/prepared_statement.h>
 #include <sqlpp11/sqlite3/bind_result.h>
 #include <sqlpp11/sqlite3/connection_config.h>
+#include <sqlite3.h>
 
 namespace sqlpp
 {
@@ -231,7 +232,7 @@ namespace sqlpp
 			}
 
 			//! execute arbitrary command (e.g. create a table)
-			void execute(const std::string& command);
+			size_t execute(const std::string& command);
 
 			//! escape given string (does not quote, though)
 			std::string escape(const std::string& s) const;
@@ -268,6 +269,8 @@ namespace sqlpp
 
 			//! report a rollback failure (will be called by transactions in case of a rollback failure in the destructor)
 			void report_rollback_failure(const std::string message) noexcept;
+
+			::sqlite3* native_handle();
 		};
 
 		inline std::string serializer_t::escape(std::string arg)
