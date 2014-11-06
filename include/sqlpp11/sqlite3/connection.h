@@ -96,6 +96,7 @@ namespace sqlpp
 			// prepared execution
 			prepared_statement_t prepare_impl(const std::string& statement);
 			bind_result_t run_prepared_select_impl(prepared_statement_t& prepared_statement);
+			void run_prepared_execute_impl(prepared_statement_t& prepared_statement);
 			size_t run_prepared_insert_impl(prepared_statement_t& prepared_statement);
 			size_t run_prepared_update_impl(prepared_statement_t& prepared_statement);
 			size_t run_prepared_remove_impl(prepared_statement_t& prepared_statement);
@@ -232,6 +233,32 @@ namespace sqlpp
 
 			//! execute arbitrary command (e.g. create a table)
 			void execute(const std::string& command);
+
+			template<typename Execute, 
+				          typename Enable = typename std::enable_if<not std::is_convertible<Execute, std::string>::value, void>::type>
+			void execute(const Execute& x)
+			{
+				_context_t context(*this);
+				serialize(x, context);
+				execute(context.str());
+			}
+
+			template<typename Execute>
+			_prepared_statement_t prepare_execute(Execute& x)
+			{
+				_context_t context(*this);
+				serialize(x, context);
+				return prepare_impl(context.str());
+			}
+
+			template<typename PreparedInsert>
+			void run_prepared_execute(const PreparedInsert& x)
+			{
+				x._prepared_statement._reset();
+				x._bind_params();
+				run_prepared_execute_impl(x._prepared_statement);
+			}
+
 
 			//! escape given string (does not quote, though)
 			std::string escape(const std::string& s) const;
