@@ -25,11 +25,13 @@
 
 #include "TabSample.h"
 #include <sqlpp11/sqlpp11.h>
+#include <sqlpp11/custom_query.h>
 #include <sqlpp11/sqlite3/sqlite3.h>
 
 #include <sqlite3.h>
 #include <iostream>
 #include <vector>
+#include <cassert>
 
 
 SQLPP_ALIAS_PROVIDER(left);
@@ -44,7 +46,7 @@ int main()
 
 	sql::connection db(config);
 	db.execute(R"(CREATE TABLE tab_sample (
-		alpha bigint(20) DEFAULT NULL,
+		alpha INTEGER PRIMARY KEY,
 			beta bool DEFAULT NULL,
 			gamma varchar(255) DEFAULT NULL
 			))");
@@ -171,6 +173,12 @@ int main()
 
 	i = db(sqlpp::sqlite3::insert_or_ignore_into(tab).set(tab.beta = "test", tab.gamma = true));
 	std::cerr << i << std::endl;
+
+	assert(db(select(count(tab.alpha)).from(tab).where(true)).begin()->count);
+	assert(db(select(all_of(tab)).from(tab).where(tab.alpha.not_in(select(tab.alpha).from(tab).where(true)))).empty());
+
+	auto x = custom_query(sqlpp::verbatim("PRAGMA writeable_schema = "), true);
+	db(x);
 
 
 	return 0;
