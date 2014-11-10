@@ -44,10 +44,10 @@ SQLPP_ALIAS_PROVIDER(left);
 namespace sql = sqlpp::sqlite3;
 TabSample tab;
 
-void testSelectAll(sql::connection& db, size_t expectedRowCount)
+void testSelectAll(sql::connection& db, int expectedRowCount)
 {
 	std::cerr << "--------------------------------------" << std::endl;
-	size_t i = 0;
+	int i = 0;
 	for(const auto& row : db(sqlpp::select(all_of(tab)).from(tab).where(true)))
 	{
 		++i;
