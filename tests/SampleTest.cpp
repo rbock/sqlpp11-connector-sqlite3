@@ -55,6 +55,7 @@ int main()
 			))");
 
 	TabSample tab;
+
 	// clear the table
 	db(remove_from(tab).where(true));
 

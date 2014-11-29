@@ -37,6 +37,7 @@ namespace sqlpp
 	template<typename ValueType, typename NameType>
 		struct serializer_t<sqlite3::serializer_t, parameter_t<ValueType, NameType>>
 		{
+			using _serialize_check = consistent_t;
 			using T = parameter_t<ValueType, NameType>;
 
 			static sqlite3::serializer_t& _(const T& t, sqlite3::serializer_t& context)
@@ -48,48 +49,85 @@ namespace sqlpp
 		};
 
 	// disable some stuff that won't work with sqlite3
+	struct assert_no_any_or_some_t
+	{
+		using type = std::false_type;
+
+		template<typename T = void>
+		static void _()
+		{
+			static_assert(wrong_t<T>::value, "Sqlite3: No support for any() or some()");
+		}
+	};
+
 	template<typename Select>
 		struct serializer_t<sqlite3::serializer_t, any_t<Select>>
 		{
+			using _serialize_check = assert_no_any_or_some_t;
 			using T = any_t<Select>;
 
 			static void _(const T& t, sqlite3::serializer_t& context)
 			{
-				static_assert(::sqlpp::wrong_t<serializer_t>::value, "Sqlite3: No support for any()");
+				_serialize_check::_();
 			}
 		};
 
 	template<typename Select>
 		struct serializer_t<sqlite3::serializer_t, some_t<Select>>
 		{
+			using _serialize_check = assert_no_any_or_some_t;
 			using T = some_t<Select>;
 
 			static void _(const T& t, sqlite3::serializer_t& context)
 			{
-				static_assert(::sqlpp::wrong_t<serializer_t>::value, "Sqlite3: No support for some()");
+				_serialize_check::_();
 			}
 		};
 
+
+	struct assert_no_outer_join_t
+	{
+		using type = std::false_type;
+
+		template<typename T = void>
+		static void _()
+		{
+			static_assert(wrong_t<T>::value, "Sqlite3: No support for outer join");
+		}
+	};
 
 	template<typename Lhs, typename Rhs, typename On>
 		struct serializer_t<sqlite3::serializer_t, join_t<outer_join_t, Lhs, Rhs, On>>
 		{
+			using _serialize_check = assert_no_outer_join_t;
 			using T = join_t<outer_join_t, Lhs, Rhs, On>;
 
 			static void _(const T& t, sqlite3::serializer_t& context)
 			{
-				static_assert(::sqlpp::wrong_t<serializer_t>::value, "Sqlite3: No support for outer join");
+				_serialize_check::_();
 			}
 		};
+
+	struct assert_no_right_outer_join_t
+	{
+		using type = std::false_type;
+
+		template<typename T = void>
+		static void _()
+		{
+			static_assert(wrong_t<T>::value, "Sqlite3: No support for right_outer join");
+		}
+	};
 
 	template<typename Lhs, typename Rhs, typename On>
 		struct serializer_t<sqlite3::serializer_t, join_t<right_outer_join_t, Lhs, Rhs, On>>
 		{
+			using _serialize_check = assert_no_outer_join_t;
 			using T = join_t<right_outer_join_t, Lhs, Rhs, On>;
 
 			static void _(const T& t, sqlite3::serializer_t& context)
 			{
-				static_assert(::sqlpp::wrong_t<serializer_t>::value, "Sqlite3: No support for right outer join");
+				_serialize_check::_();
 			}
 		};
 }

@@ -32,6 +32,7 @@
 #include <sstream>
 #include <sqlpp11/connection.h>
 #include <sqlpp11/serialize.h>
+#include <sqlpp11/type_traits.h>
 #include <sqlpp11/sqlite3/prepared_statement.h>
 #include <sqlpp11/sqlite3/bind_result.h>
 #include <sqlpp11/sqlite3/connection_config.h>
@@ -265,23 +266,42 @@ namespace sqlpp
 
 			//! call run on the argument
 			template<typename T>
-				auto run(const T& t) -> decltype(t._run(*this))
+				auto _run(const T& t, const std::true_type&) -> decltype(t._run(*this))
 				{
 					return t._run(*this);
 				}
 
-			//! call run on the argument
+			template<typename T>
+				auto _run(const T& t, const std::false_type&) -> decltype(t._run(*this));
+
 			template<typename T>
 				auto operator()(const T& t) -> decltype(t._run(*this))
 				{
-					return t._run(*this);
+					sqlpp::run_check_t<T>::_();
+					sqlpp::serialize_check_t<_serializer_context_t, T>::_();
+					using _ok = sqlpp::logic::all_t<sqlpp::run_check_t<T>::type::value,
+								sqlpp::serialize_check_t<_serializer_context_t, T>::type::value>;
+					return _run(t, _ok{});
 				}
 
 			//! call prepare on the argument
 			template<typename T>
-				auto prepare(const T& t) -> decltype(t._prepare(*this))
+				auto _prepare(const T& t, const std::true_type&) -> decltype(t._prepare(*this))
 				{
 					return t._prepare(*this);
+				}
+
+			template<typename T>
+				auto _prepare(const T& t, const std::false_type&) -> decltype(t._prepare(*this));
+
+			template<typename T>
+				auto prepare(const T& t) -> decltype(t._prepare(*this))
+				{
+					sqlpp::prepare_check_t<T>::_();
+					sqlpp::serialize_check_t<_serializer_context_t, T>::_();
+					using _ok = sqlpp::logic::all_t<sqlpp::prepare_check_t<T>::type::value,
+								sqlpp::serialize_check_t<_serializer_context_t, T>::type::value>;
+					return _prepare(t, _ok{});
 				}
 
 			//! start transaction

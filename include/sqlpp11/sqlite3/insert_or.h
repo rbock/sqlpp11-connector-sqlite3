@@ -62,9 +62,6 @@ namespace sqlpp
 					template<typename Db>
 						auto _run(Db& db) const -> decltype(db.insert(this->_get_statement()))
 						{
-							_statement_t::_check_consistency();
-
-							static_assert(_statement_t::_get_static_no_of_parameters() == 0, "cannot run insert or replace directly with parameters, use prepare instead");
 							return db.insert(_get_statement());
 						}
 
@@ -72,8 +69,6 @@ namespace sqlpp
 						auto _prepare(Db& db) const
 						-> prepared_insert_t<Db, _statement_t>
 						{
-							_statement_t::_check_consistency();
-
 							return {{}, db.prepare_insert(_get_statement())};
 						}
 				};
@@ -149,6 +144,7 @@ namespace sqlpp
 	template<typename Context>
 		struct serializer_t<Context, sqlite3::insert_or_replace_name_t>
 		{
+			using _serialize_check = consistent_t;
 			using T = sqlite3::insert_or_replace_name_t;
 
 			static Context& _(const T& t, Context& context)
@@ -162,6 +158,7 @@ namespace sqlpp
 	template<typename Context>
 		struct serializer_t<Context, sqlite3::insert_or_ignore_name_t>
 		{
+			using _serialize_check = consistent_t;
 			using T = sqlite3::insert_or_ignore_name_t;
 
 			static Context& _(const T& t, Context& context)
