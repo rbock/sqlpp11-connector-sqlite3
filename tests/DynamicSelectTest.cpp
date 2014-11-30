@@ -70,12 +70,12 @@ int main()
 	std::cerr << "last insert rowid: " << db(select(sqlpp::verbatim<sqlpp::integer>("last_insert_rowid()").as(tab.alpha))).front().alpha << std::endl;
 
 	// select a static (alpha) and a dynamic column (beta)
-	auto s = dynamic_select(db).dynamic_columns(tab.alpha).from(tab).where(true);
+	auto s = dynamic_select(db).dynamic_columns(tab.alpha.as(left)).from(tab).where(true);
 	s.selected_columns.add(tab.beta);
 	s.selected_columns.add(tab.gamma);
 	for(const auto& row : db(s))
 	{
-		std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.at("beta") << ", row.gamma: " << row.at("gamma") << std::endl;
+		std::cerr << "row.alpha: " << row.left << ", row.beta: " << row.at("beta") << ", row.gamma: " << row.at("gamma") << std::endl;
 	};
 	return 0;
 }
