@@ -8,4 +8,5 @@ endmacro ()
 
 build_and_run(SampleTest)
 build_and_run(SelectTest)
+build_and_run(WithTest)
 build_and_run(DynamicSelectTest)
