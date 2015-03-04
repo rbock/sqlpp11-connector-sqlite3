@@ -27,6 +27,8 @@
 #ifndef SQLPP_SQLITE3_SERIALIZER_H
 #define SQLPP_SQLITE3_SERIALIZER_H
 
+#include <sqlite3.h>
+#include <sqlpp11/with.h>
 #include <sqlpp11/any.h>
 #include <sqlpp11/some.h>
 #include <sqlpp11/parameter.h>
@@ -34,6 +36,31 @@
 
 namespace sqlpp
 {
+#if SQLITE_VERSION_NUMBER <= 3008003
+	struct assert_no_with_t
+	{
+		using type = std::false_type;
+
+		template<typename T = void>
+		static void _()
+		{
+			static_assert(wrong_t<T>::value, "Sqlite3: No support for with before version 3.8.3");
+		}
+	};
+
+	template<typename Database, typename... Expressions>
+		struct serializer_t<sqlite3::serializer_t, with_data_t<Database, Expressions...>>
+		{
+			using _serialize_check = assert_no_with_t;
+			using T = with_data_t<Database, Expressions...>;
+
+			static void _(const T& t, sqlite3::serializer_t& context)
+			{
+				_serialize_check::_();
+			}
+		};
+
+#endif
 	template<typename ValueType, typename NameType>
 		struct serializer_t<sqlite3::serializer_t, parameter_t<ValueType, NameType>>
 		{
