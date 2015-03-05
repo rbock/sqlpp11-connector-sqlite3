@@ -24,13 +24,11 @@
  */
 
 #include "TabSample.h"
-#include <cassert>
 #include <sqlpp11/sqlpp11.h>
 #include <sqlpp11/sqlite3/connection.h>
 
 #include <sqlite3.h>
 #include <iostream>
-#include <vector>
 
 namespace sql = sqlpp::sqlite3;
 TabSample tab;
