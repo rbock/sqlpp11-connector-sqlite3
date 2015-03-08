@@ -39,10 +39,10 @@ namespace sqlpp
 		{
 			detail::prepared_statement_handle_t prepare_statement(detail::connection_handle& handle, const std::string& statement)
 			{
-				if (handle.config->debug)
+				if (handle.config.debug)
 					std::cerr << "Sqlite3 debug: Preparing: '" << statement << "'" << std::endl;
 
-				detail::prepared_statement_handle_t result(nullptr, handle.config->debug);
+				detail::prepared_statement_handle_t result(nullptr, handle.config.debug);
 
 				auto rc = sqlite3_prepare_v2(
 						handle.sqlite,
@@ -75,7 +75,7 @@ namespace sqlpp
 			}
 		}
 
-		connection::connection(const std::shared_ptr<connection_config>& config):
+		connection::connection(connection_config config):
 			_handle(new detail::connection_handle(config))
 		{
 		}
@@ -123,6 +123,11 @@ namespace sqlpp
 			execute_statement(*_handle, *prepared_statement._handle.get());
 
 			return sqlite3_last_insert_rowid(_handle->sqlite);
+		}
+
+		void connection::run_prepared_execute_impl(prepared_statement_t& prepared_statement)
+		{
+			execute_statement(*_handle, *prepared_statement._handle.get());
 		}
 
 		size_t connection::execute(const std::string& statement)

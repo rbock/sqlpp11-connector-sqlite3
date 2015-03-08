@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2014, Roland Bock
+ * Copyright (c) 2013, Roland Bock
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -24,24 +24,17 @@
  */
 
 #include "TabSample.h"
-#include <sqlpp11/alias_provider.h>
-#include <sqlpp11/select.h>
-#include <sqlpp11/insert.h>
-#include <sqlpp11/update.h>
-#include <sqlpp11/remove.h>
-#include <sqlpp11/functions.h>
-#include <sqlpp11/transaction.h>
-#include <sqlpp11/multi_column.h>
+#include <cassert>
+#include <sqlpp11/sqlpp11.h>
 #include <sqlpp11/sqlite3/connection.h>
 
 #include <sqlite3.h>
 #include <iostream>
 #include <vector>
 
-
-SQLPP_ALIAS_PROVIDER(left);
-
 namespace sql = sqlpp::sqlite3;
+TabSample tab;
+
 int main()
 {
 	sql::connection_config config;
@@ -50,32 +43,23 @@ int main()
 	config.debug = true;
 
 	sql::connection db(config);
-	db.execute("CREATE TABLE tab_sample (\
-		alpha bigint(20) DEFAULT NULL,\
-			beta varchar(255) DEFAULT NULL,\
-			gamma bool DEFAULT NULL\
-			)");
+	db.execute(R"(CREATE TABLE tab_sample (
+		alpha INTEGER PRIMARY KEY,
+			beta varchar(255) DEFAULT NULL,
+			gamma bool DEFAULT NULL
+			))");
 
-	TabSample tab;
 
-	auto i = insert_into(tab).columns(tab.beta, tab.gamma);
-	i.values.add(tab.beta = "rhabarbertorte", tab.gamma = false);
-	//i.values.add(tab.beta = "cheesecake", tab.gamma = false)
-	//i.values.add(tab.beta = "kaesekuchen", tab.gamma = true)
-	auto last_insert_rowid = db(i);
-
-	std::cerr << "last insert rowid: " << last_insert_rowid << std::endl;
-
-	// Just to demonstrate that you can call basically any function
-	std::cerr << "last insert rowid: " << db(select(sqlpp::verbatim<sqlpp::integer>("last_insert_rowid()").as(tab.alpha))).front().alpha << std::endl;
-
-	// select a static (alpha) and a dynamic column (beta)
-	auto s = dynamic_select(db).dynamic_columns(tab.alpha.as(left)).from(tab).where(true);
-	s.selected_columns.add(tab.beta);
-	s.selected_columns.add(tab.gamma);
-	for(const auto& row : db(s))
+	auto a = sqlpp::cte(sqlpp::alias::a).as(select(all_of(tab)).from(tab).where(tab.alpha > 3));
+	for (const auto& row : db(with(a)(select(a.alpha).from(a)).where(true)))
 	{
-		std::cerr << "row.alpha: " << row.left << ", row.beta: " << row.at("beta") << ", row.gamma: " << row.at("gamma") << std::endl;
-	};
+		std::cout << row.alpha << std::endl;
+	}
+
+	for (const auto& row : db(with(a.union_all(select(all_of(a)).from(a).where(true)))(select(all_of(a)).from(a)).where(true)))
+	{
+		std::cout << row.alpha << row.beta << row.gamma << std::endl;
+	}
+
 	return 0;
 }

@@ -25,11 +25,13 @@
 
 #include "TabSample.h"
 #include <sqlpp11/sqlpp11.h>
+#include <sqlpp11/custom_query.h>
 #include <sqlpp11/sqlite3/sqlite3.h>
 
 #include <sqlite3.h>
 #include <iostream>
 #include <vector>
+#include <cassert>
 
 
 SQLPP_ALIAS_PROVIDER(left);
@@ -37,14 +39,14 @@ SQLPP_ALIAS_PROVIDER(left);
 namespace sql = sqlpp::sqlite3;
 int main()
 {
-	auto config = std::make_shared<sql::connection_config>();
- 	config->path_to_database = ":memory:";
-	config->flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
-	config->debug = true;
+	sql::connection_config config;
+ 	config.path_to_database = ":memory:";
+	config.flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
+	config.debug = true;
 
 	sql::connection db(config);
 	db.execute(R"(CREATE TABLE tab_sample (
-		alpha bigint(20) DEFAULT NULL,
+		alpha INTEGER PRIMARY KEY,
 			beta bool DEFAULT NULL,
 			gamma varchar(255) DEFAULT NULL
 			))");
@@ -53,6 +55,7 @@ int main()
 			))");
 
 	TabSample tab;
+
 	// clear the table
 	db(remove_from(tab).where(true));
 
@@ -128,6 +131,7 @@ int main()
 	}
 
 	std::cerr << "--------" << std::endl;
+	ps.params.alpha = sqlpp::eval<sqlpp::integer>(db, "last_insert_rowid()");
 	ps.params.gamma = "false";
 	for (const auto& row: db(ps))
 	{
@@ -156,6 +160,27 @@ int main()
 	auto pr = db.prepare(remove_from(tab).where(tab.beta != parameter(tab.beta)));
 	pr.params.beta = "prepared cake";
 	std::cerr << "Deleted lines: " << db(pr) << std::endl;
+
+  // Check that a prepared select is default-constructible
+  {
+    auto s = select(all_of(tab)).from(tab).where((tab.beta.like(parameter(tab.beta)) and tab.alpha == parameter(tab.alpha)) or tab.gamma != parameter(tab.gamma));
+    using P = decltype(db.prepare(s));
+    P p; // You must not use this one yet!
+		p = db.prepare(s);
+  }
+
+	auto i = db(sqlpp::sqlite3::insert_or_replace_into(tab).set(tab.beta = "test", tab.gamma = true));
+	std::cerr << i << std::endl;
+
+	i = db(sqlpp::sqlite3::insert_or_ignore_into(tab).set(tab.beta = "test", tab.gamma = true));
+	std::cerr << i << std::endl;
+
+	assert(db(select(count(tab.alpha)).from(tab).where(true)).begin()->count);
+	assert(db(select(all_of(tab)).from(tab).where(tab.alpha.not_in(select(tab.alpha).from(tab).where(true)))).empty());
+
+	auto x = custom_query(sqlpp::verbatim("PRAGMA writeable_schema = "), true);
+	db(x);
+
 
 	return 0;
 }

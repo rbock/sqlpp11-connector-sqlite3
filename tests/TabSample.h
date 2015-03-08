@@ -27,6 +27,7 @@
 #define SQLPP_TAB_SAMPLE_H
 
 #include <sqlpp11/table.h>
+#include <sqlpp11/char_sequence.h>
 #include <sqlpp11/column_types.h>
 
 
@@ -34,9 +35,10 @@ namespace TabFoo_
 {
 	struct Omega
 	{
-		struct _name_t
+		struct _alias_t
 		{
-			static constexpr const char* _get_name() { return "omega"; }
+			static constexpr const char _literal[] =  "omega";
+			using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
 			template<typename T>
 				struct _member_t
 				{
@@ -55,9 +57,10 @@ struct TabFoo: sqlpp::table_t<
 													 >
 {
 	using _value_type = sqlpp::no_value_t;
-	struct _name_t
+	struct _alias_t
 	{
-		static constexpr const char* _get_name() { return "tab_foo"; }
+		static constexpr const char _literal[] =  "tab_foo";
+		using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
 		template<typename T>
 			struct _member_t
 			{
@@ -66,21 +69,16 @@ struct TabFoo: sqlpp::table_t<
 				const T& operator()() const { return tabFoo; }
 			};
 	};
-
-	template<typename Db>
-		void serialize_impl(std::ostream& os, Db& db) const
-		{
-			os << _name_t::_get_name();
-		}
 };
 
 namespace TabSample_
 {
 	struct Alpha
 	{
-		struct _name_t
+		struct _alias_t
 		{
-			static constexpr const char* _get_name() { return "alpha"; }
+			static constexpr const char _literal[] =  "alpha";
+			using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
 			template<typename T>
 				struct _member_t
 				{
@@ -94,9 +92,10 @@ namespace TabSample_
 
 	struct Beta
 	{
-		struct _name_t
+		struct _alias_t
 		{
-			static constexpr const char* _get_name() { return "beta"; }
+			static constexpr const char _literal[] =  "beta";
+			using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
 			template<typename T>
 				struct _member_t
 				{
@@ -110,9 +109,10 @@ namespace TabSample_
 
 	struct Gamma
 	{
-		struct _name_t
+		struct _alias_t
 		{
-			static constexpr const char* _get_name() { return "gamma"; }
+			static constexpr const char _literal[] =  "gamma";
+			using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
 			template<typename T>
 				struct _member_t
 				{
@@ -133,9 +133,10 @@ struct TabSample: sqlpp::table_t<
 													 >
 {
 	using _value_type = sqlpp::no_value_t;
-	struct _name_t
+	struct _alias_t
 	{
-		static constexpr const char* _get_name() { return "tab_sample"; }
+		static constexpr const char _literal[] =  "tab_sample";
+		using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
 		template<typename T>
 			struct _member_t
 			{
@@ -144,11 +145,6 @@ struct TabSample: sqlpp::table_t<
 				const T& operator()() const { return tabSample; }
 			};
 	};
-	template<typename Db>
-		void serialize_impl(std::ostream& os, Db& db) const
-		{
-			os << _name_t::_get_name();
-		}
 };
 
 #endif

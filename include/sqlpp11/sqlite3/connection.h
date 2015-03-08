@@ -32,6 +32,7 @@
 #include <sstream>
 #include <sqlpp11/connection.h>
 #include <sqlpp11/serialize.h>
+#include <sqlpp11/type_traits.h>
 #include <sqlpp11/sqlite3/prepared_statement.h>
 #include <sqlpp11/sqlite3/bind_result.h>
 #include <sqlpp11/sqlite3/connection_config.h>
@@ -97,6 +98,7 @@ namespace sqlpp
 			// prepared execution
 			prepared_statement_t prepare_impl(const std::string& statement);
 			bind_result_t run_prepared_select_impl(prepared_statement_t& prepared_statement);
+			void run_prepared_execute_impl(prepared_statement_t& prepared_statement);
 			size_t run_prepared_insert_impl(prepared_statement_t& prepared_statement);
 			size_t run_prepared_update_impl(prepared_statement_t& prepared_statement);
 			size_t run_prepared_remove_impl(prepared_statement_t& prepared_statement);
@@ -124,7 +126,7 @@ namespace sqlpp
 					return ::sqlpp::serialize(t, context);
 				}
 
-			connection(const std::shared_ptr<connection_config>& config);
+			connection(connection_config config);
 			~connection();
 			connection(const connection&) = delete;
 			connection(connection&&) = delete;
@@ -234,28 +236,73 @@ namespace sqlpp
 			//! execute arbitrary command (e.g. create a table)
 			size_t execute(const std::string& command);
 
+			template<typename Execute, 
+				          typename Enable = typename std::enable_if<not std::is_convertible<Execute, std::string>::value, void>::type>
+			size_t execute(const Execute& x)
+			{
+				_context_t context(*this);
+				serialize(x, context);
+				return execute(context.str());
+			}
+
+			template<typename Execute>
+			_prepared_statement_t prepare_execute(Execute& x)
+			{
+				_context_t context(*this);
+				serialize(x, context);
+				return prepare_impl(context.str());
+			}
+
+			template<typename PreparedInsert>
+			void run_prepared_execute(const PreparedInsert& x)
+			{
+				x._prepared_statement._reset();
+				x._bind_params();
+				run_prepared_execute_impl(x._prepared_statement);
+			}
+
+
 			//! escape given string (does not quote, though)
 			std::string escape(const std::string& s) const;
 
 			//! call run on the argument
 			template<typename T>
-				auto run(const T& t) -> decltype(t._run(*this))
+				auto _run(const T& t, const std::true_type&) -> decltype(t._run(*this))
 				{
 					return t._run(*this);
 				}
 
-			//! call run on the argument
+			template<typename T>
+				auto _run(const T& t, const std::false_type&) -> decltype(t._run(*this));
+
 			template<typename T>
 				auto operator()(const T& t) -> decltype(t._run(*this))
 				{
-					return t._run(*this);
+					sqlpp::run_check_t<T>::_();
+					sqlpp::serialize_check_t<_serializer_context_t, T>::_();
+					using _ok = sqlpp::logic::all_t<sqlpp::run_check_t<T>::type::value,
+								sqlpp::serialize_check_t<_serializer_context_t, T>::type::value>;
+					return _run(t, _ok{});
 				}
 
 			//! call prepare on the argument
 			template<typename T>
-				auto prepare(const T& t) -> decltype(t._prepare(*this))
+				auto _prepare(const T& t, const std::true_type&) -> decltype(t._prepare(*this))
 				{
 					return t._prepare(*this);
+				}
+
+			template<typename T>
+				auto _prepare(const T& t, const std::false_type&) -> decltype(t._prepare(*this));
+
+			template<typename T>
+				auto prepare(const T& t) -> decltype(t._prepare(*this))
+				{
+					sqlpp::prepare_check_t<T>::_();
+					sqlpp::serialize_check_t<_serializer_context_t, T>::_();
+					using _ok = sqlpp::logic::all_t<sqlpp::prepare_check_t<T>::type::value,
+								sqlpp::serialize_check_t<_serializer_context_t, T>::type::value>;
+					return _prepare(t, _ok{});
 				}
 
 			//! start transaction

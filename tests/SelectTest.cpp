@@ -70,10 +70,10 @@ void testSelectAll(sql::connection& db, size_t expectedRowCount)
 
 int main()
 {
-	auto config = std::make_shared<sql::connection_config>();
- 	config->path_to_database = ":memory:";
-	config->flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
-	config->debug = true;
+	sql::connection_config config;
+ 	config.path_to_database = ":memory:";
+	config.flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
+	config.debug = true;
 
 	sql::connection db(config);
 	db.execute(R"(CREATE TABLE tab_sample (

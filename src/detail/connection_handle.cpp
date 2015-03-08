@@ -36,15 +36,15 @@ namespace sqlpp
 	{
 		namespace detail
 		{
-			connection_handle::connection_handle(const std::shared_ptr<connection_config>& conf):
+			connection_handle::connection_handle(connection_config conf):
 				config(conf),
 				sqlite(nullptr)
 			{
 				auto rc = sqlite3_open_v2(
-						conf->path_to_database.c_str(), 
+						conf.path_to_database.c_str(), 
 						&sqlite, 
-						conf->flags, 
-						conf->vfs.empty() ? nullptr : conf->vfs.c_str());
+						conf.flags, 
+						conf.vfs.empty() ? nullptr : conf.vfs.c_str());
 				if (rc != SQLITE_OK)
 				{
 					const std::string msg = sqlite3_errmsg(sqlite);

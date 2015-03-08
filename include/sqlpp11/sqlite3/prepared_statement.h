@@ -48,7 +48,7 @@ namespace sqlpp
 			std::shared_ptr<detail::prepared_statement_handle_t> _handle;
 
 		public:
-			prepared_statement_t() = delete;
+			prepared_statement_t() = default;
 			prepared_statement_t(std::shared_ptr<detail::prepared_statement_handle_t>&& handle);
 			prepared_statement_t(const prepared_statement_t&) = delete;
 			prepared_statement_t(prepared_statement_t&& rhs) = default;
