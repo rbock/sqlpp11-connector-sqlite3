@@ -98,7 +98,7 @@ namespace sqlpp
 			// prepared execution
 			prepared_statement_t prepare_impl(const std::string& statement);
 			bind_result_t run_prepared_select_impl(prepared_statement_t& prepared_statement);
-			void run_prepared_execute_impl(prepared_statement_t& prepared_statement);
+			size_t run_prepared_execute_impl(prepared_statement_t& prepared_statement);
 			size_t run_prepared_insert_impl(prepared_statement_t& prepared_statement);
 			size_t run_prepared_update_impl(prepared_statement_t& prepared_statement);
 			size_t run_prepared_remove_impl(prepared_statement_t& prepared_statement);
@@ -258,7 +258,7 @@ namespace sqlpp
 			{
 				x._prepared_statement._reset();
 				x._bind_params();
-				run_prepared_execute_impl(x._prepared_statement);
+				return run_prepared_execute_impl(x._prepared_statement);
 			}
 
 
