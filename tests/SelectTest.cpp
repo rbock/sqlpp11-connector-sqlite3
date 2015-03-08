@@ -44,15 +44,15 @@ SQLPP_ALIAS_PROVIDER(left);
 namespace sql = sqlpp::sqlite3;
 TabSample tab;
 
-void testSelectAll(sql::connection& db, int expectedRowCount)
+void testSelectAll(sql::connection& db, size_t expectedRowCount)
 {
 	std::cerr << "--------------------------------------" << std::endl;
-	int i = 0;
+	size_t i = 0;
 	for(const auto& row : db(sqlpp::select(all_of(tab)).from(tab).where(true)))
 	{
 		++i;
 		std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
-		assert(row.alpha == i);
+		assert(static_cast<size_t>(row.alpha) == i);
 	};
 	assert(i == expectedRowCount);
 
@@ -62,7 +62,7 @@ void testSelectAll(sql::connection& db, int expectedRowCount)
 	{
 		++i;
 		std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma <<  std::endl;
-		assert(row.alpha == i);
+		assert(static_cast<size_t>(row.alpha) == i);
 	};
 	assert(i == expectedRowCount);
 	std::cerr << "--------------------------------------" << std::endl;

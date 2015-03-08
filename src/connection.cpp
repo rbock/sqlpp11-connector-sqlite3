@@ -84,6 +84,11 @@ namespace sqlpp
 		{
 		}
 
+		::sqlite3* connection::native_handle()
+		{
+			return _handle->sqlite;
+		}
+
 		bind_result_t connection::select_impl(const std::string& statement)
 		{
 			std::unique_ptr<detail::prepared_statement_handle_t> prepared(new detail::prepared_statement_handle_t(prepare_statement(*_handle, statement)));
@@ -125,10 +130,11 @@ namespace sqlpp
 			execute_statement(*_handle, *prepared_statement._handle.get());
 		}
 
-		void connection::execute(const std::string& statement)
+		size_t connection::execute(const std::string& statement)
 		{
 			auto prepared = prepare_statement(*_handle, statement);
 			execute_statement(*_handle, prepared);
+			return sqlite3_changes(_handle->sqlite);
 		}
 
 		size_t connection::update_impl(const std::string& statement)

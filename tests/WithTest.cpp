@@ -50,7 +50,7 @@ int main()
 			))");
 
 
-	auto a = cte(sqlpp::a).as(select(all_of(tab)).from(tab).where(tab.alpha > 3));
+	auto a = sqlpp::cte(sqlpp::alias::a).as(select(all_of(tab)).from(tab).where(tab.alpha > 3));
 	for (const auto& row : db(with(a)(select(a.alpha).from(a)).where(true)))
 	{
 		std::cout << row.alpha << std::endl;

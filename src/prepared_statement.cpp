@@ -31,6 +31,23 @@
 #include <sqlpp11/sqlite3/prepared_statement.h>
 #include "detail/prepared_statement_handle.h"
 
+#if defined(__CYGWIN__)
+#include <sstream>
+
+// Workaround because cygwin gcc does not define to_string
+namespace std
+{
+	template <typename T>
+	std::string to_string(T t)
+	{
+		std::ostringstream stream;
+
+		stream << t;
+		return stream.str();
+	}
+}
+#endif 
+
 
 namespace sqlpp
 {
