@@ -31,6 +31,7 @@
 #include <string>
 #include <sstream>
 #include <sqlpp11/connection.h>
+#include <sqlpp11/schema.h>
 #include <sqlpp11/serialize.h>
 #include <sqlpp11/type_traits.h>
 #include <sqlpp11/sqlite3/prepared_statement.h>
@@ -318,6 +319,10 @@ namespace sqlpp
 			void report_rollback_failure(const std::string message) noexcept;
 
 			::sqlite3* native_handle();
+
+			auto attach(const connection_config&, const std::string name)
+				-> schema_t;
+
 		};
 
 		inline std::string serializer_t::escape(std::string arg)

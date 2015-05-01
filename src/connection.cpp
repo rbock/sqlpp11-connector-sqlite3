@@ -223,6 +223,15 @@ namespace sqlpp
 		{
 			std::cerr << "Sqlite3 message:" << message << std::endl;
 		}
+		
+		auto connection::attach(const connection_config& config, const std::string name)
+			-> schema_t
+		{
+			auto prepared = prepare_statement(*_handle, "ATTACH '" + escape(config.path_to_database) + "' AS " + escape(name));
+			execute_statement(*_handle, prepared);
+
+			return {name};
+		}
 	}
 }
 
