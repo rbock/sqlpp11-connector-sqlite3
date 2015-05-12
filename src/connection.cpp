@@ -76,7 +76,7 @@ namespace sqlpp
 		}
 
 		connection::connection(connection_config config):
-			_handle(new detail::connection_handle(config))
+			_handle(new detail::connection_handle(std::move(config)))
 		{
 		}
 
