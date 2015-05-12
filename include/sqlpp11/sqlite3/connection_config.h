@@ -37,7 +37,13 @@ namespace sqlpp
 	{
 		struct connection_config
 		{
-			connection_config() = default;
+			connection_config()
+				:path_to_database()
+				,flags(0)
+				,vfs()
+				,debug(false)
+			{
+			}
 			connection_config(const connection_config &) = default;
 			connection_config(connection_config &&) = default;
 
