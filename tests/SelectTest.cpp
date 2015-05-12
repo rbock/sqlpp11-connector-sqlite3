@@ -70,7 +70,7 @@ void testSelectAll(sql::connection& db, size_t expectedRowCount)
 
 int main()
 {
-	sql::connection db({":memory:", SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, true});
+	sql::connection db({":memory:",SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, "", true});
 	db.execute(R"(CREATE TABLE tab_sample (
 		alpha INTEGER PRIMARY KEY,
 			beta varchar(255) DEFAULT NULL,
