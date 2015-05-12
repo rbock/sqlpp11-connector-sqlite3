@@ -37,7 +37,7 @@ namespace sqlpp
 		namespace detail
 		{
 			connection_handle::connection_handle(connection_config conf):
-				config(conf),
+				config(std::move(conf)),
 				sqlite(nullptr)
 			{
 				auto rc = sqlite3_open_v2(
