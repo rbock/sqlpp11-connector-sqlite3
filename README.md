@@ -5,16 +5,15 @@ A C++ wrapper for sqlite3 meant to be used in combination with sqlpp11.
 
 Sample Code:
 ------------
-See for instance test/SampleTest.cpp
+See for instance tests/SampleTest.cpp
 
 ```C++
 namespace sql = sqlpp::sqlite3;
-int main()
-{
-    auto config = std::make_shared<sql::connection_config>();
-    config->path_to_database = ":memory:";
-    config->flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
-    config->debug = true;
+int main() {
+    sql::connection_config config;
+    config.path_to_database = ":memory:";
+    config.flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
+    config.debug = true;
 
     sql::connection db(config);
     std::cerr << __FILE__ << ": " << __LINE__ << std::endl;
@@ -26,11 +25,11 @@ int main()
 
     TabSample tab;
     // explicit all_of(tab)
-    for(const auto& row : db.run(select(all_of(tab)).from(tab).where(true)))
+    for(const auto& row : db(select(all_of(tab)).from(tab).where(true)))
     {
         int64_t alpha = row.alpha;
-        bool beta = row.beta;
-        std::string gamma = row.gamma;
+        std::string beta = row.beta;
+        bool gamma = row.gamma;
     };
 ```
 
