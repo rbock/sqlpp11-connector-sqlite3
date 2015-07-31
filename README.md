@@ -19,8 +19,8 @@ int main() {
     std::cerr << __FILE__ << ": " << __LINE__ << std::endl;
     db.execute("CREATE TABLE tab_sample (\
         alpha bigint(20) DEFAULT NULL,\
-        beta bool DEFAULT NULL,\
-        gamma varchar(255) DEFAULT NULL\
+        beta varchar(255) DEFAULT NULL,\
+        gamma bool DEFAULT NULL\
         )");
 
     TabSample tab;
