@@ -33,36 +33,35 @@
 #include <set>
 #include <cassert>
 
-
 SQLPP_ALIAS_PROVIDER(left);
 
 namespace sql = sqlpp::sqlite3;
 int main()
 {
-	sql::connection_config config;
- 	config.path_to_database = ":memory:";
-	config.flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
-	config.debug = true;
+  sql::connection_config config;
+  config.path_to_database = ":memory:";
+  config.flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
+  config.debug = true;
 
-	sql::connection db(config);
-	db.execute(R"(CREATE TABLE tab_sample (
+  sql::connection db(config);
+  db.execute(R"(CREATE TABLE tab_sample (
 		alpha INTEGER PRIMARY KEY AUTOINCREMENT,
 			beta bool DEFAULT NULL,
 			gamma varchar(255) DEFAULT NULL
 			))");
 
-	TabSample tab;
-	db(insert_into(tab).default_values());
-	db(insert_into(tab).default_values());
-	db(insert_into(tab).default_values());
+  TabSample tab;
+  db(insert_into(tab).default_values());
+  db(insert_into(tab).default_values());
+  db(insert_into(tab).default_values());
 
-	std::set<int64_t> results;
-	for(const auto& row : db(select(all_of(tab)).from(tab).where(true)))
-	{
-		results.insert(row.alpha);
-	};
-	const auto expected = std::set<int64_t>{1,2,3};
-	assert(results == expected);
+  std::set<int64_t> results;
+  for (const auto& row : db(select(all_of(tab)).from(tab).where(true)))
+  {
+    results.insert(row.alpha);
+  };
+  const auto expected = std::set<int64_t>{1, 2, 3};
+  assert(results == expected);
 
-	return 0;
+  return 0;
 }

@@ -24,7 +24,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 #ifndef SQLPP_SQLITE3_CONNECTION_CONFIG_H
 #define SQLPP_SQLITE3_CONNECTION_CONFIG_H
 
@@ -33,47 +32,38 @@
 
 namespace sqlpp
 {
-	namespace sqlite3
-	{
-		struct connection_config
-		{
-			connection_config()
-				:path_to_database()
-				,flags(0)
-				,vfs()
-				,debug(false)
-			{
-			}
-			connection_config(const connection_config &) = default;
-			connection_config(connection_config &&) = default;
+  namespace sqlite3
+  {
+    struct connection_config
+    {
+      connection_config() : path_to_database(), flags(0), vfs(), debug(false)
+      {
+      }
+      connection_config(const connection_config&) = default;
+      connection_config(connection_config&&) = default;
 
-			connection_config(std::string path, int fl=0, std::string vf="", bool dbg=false)
-				:path_to_database(std::move(path))
-				,flags(fl)
-				,vfs(std::move(vf))
-				,debug(dbg)
-			{
-			}
+      connection_config(std::string path, int fl = 0, std::string vf = "", bool dbg = false)
+          : path_to_database(std::move(path)), flags(fl), vfs(std::move(vf)), debug(dbg)
+      {
+      }
 
-			bool operator==(const connection_config& other) const
-			{
-				return (other.path_to_database == path_to_database
-						and other.flags == flags
-						and other.vfs == vfs
-						and other.debug == debug);
-			}
+      bool operator==(const connection_config& other) const
+      {
+        return (other.path_to_database == path_to_database and other.flags == flags and other.vfs == vfs and
+                other.debug == debug);
+      }
 
-			bool operator!=(const connection_config& other) const
-			{
-				return !operator==(other);
-			}
+      bool operator!=(const connection_config& other) const
+      {
+        return !operator==(other);
+      }
 
-			std::string path_to_database;
-			int flags;
-			std::string vfs;
-			bool debug;
-		};
-	}
+      std::string path_to_database;
+      int flags;
+      std::string vfs;
+      bool debug;
+    };
+  }
 }
 
 #endif

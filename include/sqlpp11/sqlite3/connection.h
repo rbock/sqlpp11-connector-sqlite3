@@ -276,7 +276,7 @@ namespace sqlpp
 
       template <typename T>
       auto operator()(const T& t)
-          -> decltype(this -> _run(t, typename sqlpp::run_check_t<_serializer_context_t, T>::type{}))
+          -> decltype(this->_run(t, typename sqlpp::run_check_t<_serializer_context_t, T>::type{}))
       {
         sqlpp::run_check_t<_serializer_context_t, T>::_();
         return _run(t, typename sqlpp::run_check_t<_serializer_context_t, T>::type{});
@@ -294,7 +294,7 @@ namespace sqlpp
 
       template <typename T>
       auto prepare(const T& t)
-          -> decltype(this -> _prepare(t, typename sqlpp::prepare_check_t<_serializer_context_t, T>::type{}))
+          -> decltype(this->_prepare(t, typename sqlpp::prepare_check_t<_serializer_context_t, T>::type{}))
       {
         sqlpp::prepare_check_t<_serializer_context_t, T>::_();
         return _prepare(t, typename sqlpp::prepare_check_t<_serializer_context_t, T>::type{});
@@ -307,7 +307,7 @@ namespace sqlpp
       void commit_transaction();
 
       //! rollback transaction with or without reporting the rollback (or throw if the transaction has been finished
-      //already)
+      // already)
       void rollback_transaction(bool report);
 
       //! report a rollback failure (will be called by transactions in case of a rollback failure in the destructor)
