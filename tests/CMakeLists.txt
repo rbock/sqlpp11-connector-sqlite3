@@ -6,6 +6,7 @@ macro (build_and_run arg)
 	add_test(Sqlpp11Sqlite3${arg} Sqlpp11Sqlite3${arg})
 endmacro ()
 
+build_and_run(DateTimeTest)
 build_and_run(SampleTest)
 build_and_run(SelectTest)
 build_and_run(UnionTest)
