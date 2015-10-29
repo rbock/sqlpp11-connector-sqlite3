@@ -33,6 +33,7 @@
 #include <sqlpp11/some.h>
 #include <sqlpp11/parameter.h>
 #include <sqlpp11/join.h>
+#include <sqlpp11/wrap_operand.h>
 
 namespace sqlpp
 {
@@ -154,6 +155,36 @@ namespace sqlpp
     static void _(const T& t, sqlite3::serializer_t& context)
     {
       _serialize_check::_();
+    }
+  };
+
+  template <typename Period>
+  struct serializer_t<sqlite3::serializer_t, time_point_operand<Period>>
+  {
+    using _serialize_check = consistent_t;
+    using Operand = time_point_operand<Period>;
+
+    static sqlite3::serializer_t& _(const Operand& t, sqlite3::serializer_t& context)
+    {
+      const auto dp = ::date::floor<::date::days>(t._t);
+      const auto time = ::date::make_time(t._t - dp);
+      const auto ymd = ::date::year_month_day{dp};
+      context << "STRFTIME('%Y-%m-%d %H:%M:%f', '" << ymd << ' ' << time << "')";
+      return context;
+    }
+  };
+
+  template <>
+  struct serializer_t<sqlite3::serializer_t, day_point_operand>
+  {
+    using _serialize_check = consistent_t;
+    using Operand = day_point_operand;
+
+    static sqlite3::serializer_t& _(const Operand& t, sqlite3::serializer_t& context)
+    {
+      const auto ymd = ::date::year_month_day{t._t};
+      context << "DATE('" << ymd << "')";
+      return context;
     }
   };
 }
