@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Roland Bock
+ * Copyright (c) 2013 - 2015, Roland Bock
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -25,6 +25,8 @@
  */
 
 #include <iostream>
+#include <vector>
+#include <date.h>  // Howard Hinnant's date library
 #include <sqlpp11/exception.h>
 #include <sqlpp11/sqlite3/bind_result.h>
 #include "detail/prepared_statement_handle.h"
@@ -73,6 +75,99 @@ namespace sqlpp
 
       *value = (reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, static_cast<int>(index))));
       *len = sqlite3_column_bytes(_handle->sqlite_statement, static_cast<int>(index));
+    }
+
+    namespace
+    {
+      const auto date_digits = std::vector<char>{1, 1, 1, 1, 0, 1, 1, 0, 1, 1};  // 2015-10-28
+      const auto time_digits = std::vector<char>{0, 1, 1, 0, 1, 1, 0, 1, 1};     // T23:00:12
+      const auto ms_digits = std::vector<char>{0, 1, 1, 1};                      // .123
+
+      auto check_digits(const char* text, const std::vector<char>& digitFlags) -> bool
+      {
+        for (const auto digitFlag : digitFlags)
+        {
+          if (digitFlag)
+          {
+            if (not std::isdigit(*text))
+            {
+              return false;
+            }
+          }
+          else
+          {
+            if (std::isdigit(*text) or *text == '\0')
+            {
+              return false;
+            }
+          }
+          ++text;
+        }
+        return true;
+      }
+    }
+
+    void bind_result_t::_bind_date_result(size_t index, ::sqlpp::cpp::day_point* value, bool* is_null)
+    {
+      if (_handle->debug)
+        std::cerr << "Sqlite3 debug: binding date result at index: " << index << std::endl;
+
+      const auto date_string =
+          reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, static_cast<int>(index)));
+      if (_handle->debug)
+        std::cerr << "Sqlite3 debug: date string: " << date_string << std::endl;
+
+      if (check_digits(date_string, date_digits))
+      {
+        const auto ymd = ::date::year(std::atoi(date_string)) / atoi(date_string + 5) / atoi(date_string + 8);
+        *value = ::date::day_point(ymd);
+      }
+      else
+      {
+        if (_handle->debug)
+          std::cerr << "Sqlite3 debug: invalid date result: " << date_string << std::endl;
+        *value = ::date::day_point{};
+      }
+      *is_null = sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)) == SQLITE_NULL;
+    }
+
+    void bind_result_t::_bind_date_time_result(size_t index, ::sqlpp::cpp::us_point* value, bool* is_null)
+    {
+      if (_handle->debug)
+        std::cerr << "Sqlite3 debug: binding date result at index: " << index << std::endl;
+
+      *is_null = sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)) == SQLITE_NULL;
+
+      const auto date_time_string =
+          reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, static_cast<int>(index)));
+      if (_handle->debug)
+        std::cerr << "Sqlite3 debug: date_time string: " << date_time_string << std::endl;
+
+      if (check_digits(date_time_string, date_digits))
+      {
+        const auto ymd =
+            ::date::year(std::atoi(date_time_string)) / atoi(date_time_string + 5) / atoi(date_time_string + 8);
+        *value = ::date::day_point(ymd);
+      }
+      else
+      {
+        if (_handle->debug)
+          std::cerr << "Sqlite3 debug: invalid date_time result: " << date_time_string << std::endl;
+        *value = ::date::day_point{};
+
+        return;
+      }
+
+      const auto time_string = date_time_string + 10;
+      if (check_digits(time_string, time_digits))
+      {
+        *value += ::std::chrono::hours(std::atoi(time_string + 1)) + std::chrono::minutes(std::atoi(time_string + 4)) +
+                  std::chrono::seconds(std::atoi(time_string + 7));
+      }
+      else
+      {
+        return;
+      }
     }
 
     bool bind_result_t::next_impl()

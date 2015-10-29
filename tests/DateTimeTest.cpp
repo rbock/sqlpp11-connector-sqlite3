@@ -33,8 +33,6 @@
 #include <vector>
 #include <cassert>
 
-SQLPP_ALIAS_PROVIDER(left);
-
 namespace sql = sqlpp::sqlite3;
 int main()
 {
@@ -58,6 +56,11 @@ int main()
                           tab.colDateTime = std::chrono::system_clock::now()));
   db(insert_into(tab).set(tab.colDateTime = ::date::floor<sqlpp::cpp::days>(std::chrono::system_clock::now()),
                           tab.colDate = std::chrono::system_clock::now()));
+
+  for (const auto& row : db(select(all_of(tab)).from(tab).where(true)))
+  {
+    std::cout << row.colDate << " " << row.colDateTime << std::endl;
+  }
 
   return 0;
 }
