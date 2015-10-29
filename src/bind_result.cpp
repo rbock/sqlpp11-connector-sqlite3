@@ -107,10 +107,17 @@ namespace sqlpp
       }
     }
 
-    void bind_result_t::_bind_date_result(size_t index, ::sqlpp::cpp::day_point* value, bool* is_null)
+    void bind_result_t::_bind_date_result(size_t index, ::sqlpp::chrono::day_point* value, bool* is_null)
     {
       if (_handle->debug)
         std::cerr << "Sqlite3 debug: binding date result at index: " << index << std::endl;
+
+      *is_null = sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)) == SQLITE_NULL;
+      if (*is_null)
+      {
+        *value = {};
+        return;
+      }
 
       const auto date_string =
           reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, static_cast<int>(index)));
@@ -126,17 +133,21 @@ namespace sqlpp
       {
         if (_handle->debug)
           std::cerr << "Sqlite3 debug: invalid date result: " << date_string << std::endl;
-        *value = ::date::day_point{};
+        *value = {};
       }
-      *is_null = sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)) == SQLITE_NULL;
     }
 
-    void bind_result_t::_bind_date_time_result(size_t index, ::sqlpp::cpp::us_point* value, bool* is_null)
+    void bind_result_t::_bind_date_time_result(size_t index, ::sqlpp::chrono::mus_point* value, bool* is_null)
     {
       if (_handle->debug)
         std::cerr << "Sqlite3 debug: binding date result at index: " << index << std::endl;
 
       *is_null = sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)) == SQLITE_NULL;
+      if (*is_null)
+      {
+        *value = {};
+        return;
+      }
 
       const auto date_time_string =
           reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, static_cast<int>(index)));
@@ -153,7 +164,7 @@ namespace sqlpp
       {
         if (_handle->debug)
           std::cerr << "Sqlite3 debug: invalid date_time result: " << date_time_string << std::endl;
-        *value = ::date::day_point{};
+        *value = {};
 
         return;
       }
@@ -163,6 +174,15 @@ namespace sqlpp
       {
         *value += ::std::chrono::hours(std::atoi(time_string + 1)) + std::chrono::minutes(std::atoi(time_string + 4)) +
                   std::chrono::seconds(std::atoi(time_string + 7));
+      }
+      else
+      {
+        return;
+      }
+      const auto ms_string = time_string + 9;
+      if (check_digits(ms_string, ms_digits) and ms_string[4] == '\0')
+      {
+        *value += ::std::chrono::milliseconds(std::atoi(ms_string + 1));
       }
       else
       {

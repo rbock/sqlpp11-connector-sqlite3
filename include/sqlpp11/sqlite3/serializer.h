@@ -159,10 +159,10 @@ namespace sqlpp
   };
 
   template <typename Period>
-  struct serializer_t<sqlite3::serializer_t, date_time_operand<Period>>
+  struct serializer_t<sqlite3::serializer_t, time_point_operand<Period>>
   {
     using _serialize_check = consistent_t;
-    using Operand = date_time_operand<Period>;
+    using Operand = time_point_operand<Period>;
 
     static sqlite3::serializer_t& _(const Operand& t, sqlite3::serializer_t& context)
     {
@@ -175,10 +175,10 @@ namespace sqlpp
   };
 
   template <>
-  struct serializer_t<sqlite3::serializer_t, date_time_operand<cpp::days>>
+  struct serializer_t<sqlite3::serializer_t, day_point_operand>
   {
     using _serialize_check = consistent_t;
-    using Operand = date_time_operand<cpp::days>;
+    using Operand = day_point_operand;
 
     static sqlite3::serializer_t& _(const Operand& t, sqlite3::serializer_t& context)
     {

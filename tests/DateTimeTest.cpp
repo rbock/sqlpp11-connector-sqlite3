@@ -33,6 +33,26 @@
 #include <vector>
 #include <cassert>
 
+namespace
+{
+  const auto now = ::date::floor<::std::chrono::milliseconds>(std::chrono::system_clock::now());
+  const auto today = ::date::floor<::sqlpp::chrono::days>(now);
+  const auto yesterday = today - ::sqlpp::chrono::days{1};
+
+  template <typename L, typename R>
+  auto require_equal(int line, const L& l, const R& r) -> void
+  {
+    if (l != r)
+    {
+      std::cerr << line << ": ";
+      serialize(::sqlpp::wrap_operand_t<L>{l}, std::cerr);
+      std::cerr << " != ";
+      serialize(::sqlpp::wrap_operand_t<R>{r}, std::cerr);
+      throw std::runtime_error("Unexpected result");
+    }
+  }
+}
+
 namespace sql = sqlpp::sqlite3;
 int main()
 {
@@ -43,23 +63,43 @@ int main()
 
   sql::connection db(config);
   db.execute(R"(CREATE TABLE tab_date_time (
-		col_date DATE,
-			col_date_time DATETIME
+		col_day_point DATE,
+			col_time_point DATETIME
 			))");
 
   TabDateTime tab;
 
-  // clear the table
-  db(remove_from(tab).where(true));
-
-  db(insert_into(tab).set(tab.colDate = ::date::floor<sqlpp::cpp::days>(std::chrono::system_clock::now()),
-                          tab.colDateTime = std::chrono::system_clock::now()));
-  db(insert_into(tab).set(tab.colDateTime = ::date::floor<sqlpp::cpp::days>(std::chrono::system_clock::now()),
-                          tab.colDate = std::chrono::system_clock::now()));
-
-  for (const auto& row : db(select(all_of(tab)).from(tab).where(true)))
+  try
   {
-    std::cout << row.colDate << " " << row.colDateTime << std::endl;
+    db(insert_into(tab).default_values());
+    for (const auto& row : db(select(all_of(tab)).from(tab).where(true)))
+    {
+      require_equal(__LINE__, row.colDayPoint.is_null(), true);
+      require_equal(__LINE__, row.colDayPoint.value(), ::sqlpp::chrono::day_point{});
+      require_equal(__LINE__, row.colTimePoint.is_null(), true);
+      require_equal(__LINE__, row.colTimePoint.value(), ::sqlpp::chrono::mus_point{});
+    }
+
+    db(update(tab).set(tab.colDayPoint = today, tab.colTimePoint = now).where(true));
+
+    for (const auto& row : db(select(all_of(tab)).from(tab).where(true)))
+    {
+      require_equal(__LINE__, row.colDayPoint.value(), today);
+      require_equal(__LINE__, row.colTimePoint.value(), now);
+    }
+
+    db(update(tab).set(tab.colDayPoint = yesterday, tab.colTimePoint = today).where(true));
+
+    for (const auto& row : db(select(all_of(tab)).from(tab).where(true)))
+    {
+      require_equal(__LINE__, row.colDayPoint.value(), yesterday);
+      require_equal(__LINE__, row.colTimePoint.value(), today);
+    }
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "Exception: " << e.what() << std::endl;
+    return 1;
   }
 
   return 0;
