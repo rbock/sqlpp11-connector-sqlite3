@@ -28,7 +28,7 @@
 #define SQLPP_SQLITE3_BIND_RESULT_H
 
 #include <memory>
-#include <sqlpp11/date_time_fwd.h>
+#include <sqlpp11/chrono.h>
 
 namespace sqlpp
 {

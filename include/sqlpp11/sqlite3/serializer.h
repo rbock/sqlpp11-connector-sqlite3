@@ -33,7 +33,8 @@
 #include <sqlpp11/some.h>
 #include <sqlpp11/parameter.h>
 #include <sqlpp11/join.h>
-#include <sqlpp11/wrap_operand.h>
+#include <sqlpp11/data_types/day_point/operand.h>
+#include <sqlpp11/data_types/time_point/operand.h>
 
 namespace sqlpp
 {
