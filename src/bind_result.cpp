@@ -137,7 +137,7 @@ namespace sqlpp
       }
     }
 
-    void bind_result_t::_bind_date_time_result(size_t index, ::sqlpp::chrono::mus_point* value, bool* is_null)
+    void bind_result_t::_bind_date_time_result(size_t index, ::sqlpp::chrono::microsecond_point* value, bool* is_null)
     {
       if (_handle->debug)
         std::cerr << "Sqlite3 debug: binding date result at index: " << index << std::endl;

@@ -77,7 +77,7 @@ int main()
       require_equal(__LINE__, row.colDayPoint.is_null(), true);
       require_equal(__LINE__, row.colDayPoint.value(), ::sqlpp::chrono::day_point{});
       require_equal(__LINE__, row.colTimePoint.is_null(), true);
-      require_equal(__LINE__, row.colTimePoint.value(), ::sqlpp::chrono::mus_point{});
+      require_equal(__LINE__, row.colTimePoint.value(), ::sqlpp::chrono::microsecond_point{});
     }
 
     db(update(tab).set(tab.colDayPoint = today, tab.colTimePoint = now).where(true));
@@ -94,6 +94,21 @@ int main()
     {
       require_equal(__LINE__, row.colDayPoint.value(), yesterday);
       require_equal(__LINE__, row.colTimePoint.value(), today);
+    }
+
+    auto prepared_update = db.prepare(
+        update(tab)
+            .set(tab.colDayPoint = parameter(tab.colDayPoint), tab.colTimePoint = parameter(tab.colTimePoint))
+            .where(true));
+    prepared_update.params.colDayPoint = today;
+    prepared_update.params.colTimePoint = now;
+    std::cout << "---- running prepared update ----" << std::endl;
+    db(prepared_update);
+    std::cout << "---- finished prepared update ----" << std::endl;
+    for (const auto& row : db(select(all_of(tab)).from(tab).where(true)))
+    {
+      require_equal(__LINE__, row.colDayPoint.value(), today);
+      require_equal(__LINE__, row.colTimePoint.value(), now);
     }
   }
   catch (const std::exception& e)

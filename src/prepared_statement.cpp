@@ -25,7 +25,9 @@
  */
 
 #include <iostream>
+#include <sstream>
 #include <string>
+#include <date.h>
 #include <sqlpp11/exception.h>
 #include <sqlpp11/sqlite3/prepared_statement.h>
 #include "detail/prepared_statement_handle.h"
@@ -139,6 +141,52 @@ namespace sqlpp
       else
         result = sqlite3_bind_null(_handle->sqlite_statement, static_cast<int>(index + 1));
       check_bind_result(result, "text");
+    }
+
+    void prepared_statement_t::_bind_date_parameter(size_t index, const ::sqlpp::chrono::day_point* value, bool is_null)
+    {
+      const auto ymd = value ? ::date::year_month_day{*value} : ::date::year_month_day{*value};
+      if (_handle->debug)
+        std::cerr << "Sqlite3 debug: binding date parameter " << ymd << " at index: " << index << ", being "
+                  << (is_null ? "" : "not ") << "null" << std::endl;
+
+      int result;
+      if (not is_null)
+      {
+        auto os = std::ostringstream{};
+        os << ymd;
+        const auto text = os.str();
+        result = sqlite3_bind_text(_handle->sqlite_statement, static_cast<int>(index + 1), text.data(),
+                                   static_cast<int>(text.size()), SQLITE_TRANSIENT);
+      }
+      else
+        result = sqlite3_bind_null(_handle->sqlite_statement, static_cast<int>(index + 1));
+      check_bind_result(result, "date");
+    }
+
+    void prepared_statement_t::_bind_date_time_parameter(size_t index,
+                                                         const ::sqlpp::chrono::microsecond_point* value,
+                                                         bool is_null)
+    {
+      if (_handle->debug)
+        std::cerr << "Sqlite3 debug: binding date_time parameter "
+                  << " at index: " << index << ", being " << (is_null ? "" : "not ") << "null" << std::endl;
+
+      int result;
+      if (not is_null)
+      {
+        const auto dp = ::date::floor<::date::days>(*value);
+        const auto time = date::make_time(::date::floor<::std::chrono::milliseconds>(*value - dp));
+        const auto ymd = ::date::year_month_day{dp};
+        auto os = std::ostringstream{};
+        os << ymd << ' ' << time;
+        const auto text = os.str();
+        result = sqlite3_bind_text(_handle->sqlite_statement, static_cast<int>(index + 1), text.data(),
+                                   static_cast<int>(text.size()), SQLITE_TRANSIENT);
+      }
+      else
+        result = sqlite3_bind_null(_handle->sqlite_statement, static_cast<int>(index + 1));
+      check_bind_result(result, "date");
     }
   }
 }
