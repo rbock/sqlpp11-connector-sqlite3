@@ -145,15 +145,15 @@ namespace sqlpp
 
     void prepared_statement_t::_bind_date_parameter(size_t index, const ::sqlpp::chrono::day_point* value, bool is_null)
     {
-      const auto ymd = value ? ::date::year_month_day{*value} : ::date::year_month_day{*value};
       if (_handle->debug)
-        std::cerr << "Sqlite3 debug: binding date parameter " << ymd << " at index: " << index << ", being "
-                  << (is_null ? "" : "not ") << "null" << std::endl;
+        std::cerr << "Sqlite3 debug: binding date parameter "
+                  << " at index: " << index << ", being " << (is_null ? "" : "not ") << "null" << std::endl;
 
       int result;
       if (not is_null)
       {
         auto os = std::ostringstream{};
+        const auto ymd = ::date::year_month_day{*value};
         os << ymd;
         const auto text = os.str();
         result = sqlite3_bind_text(_handle->sqlite_statement, static_cast<int>(index + 1), text.data(),
