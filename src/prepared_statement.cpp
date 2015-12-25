@@ -152,7 +152,7 @@ namespace sqlpp
       int result;
       if (not is_null)
       {
-        auto os = std::ostringstream{};
+        std::ostringstream os;
         const auto ymd = ::date::year_month_day{*value};
         os << ymd;
         const auto text = os.str();
@@ -178,7 +178,7 @@ namespace sqlpp
         const auto dp = ::date::floor<::date::days>(*value);
         const auto time = date::make_time(::date::floor<::std::chrono::milliseconds>(*value - dp));
         const auto ymd = ::date::year_month_day{dp};
-        auto os = std::ostringstream{};
+        std::ostringstream os;  // gcc-4.9 does not support auto os = std::ostringstream{};
         os << ymd << ' ' << time;
         const auto text = os.str();
         result = sqlite3_bind_text(_handle->sqlite_statement, static_cast<int>(index + 1), text.data(),
