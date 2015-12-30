@@ -46,8 +46,8 @@ int main()
   sql::connection db(config);
   db.execute(R"(CREATE TABLE tab_sample (
 		alpha INTEGER PRIMARY KEY,
-			beta bool DEFAULT NULL,
-			gamma varchar(255) DEFAULT NULL
+			beta varchar(255) DEFAULT NULL,
+			gamma bool DEFAULT NULL
 			))");
   db.execute(R"(CREATE TABLE tab_foo (
 		omega bigint(20) DEFAULT NULL

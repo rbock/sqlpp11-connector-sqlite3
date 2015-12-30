@@ -79,7 +79,7 @@ namespace sqlpp
           if (result_row)
             result_row._invalidate();
         }
-      };
+      }
 
       void _bind_boolean_result(size_t index, signed char* value, bool* is_null);
       void _bind_floating_point_result(size_t index, double* value, bool* is_null);
