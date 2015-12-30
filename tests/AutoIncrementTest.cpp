@@ -24,16 +24,16 @@
  */
 
 #include "TabSample.h"
-#include <cassert>
 #include <sqlpp11/sqlpp11.h>
-#include <sqlpp11/sqlite3/connection.h>
+#include <sqlpp11/custom_query.h>
+#include <sqlpp11/sqlite3/sqlite3.h>
 
 #include <sqlite3.h>
 #include <iostream>
-#include <vector>
+#include <set>
+#include <cassert>
 
 namespace sql = sqlpp::sqlite3;
-
 int main()
 {
   sql::connection_config config;
@@ -41,31 +41,25 @@ int main()
   config.flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
   config.debug = true;
 
-  // Opening a connection to an in-memory database and creating a table in it
   sql::connection db(config);
   db.execute(R"(CREATE TABLE tab_sample (
-		alpha INTEGER PRIMARY KEY,
-			beta varchar(255) DEFAULT NULL,
-			gamma bool DEFAULT NULL
+		alpha INTEGER PRIMARY KEY AUTOINCREMENT,
+			beta bool DEFAULT NULL,
+			gamma varchar(255) DEFAULT NULL
 			))");
 
-  // Attaching another in-memory database and creating the same table in it
-  auto other = db.attach(config, "other");
-  db.execute(R"(CREATE TABLE other.tab_sample (
-		alpha INTEGER PRIMARY KEY,
-			beta varchar(255) DEFAULT NULL,
-			gamma bool DEFAULT NULL
-			))");
+  TabSample tab;
+  db(insert_into(tab).default_values());
+  db(insert_into(tab).default_values());
+  db(insert_into(tab).default_values());
 
-  auto left = TabSample{};
-  auto right =
-      schema_qualified_table(other, TabSample{}).as(sqlpp::alias::right);  // this is a table in the attached database
-
-  // inserting in one tab_sample
-  db(insert_into(left).default_values());
-
-  // selecting from the other tab_sample
-  assert(db(select(all_of(right)).from(right).where(true)).empty());
+  std::set<int64_t> results;
+  for (const auto& row : db(select(all_of(tab)).from(tab).where(true)))
+  {
+    results.insert(row.alpha);
+  };
+  const auto expected = std::set<int64_t>{1, 2, 3};
+  assert(results == expected);
 
   return 0;
 }
