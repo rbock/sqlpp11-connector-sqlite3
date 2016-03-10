@@ -41,8 +41,8 @@ sqlpp11-connector-sqlite3 makes use of C++11 and requires a recent compiler and 
   * clang-3.2 on Ubuntu-12.4
   * g++-4.8 on Ubuntu-12.4
 
-__C++ SQL Layer:__
-sqlpp11-connector-sqlite3 is meant to be used with sqlpp11 (https://github.com/rbock/sqlpp11).
+__Libraries:__
 
-__sqlite3:__
-libsqlite3, version 3.7.11 or later is required to use multi-row insert. Older versions (e.g. 3.7.9) work fine otherwise.
+  * sqlpp11-connector-sqlite3 is meant to be used with sqlpp11 (https://github.com/rbock/sqlpp11).
+  * sqlpp11 requires date.h (https://github.com/HowardHinnant/date).
+  * libsqlite3, version 3.7.11 or later is required to use multi-row insert. Older versions (e.g. 3.7.9) work fine otherwise.
