@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2015, Roland Bock
+ * Copyright (c) 2013 - 2016, Roland Bock
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -50,13 +50,13 @@ int main()
 			))");
 
   auto a = sqlpp::cte(sqlpp::alias::a).as(select(all_of(tab)).from(tab).where(tab.alpha > 3));
-  for (const auto& row : db(with(a)(select(a.alpha).from(a)).where(true)))
+  for (const auto& row : db(with(a)(select(a.alpha).from(a)).unconditionally()))
   {
     std::cout << row.alpha << std::endl;
   }
 
   for (const auto& row :
-       db(with(a.union_all(select(all_of(a)).from(a).where(true)))(select(all_of(a)).from(a)).where(true)))
+       db(with(a.union_all(select(all_of(a)).from(a).unconditionally()))(select(all_of(a)).from(a)).unconditionally()))
   {
     std::cout << row.alpha << row.beta << row.gamma << std::endl;
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2015, Roland Bock
+ * Copyright (c) 2013 - 2016, Roland Bock
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -56,16 +56,16 @@ int main()
   TabSample tab;
 
   // clear the table
-  db(remove_from(tab).where(true));
+  db(remove_from(tab).unconditionally());
 
   // explicit all_of(tab)
-  for (const auto& row : db(select(all_of(tab)).from(tab).where(true)))
+  for (const auto& row : db(select(all_of(tab)).from(tab).unconditionally()))
   {
     std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma << std::endl;
   };
   std::cerr << __FILE__ << ": " << __LINE__ << std::endl;
   // selecting a table implicitly expands to all_of(tab)
-  for (const auto& row : db(select(all_of(tab)).from(tab).where(true)))
+  for (const auto& row : db(select(all_of(tab)).from(tab).unconditionally()))
   {
     std::cerr << "row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma << std::endl;
   };
@@ -73,7 +73,7 @@ int main()
   for (const auto& row :
        db(select(multi_column(tab.alpha, tab.beta, tab.gamma).as(left), multi_column(all_of(tab)).as(tab))
               .from(tab)
-              .where(true)))
+              .unconditionally()))
   {
     std::cerr << "row.left.alpha: " << row.left.alpha << ", row.left.beta: " << row.left.beta
               << ", row.left.gamma: " << row.left.gamma << std::endl;
@@ -96,15 +96,16 @@ int main()
   // remove
   db(remove_from(tab).where(tab.alpha == tab.alpha + 3));
 
-  auto result = db(select(all_of(tab)).from(tab).where(true));
+  auto result = db(select(all_of(tab)).from(tab).unconditionally());
   std::cerr << "Accessing a field directly from the result (using the current row): " << result.begin()->alpha
             << std::endl;
   std::cerr << "Can do that again, no problem: " << result.begin()->alpha << std::endl;
 
   auto tx = start_transaction(db);
   TabFoo foo;
-  for (const auto& row :
-       db(select(all_of(tab), select(max(foo.omega)).from(foo).where(foo.omega > tab.alpha)).from(tab).where(true)))
+  for (const auto& row : db(select(all_of(tab), select(max(foo.omega)).from(foo).where(foo.omega > tab.alpha))
+                                .from(tab)
+                                .unconditionally()))
   {
     int x = row.alpha;
     int a = row.max;
@@ -112,12 +113,13 @@ int main()
   }
   tx.commit();
 
-  for (const auto& row : db(select(tab.alpha).from(tab.join(foo).on(tab.alpha == foo.omega)).where(true)))
+  for (const auto& row : db(select(tab.alpha).from(tab.join(foo).on(tab.alpha == foo.omega)).unconditionally()))
   {
     std::cerr << row.alpha << std::endl;
   }
 
-  for (const auto& row : db(select(tab.alpha).from(tab.left_outer_join(foo).on(tab.alpha == foo.omega)).where(true)))
+  for (const auto& row :
+       db(select(tab.alpha).from(tab.left_outer_join(foo).on(tab.alpha == foo.omega)).unconditionally()))
   {
     std::cerr << row.alpha << std::endl;
   }
@@ -184,8 +186,9 @@ int main()
   i = db(sqlpp::sqlite3::insert_or_ignore_into(tab).set(tab.beta = "test", tab.gamma = true));
   std::cerr << i << std::endl;
 
-  assert(db(select(count(tab.alpha)).from(tab).where(true)).begin()->count);
-  assert(db(select(all_of(tab)).from(tab).where(tab.alpha.not_in(select(tab.alpha).from(tab).where(true)))).empty());
+  assert(db(select(count(tab.alpha)).from(tab).unconditionally()).begin()->count);
+  assert(
+      db(select(all_of(tab)).from(tab).where(tab.alpha.not_in(select(tab.alpha).from(tab).unconditionally()))).empty());
 
   auto x = custom_query(sqlpp::verbatim("PRAGMA writeable_schema = "), true);
   db(x);
