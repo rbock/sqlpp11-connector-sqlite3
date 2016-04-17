@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 - 2015, Roland Bock
+ * Copyright (c) 2015 - 2016, Roland Bock
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -65,7 +65,7 @@ int main()
   db(insert_into(left).default_values());
 
   // selecting from the other tab_sample
-  assert(db(select(all_of(right)).from(right).where(true)).empty());
+  assert(db(select(all_of(right)).from(right).unconditionally()).empty());
 
   return 0;
 }

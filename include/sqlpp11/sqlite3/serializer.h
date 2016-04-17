@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2015, Roland Bock
+ * Copyright (c) 2013 - 2016, Roland Bock
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -32,7 +32,7 @@
 #include <sqlpp11/any.h>
 #include <sqlpp11/some.h>
 #include <sqlpp11/parameter.h>
-#include <sqlpp11/join.h>
+#include <sqlpp11/pre_join.h>
 #include <sqlpp11/data_types/day_point/operand.h>
 #include <sqlpp11/data_types/time_point/operand.h>
 
@@ -124,11 +124,11 @@ namespace sqlpp
     }
   };
 
-  template <typename Lhs, typename Rhs, typename On>
-  struct serializer_t<sqlite3::serializer_t, join_t<outer_join_t, Lhs, Rhs, On>>
+  template <typename Lhs, typename Rhs>
+  struct serializer_t<sqlite3::serializer_t, pre_join_t<outer_join_t, Lhs, Rhs>>
   {
     using _serialize_check = assert_no_outer_join_t;
-    using T = join_t<outer_join_t, Lhs, Rhs, On>;
+    using T = pre_join_t<outer_join_t, Lhs, Rhs>;
 
     static void _(const T& t, sqlite3::serializer_t& context)
     {
@@ -147,11 +147,11 @@ namespace sqlpp
     }
   };
 
-  template <typename Lhs, typename Rhs, typename On>
-  struct serializer_t<sqlite3::serializer_t, join_t<right_outer_join_t, Lhs, Rhs, On>>
+  template <typename Lhs, typename Rhs>
+  struct serializer_t<sqlite3::serializer_t, pre_join_t<right_outer_join_t, Lhs, Rhs>>
   {
     using _serialize_check = assert_no_outer_join_t;
-    using T = join_t<right_outer_join_t, Lhs, Rhs, On>;
+    using T = pre_join_t<right_outer_join_t, Lhs, Rhs>;
 
     static void _(const T& t, sqlite3::serializer_t& context)
     {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 - 2015, Roland Bock
+ * Copyright (c) 2015 - 2016, Roland Bock
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -54,7 +54,7 @@ int main()
   db(insert_into(tab).default_values());
 
   std::set<int64_t> results;
-  for (const auto& row : db(select(all_of(tab)).from(tab).where(true)))
+  for (const auto& row : db(select(all_of(tab)).from(tab).unconditionally()))
   {
     results.insert(row.alpha);
   };
