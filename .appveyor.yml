@@ -15,6 +15,8 @@ matrix:
 
 build_script:
   - SET
+  - cd C:\Program Files
+  - DIR /s
   - CD
   - cd ..
   - CD
