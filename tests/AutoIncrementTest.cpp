@@ -48,7 +48,7 @@ int main()
 			gamma varchar(255) DEFAULT NULL
 			))");
 
-  TabSample tab;
+  const auto tab = TabSample{};
   db(insert_into(tab).default_values());
   db(insert_into(tab).default_values());
   db(insert_into(tab).default_values());

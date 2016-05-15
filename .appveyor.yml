@@ -3,9 +3,6 @@ os: Visual Studio 2015
 platform:
   - x64
 
-services:
-  - sqlite3
-
 configuration:
   - Debug
   - Release
@@ -14,19 +11,27 @@ matrix:
   fast_finish: true
 
 build_script:
-  - SET
   - CD
+  - SET
+  - C:\"Program Files (x86)"\"Microsoft Visual Studio 14.0"\VC\vcvarsall.bat amd64
+  - choco install wget
+  - wget http://www.sqlite.org/2016/sqlite-amalgamation-3120200.zip
+  - unzip sqlite-amalgamation-3120200.zip
+  - cd sqlite-amalgamation-3120200
+  - cl /c /EHsc sqlite3.c
+  - lib sqlite3.obj
+  - cd ..
   - cd ..
   - CD
   - git clone https://github.com/HowardHinnant/date
   - git clone https://github.com/rbock/sqlpp11
-  - cd sqlpp11-connector-mysql
+  - cd sqlpp11-connector-sqlite3
   - CD
   - echo %configuration%
   - mkdir build
   - cd build
   - cmake --version
-  - cmake .. -DCMAKE_CXX_FLAGS="/EHsc /wd4503" -DCMAKE_GENERATOR_PLATFORM=x64
+  - cmake .. -DCMAKE_PREFIX_PATH="C:/projects/sqlpp11-connector-sqlite3/sqlite-amalgamation-3120200" -DCMAKE_CXX_FLAGS="/EHsc /wd4503" -DCMAKE_GENERATOR_PLATFORM=x64
   - cmake --build . --config %configuration%
   - ctest . --build-config %configuration%
 

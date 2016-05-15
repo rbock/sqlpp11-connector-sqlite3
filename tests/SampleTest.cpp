@@ -53,7 +53,7 @@ int main()
 		omega bigint(20) DEFAULT NULL
 			))");
 
-  TabSample tab;
+  const auto tab = TabSample{};
 
   // clear the table
   db(remove_from(tab).unconditionally());
