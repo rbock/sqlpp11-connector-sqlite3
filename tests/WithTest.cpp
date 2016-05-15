@@ -37,6 +37,7 @@ TabSample tab;
 
 int main()
 {
+#if SQLITE_VERSION_NUMBER >= 3008003
   sql::connection_config config;
   config.path_to_database = ":memory:";
   config.flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
@@ -61,5 +62,6 @@ int main()
     std::cout << row.alpha << row.beta << row.gamma << std::endl;
   }
 
+#endif
   return 0;
 }

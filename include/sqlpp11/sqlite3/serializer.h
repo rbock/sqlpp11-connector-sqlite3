@@ -38,7 +38,7 @@
 
 namespace sqlpp
 {
-#if SQLITE_VERSION_NUMBER <= 3008003
+#if SQLITE_VERSION_NUMBER < 3008003
   struct assert_no_with_t
   {
     using type = std::false_type;
