@@ -25,6 +25,7 @@
  */
 
 #include <ciso646>
+#include <cctype>
 #include <iostream>
 #include <vector>
 #include <date.h>  // Howard Hinnant's date library
