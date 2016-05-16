@@ -18,6 +18,7 @@ build_script:
   - unzip sqlite-amalgamation-3120200.zip
   - cd sqlite-amalgamation-3120200
   - md lib
+  - cl sqlite3.c -link -dll -out:sqlite3.dll
   - cl sqlite3.c -link -dll -out:lib\sqlite3.dll
   - cd
   - dir /s
