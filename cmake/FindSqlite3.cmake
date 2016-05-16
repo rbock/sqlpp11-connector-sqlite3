@@ -20,7 +20,7 @@ else()
 	else()
 		message("header not found")
 	endif()
-	if (EXISTS "${CMAKE_PREFIX_PATH}/lib/sqlite3.dll")
+	if (EXISTS "${CMAKE_PREFIX_PATH}/sqlite3.lib")
 		message("found the library")
 	else()
 		message("library not found")
@@ -35,7 +35,7 @@ else()
 		)
 
 	find_library(SQLITE3_LIBRARY
-		NAMES sqlite sqlite3.dll
+		NAMES sqlite3
 		PATHS ${SQLITE3_GLOB_PROGRAM}
 					${SQLITE3_GLOB_PROGRAM86}
 					"C:/projects/sqlpp11-connector-sqlite3/sqlite-amalgamation-3120200"
