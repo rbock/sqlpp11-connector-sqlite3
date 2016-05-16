@@ -31,12 +31,14 @@ else()
 		NAMES sqlite3.h
 		PATHS ${SQLITE3_GLOB_PROGRAM}
 					${SQLITE3_GLOB_PROGRAM86}
+					"C:/projects/sqlpp11-connector-sqlite3/sqlite-amalgamation-3120200"
 		)
 
 	find_library(SQLITE3_LIBRARY
-		NAMES sqlite3.dll
+		NAMES sqlite sqlite3.dll
 		PATHS ${SQLITE3_GLOB_PROGRAM}
 					${SQLITE3_GLOB_PROGRAM86}
+					"C:/projects/sqlpp11-connector-sqlite3/sqlite-amalgamation-3120200"
 		)
 endif()
 
