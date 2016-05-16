@@ -13,8 +13,8 @@ matrix:
 build_script:
   - choco install sqlite
   - SET
-  - cd C:\tools
-  - DIR
+  - cd C:\tools\Sqlite
+  - DIR /s
   - CD
   - cd ..
   - CD
