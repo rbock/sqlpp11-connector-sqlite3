@@ -29,7 +29,7 @@ else()
 		)
 
 	find_library(SQLITE3_LIBRARY
-		NAMES sqlite3
+		NAMES sqlite3.dll
 		PATHS ${SQLITE3_GLOB_PROGRAM}
 					${SQLITE3_GLOB_PROGRAM86}
 		)

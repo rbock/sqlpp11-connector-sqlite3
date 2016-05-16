@@ -20,7 +20,7 @@ build_script:
   - md lib
   - cl sqlite3.c -link -dll -out:lib\sqlite3.dll
   - cd
-  - dir
+  - dir /s
   - cd ..
   - CD
   - cd ..
