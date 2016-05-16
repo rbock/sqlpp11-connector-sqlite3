@@ -14,10 +14,16 @@ if (NOT DEFINED MSVC)
 		NAMES sqlite3
 		)
 else()
+	message("CMAKE_PREFIX_PATH: " ${CMAKE_PREFIX_PATH})
+	if (EXISTS "${CMAKE_PREFIX_PATH}/sqlite3.h")
+		message("found the header")
+	else()
+		message("header not found")
+	endif()
 	file(GLOB SQLITE3_GLOB_PROGRAM "$ENV{SystemDrive}/Program Files/Sqlite3*/*")
 	file(GLOB SQLITE3_GLOB_PROGRAM86 "$ENV{SystemDrive}/Program Files (x86)/Sqlite3*/*")
 	find_path(SQLITE3_INCLUDE_DIR
-		NAMES slite3.h
+		NAMES sqlite3.h
 		PATHS ${SQLITE3_GLOB_PROGRAM}
 					${SQLITE3_GLOB_PROGRAM86}
 		)
