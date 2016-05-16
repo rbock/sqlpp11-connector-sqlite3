@@ -12,6 +12,9 @@ matrix:
 
 build_script:
   - SET
+  - cd "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7"
+  - DIR /s
+  - exit
   - choco install wget
   - wget http://www.sqlite.org/2016/sqlite-uwp-3120200.vsix
   - VSIXInstaller /q /a sqlite-uwp-3120200.vsix > install-vsix.cmd
