@@ -11,10 +11,11 @@ matrix:
   fast_finish: true
 
 build_script:
-  - choco install sqlite
-  - SET
-  - cd C:\tools\Sqlite
-  - DIR /s
+  - choco install wget
+  - $vsixPath = "$($env:USERPROFILE)\sqlite-winrt81-3110100.vsix"
+  - (New-Object Net.WebClient).DownloadFile('https://visualstudiogallery.msdn.microsoft.com/1d04f82f-2fe9-4727-a2f9-a2db127ddc9a/file/111148/32/sqlite-winrt81-3110100.vsix', $vsixPath)
+  - "`"C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\VSIXInstaller.exe`" /q /a $vsixPath" | out-file ".\install-vsix.cmd" -Encoding ASCII
+  - & .\install-vsix.cmd
   - CD
   - cd ..
   - CD
