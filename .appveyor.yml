@@ -12,13 +12,12 @@ matrix:
 
 build_script:
   - SET
-  - cd "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7"
-  - DIR /s
-  - exit
   - choco install wget
-  - wget http://www.sqlite.org/2016/sqlite-uwp-3120200.vsix
-  - VSIXInstaller /q /a sqlite-uwp-3120200.vsix > install-vsix.cmd
-  - install-vsix.cmd
+  - wget http://www.sqlite.org/2016/sqlite-amalgamation-3120200.zip
+  - unzip sqlite-amalgamation-3120200.zip
+  - cd sqlite-amalgamation-3120200
+  - cl sqlite3.c -link -dll -out:sqlite3.dll
+  - cd ..
   - CD
   - cd ..
   - CD
@@ -30,7 +29,7 @@ build_script:
   - mkdir build
   - cd build
   - cmake --version
-  - cmake .. -DCMAKE_CXX_FLAGS="/EHsc /wd4503" -DCMAKE_GENERATOR_PLATFORM=x64
+  - cmake .. -DCMAKE_PREFIX_PATH="C:/projects/sqlpp11-connector-sqlite3/sqlite-amalgamation-3120200" -DCMAKE_CXX_FLAGS="/EHsc /wd4503" -DCMAKE_GENERATOR_PLATFORM=x64
   - cmake --build . --config %configuration%
   - ctest . --build-config %configuration%
 
