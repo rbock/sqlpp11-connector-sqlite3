@@ -12,7 +12,7 @@ matrix:
 
 build_script:
   - SET
-  - "C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\vcvarsall.bat" amd64
+  - C:\"Program Files (x86)"\"Microsoft Visual Studio 14.0"\VC\vcvarsall.bat amd64
   - choco install wget
   - wget http://www.sqlite.org/2016/sqlite-amalgamation-3120200.zip
   - unzip sqlite-amalgamation-3120200.zip
