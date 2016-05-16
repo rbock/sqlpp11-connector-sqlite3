@@ -17,7 +17,8 @@ build_script:
   - wget http://www.sqlite.org/2016/sqlite-amalgamation-3120200.zip
   - unzip sqlite-amalgamation-3120200.zip
   - cd sqlite-amalgamation-3120200
-  - cl sqlite3.c -link -dll -out:sqlite3.dll
+  - md lib
+  - cl sqlite3.c -link -dll -out:lib\sqlite3.dll
   - cd
   - dir
   - cd ..
