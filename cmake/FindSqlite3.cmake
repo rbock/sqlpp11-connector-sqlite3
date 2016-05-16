@@ -18,14 +18,12 @@ else()
 	file(GLOB SQLITE3_GLOB_PROGRAM86 "$ENV{SystemDrive}/Program Files (x86)/Sqlite3*/*")
 	find_path(SQLITE3_INCLUDE_DIR
 		NAMES slite3.h
-		PATH_SUFFIXES include
 		PATHS ${SQLITE3_GLOB_PROGRAM}
 					${SQLITE3_GLOB_PROGRAM86}
 		)
 
 	find_library(SQLITE3_LIBRARY
 		NAMES sqlite3
-		PATH_SUFFIXES lib
 		PATHS ${SQLITE3_GLOB_PROGRAM}
 					${SQLITE3_GLOB_PROGRAM86}
 		)
