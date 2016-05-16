@@ -11,6 +11,7 @@ matrix:
   fast_finish: true
 
 build_script:
+  - CD
   - SET
   - C:\"Program Files (x86)"\"Microsoft Visual Studio 14.0"\VC\vcvarsall.bat amd64
   - choco install wget
@@ -19,10 +20,7 @@ build_script:
   - cd sqlite-amalgamation-3120200
   - cl /c /EHsc sqlite3.c
   - lib sqlite3.obj
-  - cd
-  - dir /s
   - cd ..
-  - CD
   - cd ..
   - CD
   - git clone https://github.com/HowardHinnant/date

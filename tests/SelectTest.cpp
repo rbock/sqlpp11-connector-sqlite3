@@ -42,7 +42,7 @@
 SQLPP_ALIAS_PROVIDER(left);
 
 namespace sql = sqlpp::sqlite3;
-TabSample tab;
+const auto tab = TabSample{};
 
 void testSelectAll(sql::connection& db, size_t expectedRowCount)
 {

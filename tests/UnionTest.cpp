@@ -31,7 +31,7 @@
 #include <iostream>
 
 namespace sql = sqlpp::sqlite3;
-TabSample tab;
+const auto tab = TabSample{};
 
 int main()
 {
