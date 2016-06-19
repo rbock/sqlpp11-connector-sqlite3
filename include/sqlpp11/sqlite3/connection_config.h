@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2015, Roland Bock
+ * Copyright (c) 2013 - 2016, Roland Bock
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -49,7 +49,7 @@ namespace sqlpp
 
       bool operator==(const connection_config& other) const
       {
-        return (other.path_to_database == path_to_database and other.flags == flags and other.vfs == vfs and
+        return (other.path_to_database == path_to_database && other.flags == flags && other.vfs == vfs &&
                 other.debug == debug);
       }
 

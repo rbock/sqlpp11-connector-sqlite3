@@ -1,4 +1,4 @@
-# Copyright (c) 2013 - 2015, Roland Bock
+# Copyright (c) 2013 - 2016, Roland Bock
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
@@ -22,39 +22,52 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required(VERSION 2.6)
-
-# Cygwin does not define WIN32 and warn if not use with this flag
-set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove when CMake >= 2.8.4 is required
-
+cmake_minimum_required(VERSION 3.2)
+include(CheckCXXSymbolExists)
 project (sqlpp11-connector-sqlite3)
 enable_testing()
+set(CMAKE_CXX_STANDARD 11)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+find_package(Sqlite3 REQUIRED)
 
 message(STATUS "Using ${CMAKE_CXX_COMPILER} (compiler id: ${CMAKE_CXX_COMPILER_ID})")
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-	set(CMAKE_CXX_FLAGS "-Wall -std=c++11 -stdlib=libc++ ${CMAKE_CXX_FLAGS}")
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-	set(CMAKE_CXX_FLAGS "-Wall -std=c++11 ${CMAKE_CXX_FLAGS}")
-endif ()
 
 set(DATE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../date" CACHE FILEPATH "Path to Howard Hinnant's date library")
 
 if(NOT EXISTS ${DATE_INCLUDE_DIR}/date.h)
-  message(SEND_ERROR "Can't find date.h in ${DATE_INCLUDE_DIR}")
+	message(SEND_ERROR "Can't find file date.h")
+	message("Can't find date.h in ${DATE_INCLUDE_DIR} ")
+	message("Please either")
+	message("  - git clone https://github.com/howardhinnant/date ${DATE_INCLUDE_DIR}")
+	message("  - download and unzip a current version from https://github.com/howardhinnant/date to ${DATE_INCLUDE_DIR}")
+	message("  - set DATE_INCLUDE_DIR to point to the dir containing date.h from the date library")
+	message("")
+else()
+	message("including date from ${DATE_INCLUDE_DIR}")
 endif()
 
 set(SQLPP11_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../sqlpp11/include" CACHE FILEPATH "Path to sqlpp11 includes")
 
-if(NOT EXISTS ${SQLPP11_INCLUDE_DIR}/sqlpp11/exception.h)
-  message(SEND_ERROR "Can't find header.h in ${SQLPP11_INCLUDE_DIR}")
+if(NOT EXISTS ${SQLPP11_INCLUDE_DIR}/sqlpp11/sqlpp11.h)
+	message(SEND_ERROR "Can't find file sqlpp11/sqlpp11.h")
+	message("Can't find sqlpp11/sqlpp11.h in ${SQLPP11_INCLUDE_DIR} ")
+	message("Please either")
+	message("  - git clone https://github.com/rbock/sqlpp11 ${SQLPP11_INCLUDE_DIR}")
+	message("  - download and unzip a current version from https://github.com/rbock/sqlpp11 to ${SQLPP11_INCLUDE_DIR}")
+	message("  - set DATE_INCLUDE_DIR to point to the dir containing sqlpp11/sqlpp11.h")
+	message("")
+else()
+	message("including sqlpp11 from ${SQLPP11_INCLUDE_DIR}")
 endif()
 
-message(SEND_MESSAGE "including sqlpp11 from ${SQLPP11_INCLUDE_DIR}")
 include_directories("${SQLPP11_INCLUDE_DIR}")
 include_directories("${DATE_INCLUDE_DIR}")
+include_directories("${SQLITE3_INCLUDE_DIRS}")
 set(include_dir "${PROJECT_SOURCE_DIR}/include")
 file(GLOB_RECURSE sqlpp_headers ${include_dir}/*.h ${SQLPP11_INCLUDE_DIR}/*.h)
 include_directories(${include_dir})
+
 add_subdirectory(src)
 add_subdirectory(tests)
 

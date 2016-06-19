@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2015, Roland Bock
+ * Copyright (c) 2013 - 2016, Roland Bock
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -24,6 +24,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <ciso646>
+#include <cctype>
 #include <iostream>
 #include <vector>
 #include <date.h>  // Howard Hinnant's date library
@@ -127,7 +129,7 @@ namespace sqlpp
       if (check_digits(date_string, date_digits))
       {
         const auto ymd = ::date::year(std::atoi(date_string)) / atoi(date_string + 5) / atoi(date_string + 8);
-        *value = ::date::day_point(ymd);
+        *value = ::sqlpp::chrono::day_point(ymd);
       }
       else
       {
@@ -158,7 +160,7 @@ namespace sqlpp
       {
         const auto ymd =
             ::date::year(std::atoi(date_time_string)) / atoi(date_time_string + 5) / atoi(date_time_string + 8);
-        *value = ::date::day_point(ymd);
+        *value = ::sqlpp::chrono::day_point(ymd);
       }
       else
       {
