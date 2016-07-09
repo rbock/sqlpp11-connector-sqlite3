@@ -24,14 +24,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "detail/prepared_statement_handle.h"
 #include <ciso646>
-#include <iostream>
-#include <sstream>
-#include <string>
 #include <date.h>
+#include <iostream>
 #include <sqlpp11/exception.h>
 #include <sqlpp11/sqlite3/prepared_statement.h>
-#include "detail/prepared_statement_handle.h"
+#include <sstream>
+#include <string>
 
 #if defined(__CYGWIN__)
 #include <sstream>
@@ -176,8 +176,8 @@ namespace sqlpp
       int result;
       if (not is_null)
       {
-        const auto dp = ::date::floor<::date::days>(*value);
-        const auto time = date::make_time(::date::floor<::std::chrono::milliseconds>(*value - dp));
+        const auto dp = ::sqlpp::chrono::floor<::date::days>(*value);
+        const auto time = date::make_time(::sqlpp::chrono::floor<::std::chrono::milliseconds>(*value - dp));
         const auto ymd = ::date::year_month_day{dp};
         std::ostringstream os;  // gcc-4.9 does not support auto os = std::ostringstream{};
         os << ymd << ' ' << time;

@@ -28,13 +28,13 @@
 #define SQLPP_SQLITE3_SERIALIZER_H
 
 #include <sqlite3.h>
-#include <sqlpp11/with.h>
 #include <sqlpp11/any.h>
-#include <sqlpp11/some.h>
-#include <sqlpp11/parameter.h>
-#include <sqlpp11/pre_join.h>
 #include <sqlpp11/data_types/day_point/operand.h>
 #include <sqlpp11/data_types/time_point/operand.h>
+#include <sqlpp11/parameter.h>
+#include <sqlpp11/pre_join.h>
+#include <sqlpp11/some.h>
+#include <sqlpp11/with.h>
 
 namespace sqlpp
 {
@@ -167,7 +167,7 @@ namespace sqlpp
 
     static sqlite3::serializer_t& _(const Operand& t, sqlite3::serializer_t& context)
     {
-      const auto dp = ::date::floor<::date::days>(t._t);
+      const auto dp = ::sqlpp::chrono::floor<::date::days>(t._t);
       const auto time = ::date::make_time(t._t - dp);
       const auto ymd = ::date::year_month_day{dp};
       context << "STRFTIME('%Y-%m-%d %H:%M:%f', '" << ymd << ' ' << time << "')";
