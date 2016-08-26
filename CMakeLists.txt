@@ -28,8 +28,18 @@ project (sqlpp11-connector-sqlite3)
 enable_testing()
 set(CMAKE_CXX_STANDARD 11)
 
+option(SQLCIPHER "Build with sqlcipher" Off)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-find_package(Sqlite3 REQUIRED)
+if(SQLCIPHER )
+	find_package(SQLCipher REQUIRED)
+	set (SQLITE3_LIBRARIES "${SQLCIPHER_LIBRARIES}" )
+	set (SQLITE3_INCLUDE_DIRS "${SQLCIPHER_INCLUDE_DIR}" )
+else()
+	find_package(Sqlite3 REQUIRED)
+endif()
+
+
 
 message(STATUS "Using ${CMAKE_CXX_COMPILER} (compiler id: ${CMAKE_CXX_COMPILER_ID})")
 
