@@ -65,13 +65,16 @@ int main()
 
     sql::connection db(config);
     db.execute(R"(CREATE TABLE tab_date_time (
-		col_day_point DATE,
+			col_day_point DATE,
 			col_time_point DATETIME
 			))");
+    std::cerr << __LINE__ << std::endl;
 
     TabDateTime tab;
+    std::cerr << __LINE__ << std::endl;
 
     db(insert_into(tab).default_values());
+
     for (const auto& row : db(select(all_of(tab)).from(tab).unconditionally()))
     {
       require_equal(__LINE__, row.colDayPoint.is_null(), true);
@@ -114,6 +117,11 @@ int main()
   catch (const std::exception& e)
   {
     std::cerr << "Exception: " << e.what() << std::endl;
+    return 1;
+  }
+  catch (...)
+  {
+    std::cerr << "Unknown exception: " << std::endl;
     return 1;
   }
 
