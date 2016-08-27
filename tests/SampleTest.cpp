@@ -24,16 +24,17 @@
  */
 
 #include "TabSample.h"
-#include <sqlpp11/sqlpp11.h>
 #include <sqlpp11/custom_query.h>
 #include <sqlpp11/sqlite3/sqlite3.h>
+#include <sqlpp11/sqlpp11.h>
 
-#include <sqlite3.h>
-#include <iostream>
-#include <vector>
 #include <cassert>
+#include <iostream>
+#include <sqlite3.h>
+#include <vector>
 
 SQLPP_ALIAS_PROVIDER(left);
+SQLPP_ALIAS_PROVIDER(pragma);
 
 namespace sql = sqlpp::sqlite3;
 int main()
@@ -190,8 +191,13 @@ int main()
   assert(
       db(select(all_of(tab)).from(tab).where(tab.alpha.not_in(select(tab.alpha).from(tab).unconditionally()))).empty());
 
-  auto x = custom_query(sqlpp::verbatim("PRAGMA writeable_schema = "), true);
+  auto x = custom_query(sqlpp::verbatim("PRAGMA user_version = "), 1);
   db(x);
+  int pragmaValue =
+      db(custom_query(sqlpp::verbatim("PRAGMA user_version")).with_result_type_of(select(sqlpp::value(1).as(pragma))))
+          .front()
+          .pragma;
+  std::cerr << pragmaValue << std::endl;
 
   return 0;
 }
