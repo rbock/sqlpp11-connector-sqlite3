@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2015, Roland Bock
+ * Copyright (c) 2013 - 2016, Roland Bock
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -24,11 +24,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "detail/connection_handle.h"
+#include "detail/prepared_statement_handle.h"
 #include <iostream>
 #include <sqlpp11/exception.h>
 #include <sqlpp11/sqlite3/connection.h>
-#include "detail/prepared_statement_handle.h"
-#include "detail/connection_handle.h"
 
 namespace sqlpp
 {
@@ -106,8 +106,11 @@ namespace sqlpp
 
     size_t connection::insert_impl(const std::string& statement)
     {
+      std::cerr << __FILE__ << __LINE__ << std::endl;
       auto prepared = prepare_statement(*_handle, statement);
+      std::cerr << __FILE__ << __LINE__ << std::endl;
       execute_statement(*_handle, prepared);
+      std::cerr << __FILE__ << __LINE__ << std::endl;
 
       return sqlite3_last_insert_rowid(_handle->sqlite);
     }

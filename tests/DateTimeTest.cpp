@@ -74,6 +74,7 @@ int main()
     std::cerr << __LINE__ << std::endl;
 
     db(insert_into(tab).default_values());
+    std::cerr << __LINE__ << std::endl;
 
     for (const auto& row : db(select(all_of(tab)).from(tab).unconditionally()))
     {
