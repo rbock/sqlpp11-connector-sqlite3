@@ -70,7 +70,13 @@ int main()
 			))");
     std::cerr << __LINE__ << std::endl;
 
-    TabDateTime tab;
+    const auto tab = TabDateTime{};
+    std::cerr << __LINE__ << std::endl;
+    const auto removalQuery = remove_from(tab).unconditionally();
+    std::cerr << __LINE__ << std::endl;
+    const auto removalPrepared = db.prepare(removalQuery);
+    std::cerr << __LINE__ << std::endl;
+    const auto result = db(removalPrepared);
     std::cerr << __LINE__ << std::endl;
 
     db(remove_from(tab).unconditionally());
