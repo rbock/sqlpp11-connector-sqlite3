@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2015, Roland Bock
+ * Copyright (c) 2013 - 2016, Roland Bock
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,16 +27,16 @@
 #ifndef SQLPP_SQLITE3_CONNECTION_H
 #define SQLPP_SQLITE3_CONNECTION_H
 
-#include <string>
-#include <sstream>
+#include <sqlite3.h>
 #include <sqlpp11/connection.h>
 #include <sqlpp11/schema.h>
 #include <sqlpp11/serialize.h>
-#include <sqlpp11/type_traits.h>
-#include <sqlpp11/sqlite3/prepared_statement.h>
 #include <sqlpp11/sqlite3/bind_result.h>
 #include <sqlpp11/sqlite3/connection_config.h>
-#include <sqlite3.h>
+#include <sqlpp11/sqlite3/prepared_statement.h>
+#include <sqlpp11/type_traits.h>
+#include <sstream>
+#include <string>
 
 namespace sqlpp
 {

@@ -56,22 +56,22 @@ namespace
 namespace sql = sqlpp::sqlite3;
 int main()
 {
-  sql::connection_config config;
-  config.path_to_database = ":memory:";
-  config.flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
-  config.debug = true;
+  try
+  {
+    sql::connection_config config;
+    config.path_to_database = ":memory:";
+    config.flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
+    config.debug = true;
 
-  sql::connection db(config);
-  db.execute(R"(CREATE TABLE tab_date_time (
-		col_day_point DATE,
+    sql::connection db(config);
+    db.execute(R"(CREATE TABLE tab_date_time (
+			col_day_point DATE,
 			col_time_point DATETIME
 			))");
 
-  TabDateTime tab;
-
-  try
-  {
+    const auto tab = TabDateTime{};
     db(insert_into(tab).default_values());
+
     for (const auto& row : db(select(all_of(tab)).from(tab).unconditionally()))
     {
       require_equal(__LINE__, row.colDayPoint.is_null(), true);
@@ -114,6 +114,11 @@ int main()
   catch (const std::exception& e)
   {
     std::cerr << "Exception: " << e.what() << std::endl;
+    return 1;
+  }
+  catch (...)
+  {
+    std::cerr << "Unknown exception: " << std::endl;
     return 1;
   }
 
