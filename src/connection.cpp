@@ -106,11 +106,8 @@ namespace sqlpp
 
     size_t connection::insert_impl(const std::string& statement)
     {
-      std::cerr << __FILE__ << __LINE__ << std::endl;
       auto prepared = prepare_statement(*_handle, statement);
-      std::cerr << __FILE__ << __LINE__ << std::endl;
       execute_statement(*_handle, prepared);
-      std::cerr << __FILE__ << __LINE__ << std::endl;
 
       return sqlite3_last_insert_rowid(_handle->sqlite);
     }
