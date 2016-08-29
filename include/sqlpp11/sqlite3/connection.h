@@ -161,13 +161,8 @@ namespace sqlpp
       template <typename Insert>
       size_t insert(const Insert& i)
       {
-        std::cerr << __FILE__ << __LINE__ << std::endl;
         _context_t context(*this);
-        std::cerr << __FILE__ << __LINE__ << std::endl;
         serialize(i, context);
-        std::cerr << __FILE__ << __LINE__ << std::endl;
-        std::cerr << "Statement: " << context.str() << std::endl;
-        std::cerr << __FILE__ << __LINE__ << std::endl;
         return insert_impl(context.str());
       }
 
