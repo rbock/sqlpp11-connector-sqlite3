@@ -68,23 +68,9 @@ int main()
 			col_day_point DATE,
 			col_time_point DATETIME
 			))");
-    std::cerr << __LINE__ << std::endl;
 
     const auto tab = TabDateTime{};
-    /*
-    std::cerr << __LINE__ << std::endl;
-    const auto removalQuery = remove_from(tab).unconditionally();
-    std::cerr << __LINE__ << std::endl;
-    const auto removalPrepared = db.prepare(removalQuery);
-    std::cerr << __LINE__ << std::endl;
-    const auto result = db(removalPrepared);
-    std::cerr << __LINE__ << std::endl;
-    */
-
-    // db(remove_from(tab).unconditionally());
-    std::cerr << __LINE__ << std::endl;
     db(insert_into(tab).default_values());
-    std::cerr << __LINE__ << std::endl;
 
     for (const auto& row : db(select(all_of(tab)).from(tab).unconditionally()))
     {
