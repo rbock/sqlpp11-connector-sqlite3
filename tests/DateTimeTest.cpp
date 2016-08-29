@@ -81,7 +81,7 @@ int main()
     std::cerr << __LINE__ << std::endl;
     */
 
-    db(remove_from(tab).unconditionally());
+    // db(remove_from(tab).unconditionally());
     std::cerr << __LINE__ << std::endl;
     db(insert_into(tab).default_values());
     std::cerr << __LINE__ << std::endl;
