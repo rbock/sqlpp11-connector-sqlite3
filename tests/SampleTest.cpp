@@ -35,6 +35,7 @@
 
 SQLPP_ALIAS_PROVIDER(left);
 SQLPP_ALIAS_PROVIDER(pragma);
+SQLPP_ALIAS_PROVIDER(sub);
 
 namespace sql = sqlpp::sqlite3;
 int main()
@@ -198,6 +199,17 @@ int main()
           .front()
           .pragma;
   std::cerr << pragmaValue << std::endl;
+
+  const auto subQuery = select(tab.alpha).from(tab).unconditionally().as(sub);
+  for (const auto& row : db(select(subQuery.alpha).from(subQuery).unconditionally()))
+  {
+    std::cerr << row.alpha;
+  }
+
+  for (const auto& row : db(select(subQuery.alpha).from(tab.inner_join(subQuery).unconditionally()).unconditionally()))
+  {
+    std::cerr << row.alpha;
+  }
 
   return 0;
 }
