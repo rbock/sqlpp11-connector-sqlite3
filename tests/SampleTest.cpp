@@ -200,6 +200,7 @@ int main()
           .pragma;
   std::cerr << pragmaValue << std::endl;
 
+  // Testing sub select tables and unconditional joins
   const auto subQuery = select(tab.alpha).from(tab).unconditionally().as(sub);
   for (const auto& row : db(select(subQuery.alpha).from(subQuery).unconditionally()))
   {
