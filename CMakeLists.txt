@@ -29,6 +29,7 @@ enable_testing()
 set(CMAKE_CXX_STANDARD 11)
 
 option(SQLCIPHER "Build with sqlcipher" Off)
+option(ENABLE_TESTS "Build unit tests" On)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 if(SQLCIPHER )
@@ -79,7 +80,10 @@ file(GLOB_RECURSE sqlpp_headers ${include_dir}/*.h ${SQLPP11_INCLUDE_DIR}/*.h)
 include_directories(${include_dir})
 
 add_subdirectory(src)
-add_subdirectory(tests)
+
+if(ENABLE_TESTS)
+	add_subdirectory(tests)
+endif()
 
 install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/sqlpp11" DESTINATION include)
 
