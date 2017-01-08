@@ -70,6 +70,15 @@ namespace sqlpp
       *is_null = sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)) == SQLITE_NULL;
     }
 
+    void bind_result_t::_bind_unsigned_integral_result(size_t index, uint64_t* value, bool* is_null)
+    {
+      if (_handle->debug)
+        std::cerr << "Sqlite3 debug: binding unsigned integral result " << *value << " at index: " << index << std::endl;
+
+      *value = sqlite3_column_int64(_handle->sqlite_statement, static_cast<int>(index));
+      *is_null = sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)) == SQLITE_NULL;
+    }
+
     void bind_result_t::_bind_text_result(size_t index, const char** value, size_t* len)
     {
       if (_handle->debug)
