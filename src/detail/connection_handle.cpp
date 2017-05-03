@@ -48,7 +48,7 @@ namespace sqlpp
 #ifdef SQLITE_HAS_CODEC
         if (conf.password.size()>0)
         {
-          int ret = sqlite3_key(sqlite, conf.password.data(),conf.password.size()+1);
+          int ret = sqlite3_key(sqlite, conf.password.data(),conf.password.size());
           if (ret!=SQLITE_OK)
           {
             const std::string msg = sqlite3_errmsg(sqlite);
