@@ -51,3 +51,24 @@ __Libraries:__
   * sqlpp11-connector-sqlite3 is meant to be used with sqlpp11 (https://github.com/rbock/sqlpp11).
   * sqlpp11 requires date.h (https://github.com/HowardHinnant/date).
   * libsqlite3, version 3.7.11 or later is required to use multi-row insert. Older versions (e.g. 3.7.9) work fine otherwise.
+
+Breaking Changes:
+-----------------
+__Version 0.24, handling of password for encrypted databases:__
+
+The call to sqlite3_key used to include a null character at the end of the
+password provided in the connection_config. This prevented users from using the
+"x'HEXHEXHEX'" syntax that skips the key derivation and made interoperability
+with other tools more complex.
+
+The call has been fixed, which implies that databases created with sqlpp11 won't
+open anymore without changing user code. To adapt to this change, you must
+explicitely append a null character to the database password:
+
+```C++
+config.password.push_back('\0');
+```
+
+You can also update your database to migrate them to a password without the
+extra null character with
+[sqlite3_rekey](https://www.zetetic.net/sqlcipher/sqlcipher-api/#sqlite3_rekey).
