@@ -233,6 +233,11 @@ namespace sqlpp
       std::cerr << "Sqlite3 message:" << message << std::endl;
     }
 
+    uint64_t connection::last_insert_id() noexcept
+    {
+      return sqlite3_last_insert_rowid(_handle->sqlite);
+    }
+
     auto connection::attach(const connection_config& config, const std::string name) -> schema_t
     {
       auto prepared =

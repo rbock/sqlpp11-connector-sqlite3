@@ -86,7 +86,9 @@ int main()
   // insert
   std::cerr << "no of required columns: " << TabSample::_required_insert_columns::size::value << std::endl;
   db(insert_into(tab).default_values());
+  std::cout << "Last Insert ID: " << db.last_insert_id() << "\n";
   db(insert_into(tab).set(tab.gamma = true));
+  std::cout << "Last Insert ID: " << db.last_insert_id() << "\n";
   auto di = dynamic_insert_into(db, tab).dynamic_set(tab.gamma = true);
   di.insert_list.add(tab.beta = "");
   db(di);
