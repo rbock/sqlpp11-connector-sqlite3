@@ -34,6 +34,8 @@
 //    using namespace sqlpp::sqlite3::dyn;
 // to override the libsqlite3 functions with these function pointers
 
+#ifdef SQLPP_DYNAMIC_LOADING
+
 namespace sqlpp {
 namespace sqlite3 {
 namespace dynamic {
@@ -224,6 +226,7 @@ void init_sqlite();
 
 #undef DYNDEFINE
 
+#endif
 #endif // DYNAMIC_LIBSQLITE3_H
 
 

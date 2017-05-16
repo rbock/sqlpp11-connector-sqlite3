@@ -29,14 +29,27 @@
 #include <sqlpp11/sqlite3/connection_config.h>
 #include "connection_handle.h"
 
+#ifdef SQLPP_DYNAMIC_LOADING
+#include <sqlpp11/sqlite3/dynamic_libsqlite3.h>
+#endif
+
 namespace sqlpp
 {
   namespace sqlite3
   {
+
+#ifdef SQLPP_DYNAMIC_LOADING
+  using namespace dynamic;
+#endif
+
     namespace detail
     {
       connection_handle::connection_handle(connection_config conf) : config(conf), sqlite(nullptr)
       {
+#ifdef SQLPP_DYNAMIC_LOADING
+        init_sqlite();
+#endif
+        
         auto rc = sqlite3_open_v2(conf.path_to_database.c_str(), &sqlite, conf.flags,
                                   conf.vfs.empty() ? nullptr : conf.vfs.c_str());
         if (rc != SQLITE_OK)

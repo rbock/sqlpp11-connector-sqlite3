@@ -30,6 +30,7 @@
 #include <cassert>
 #include <dlfcn.h>
 
+#ifdef SQLPP_DYNAMIC_LOADING
 
 namespace sqlpp
 {
@@ -37,18 +38,8 @@ namespace sqlite3
 {
 namespace dynamic
 {
-
 #define DYNDEFINE(NAME) decltype( ::NAME ) * NAME
-
-#ifdef SQLPP_DYNAMIC_LOADING
-
 #define DYNLOAD(HNDL, NAME) NAME = reinterpret_cast<decltype( NAME )>( dlsym(HNDL, #NAME) )
-
-#else
-
-#define DYNLOAD(HNDL, NAME) NAME = &::NAME ; // HNDL
-
-#endif
 
 DYNDEFINE(sqlite3_open_v2);
 DYNDEFINE(sqlite3_open);
@@ -229,15 +220,11 @@ DYNDEFINE(sqlite3_unlock_notify);
 void init_sqlite() {
    void* handle = nullptr;
 
-#ifdef SQLPP_DYNAMIC_LOADING
-
    handle = dlopen("libsqlite3.so", RTLD_LAZY | RTLD_GLOBAL);
 
    if (!handle) {
       throw sqlpp::exception(std::string("Could not load lib: ").append(dlerror()));
    }
-
-#endif
 
    DYNLOAD(handle, sqlite3_libversion_number);
    //   DYNLOAD(handle, sqlite3_compileoption_used);
@@ -426,3 +413,4 @@ void init_sqlite() {
 
 #undef DYNDEFINE
 #undef DYNLOAD
+#endif

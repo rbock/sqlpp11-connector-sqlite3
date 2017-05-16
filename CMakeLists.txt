@@ -31,6 +31,8 @@ set(CMAKE_CXX_STANDARD 11)
 option(SQLCIPHER "Build with sqlcipher" Off)
 option(ENABLE_TESTS "Build unit tests" On)
 
+set(SQLPP11_DYNAMIC_LOADING Off)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 if(SQLCIPHER )
 	find_package(SQLCipher REQUIRED)
@@ -40,7 +42,12 @@ else()
 	find_package(Sqlite3 REQUIRED)
 endif()
 
-
+if (${SQLPP11_DYNAMIC_LOADING})
+   add_definitions("-DSQLPP_DYNAMIC_LOADING")
+   set(CMAKE_CXX_FLAGS "-ldl ${CMAKE_CXX_FLAGS}")
+   set (SQLITE3_LIBRARIES "")
+   message("Enabling dynamic loading of DB libraries: -DSQLPP_DYNAMIC_LOADING")
+endif ()
 
 message(STATUS "Using ${CMAKE_CXX_COMPILER} (compiler id: ${CMAKE_CXX_COMPILER_ID})")
 
