@@ -311,6 +311,9 @@ namespace sqlpp
       //! report a rollback failure (will be called by transactions in case of a rollback failure in the destructor)
       void report_rollback_failure(const std::string message) noexcept;
 
+      //! get the last inserted id
+      uint64_t last_insert_id() noexcept;
+
       ::sqlite3* native_handle();
 
       auto attach(const connection_config&, const std::string name) -> schema_t;
