@@ -30,10 +30,19 @@
 #include <sqlpp11/exception.h>
 #include <sqlpp11/sqlite3/connection.h>
 
+#ifdef SQLPP_DYNAMIC_LOADING
+#include <sqlpp11/sqlite3/dynamic_libsqlite3.h>
+#endif
+
 namespace sqlpp
 {
   namespace sqlite3
   {
+
+#ifdef SQLPP_DYNAMIC_LOADING
+  using namespace dynamic;
+#endif
+
     namespace
     {
       detail::prepared_statement_handle_t prepare_statement(detail::connection_handle& handle,
