@@ -47,7 +47,7 @@ namespace sqlpp
       connection_handle::connection_handle(connection_config conf) : config(conf), sqlite(nullptr)
       {
 #ifdef SQLPP_DYNAMIC_LOADING
-        init_sqlite();
+        init_sqlite("");
 #endif
         
         auto rc = sqlite3_open_v2(conf.path_to_database.c_str(), &sqlite, conf.flags,

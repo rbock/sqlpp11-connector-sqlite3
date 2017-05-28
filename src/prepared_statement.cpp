@@ -36,6 +36,10 @@
 #if defined(__CYGWIN__)
 #include <sstream>
 
+#ifdef SQLPP_DYNAMIC_LOADING
+#include <sqlpp11/sqlite3/dynamic_libsqlite3.h>
+#endif
+
 // Workaround because cygwin gcc does not define to_string
 namespace std
 {
