@@ -29,6 +29,7 @@
 
 #include <sqlite3.h>
 #include <sqlpp11/connection.h>
+#include <sqlpp11/transaction.h>
 #include <sqlpp11/schema.h>
 #include <sqlpp11/serialize.h>
 #include <sqlpp11/sqlite3/bind_result.h>
@@ -299,7 +300,7 @@ namespace sqlpp
       }
 
       //! start transaction
-      void start_transaction();
+      void start_transaction(sqlpp::isolation_level isolation_level = isolation_level::undefined);
 
       //! commit transaction (or throw if the transaction has been finished already)
       void commit_transaction();
