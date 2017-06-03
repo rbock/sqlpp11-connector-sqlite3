@@ -191,19 +191,26 @@ namespace sqlpp
       return t;
     }
 
-    void connection::start_transaction(isolation_level isolation)
+    void connection::start_transaction(isolation_level level)
     {
       if (_transaction_active)
       {
         throw sqlpp::exception("Sqlite3 error: Cannot have more than one open transaction per connection");
       }
-      if (isolation == sqlpp::isolation_level::undefined)
+
+      switch (level)
       {
-          // use the current default, nothing to do
-      } else if (isolation == sqlpp::isolation_level::read_uncommitted) {
-          execute("pragma read_uncommitted = true;");
-      } else {
+        case sqlpp::isolation_level::serializable:
+        case sqlpp::isolation_level::repeatable_read:
+        case sqlpp::isolation_level::read_committed:
           execute("pragma read_uncommitted = false;");
+          break;
+        case sqlpp::isolation_level::read_uncommitted:
+          execute("pragma read_uncommitted = true;");
+          break;
+        case sqlpp::isolation_level::undefined:
+          // do nothing here ...
+          break;
       }
 
       auto prepared = prepare_statement(*_handle, "BEGIN");
