@@ -299,8 +299,14 @@ namespace sqlpp
         return _prepare(t, sqlpp::prepare_check_t<_serializer_context_t, T>{});
       }
 
+      //! set the transaction isolation level for this connection
+      void set_default_isolation_level(isolation_level level);
+
+      //! get the currently active transaction isolation level
+      isolation_level get_default_isolation_level();
+
       //! start transaction
-      void start_transaction(sqlpp::isolation_level isolation_level = isolation_level::undefined);
+      void start_transaction();
 
       //! commit transaction (or throw if the transaction has been finished already)
       void commit_transaction();
@@ -318,6 +324,7 @@ namespace sqlpp
       ::sqlite3* native_handle();
 
       auto attach(const connection_config&, const std::string name) -> schema_t;
+
     };
 
     inline std::string serializer_t::escape(std::string arg)
