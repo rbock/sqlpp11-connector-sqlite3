@@ -208,9 +208,8 @@ namespace sqlpp
 
       int level = sqlite3_column_int(stmt.sqlite_statement, 0);
 
-      return level == 0 ?
-               sqlpp::isolation_level::serializable :
-               sqlpp::isolation_level::read_uncommitted;
+      return level == 0 ? sqlpp::isolation_level::serializable :
+                          sqlpp::isolation_level::read_uncommitted;
     }
 
     void connection::start_transaction()
