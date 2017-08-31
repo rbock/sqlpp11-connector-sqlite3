@@ -57,7 +57,15 @@ namespace sqlpp
       if (_handle->debug)
         std::cerr << "Sqlite3 debug: binding floating_point result " << *value << " at index: " << index << std::endl;
 
-      *value = sqlite3_column_double(_handle->sqlite_statement, static_cast<int>(index));
+      switch (sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)))
+      {
+        case (SQLITE3_TEXT):
+          *value = atof(
+              reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, static_cast<int>(index))));
+          break;
+        default:
+          *value = sqlite3_column_double(_handle->sqlite_statement, static_cast<int>(index));
+      }
       *is_null = sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)) == SQLITE_NULL;
     }
 
