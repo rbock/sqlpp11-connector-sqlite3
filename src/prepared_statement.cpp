@@ -50,10 +50,17 @@ namespace std
 }
 #endif
 
+#ifdef SQLPP_DYNAMIC_LOADING
+#include <sqlpp11/sqlite3/dynamic_libsqlite3.h>
+#endif
+
 namespace sqlpp
 {
   namespace sqlite3
   {
+#ifdef SQLPP_DYNAMIC_LOADING
+   using namespace dynamic;
+#endif
     namespace
     {
       void check_bind_result(int result, const char* const type)

@@ -30,10 +30,19 @@
 #include <sqlpp11/exception.h>
 #include <sqlpp11/sqlite3/connection.h>
 
+#ifdef SQLPP_DYNAMIC_LOADING
+#include <sqlpp11/sqlite3/dynamic_libsqlite3.h>
+#endif
+
 namespace sqlpp
 {
   namespace sqlite3
   {
+
+#ifdef SQLPP_DYNAMIC_LOADING
+  using namespace dynamic;
+#endif
+
     namespace
     {
       detail::prepared_statement_handle_t prepare_statement(detail::connection_handle& handle,
@@ -182,12 +191,34 @@ namespace sqlpp
       return t;
     }
 
+    void connection::set_default_isolation_level(isolation_level level)
+    {
+      if (level == sqlpp::isolation_level::read_uncommitted)
+      {
+        execute("pragma read_uncommitted = true");
+      } else {
+        execute("pragma read_uncommitted = false");
+      }
+    }
+
+    sqlpp::isolation_level connection::get_default_isolation_level()
+    {
+      auto stmt = prepare_statement(*_handle, "pragma read_uncommitted");
+      execute_statement(*_handle, stmt);
+
+      int level = sqlite3_column_int(stmt.sqlite_statement, 0);
+
+      return level == 0 ? sqlpp::isolation_level::serializable :
+                          sqlpp::isolation_level::read_uncommitted;
+    }
+
     void connection::start_transaction()
     {
       if (_transaction_active)
       {
         throw sqlpp::exception("Sqlite3 error: Cannot have more than one open transaction per connection");
       }
+
       auto prepared = prepare_statement(*_handle, "BEGIN");
       execute_statement(*_handle, prepared);
       _transaction_active = true;
@@ -222,6 +253,11 @@ namespace sqlpp
     void connection::report_rollback_failure(const std::string message) noexcept
     {
       std::cerr << "Sqlite3 message:" << message << std::endl;
+    }
+
+    uint64_t connection::last_insert_id() noexcept
+    {
+      return sqlite3_last_insert_rowid(_handle->sqlite);
     }
 
     auto connection::attach(const connection_config& config, const std::string name) -> schema_t

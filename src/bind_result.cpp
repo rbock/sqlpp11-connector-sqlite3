@@ -33,10 +33,18 @@
 #include <sqlpp11/sqlite3/bind_result.h>
 #include "detail/prepared_statement_handle.h"
 
+#ifdef SQLPP_DYNAMIC_LOADING
+#include <sqlpp11/sqlite3/dynamic_libsqlite3.h>
+#endif
+
 namespace sqlpp
 {
   namespace sqlite3
   {
+#ifdef SQLPP_DYNAMIC_LOADING
+    using namespace dynamic;
+#endif
+
     bind_result_t::bind_result_t(const std::shared_ptr<detail::prepared_statement_handle_t>& handle) : _handle(handle)
     {
       if (_handle and _handle->debug)

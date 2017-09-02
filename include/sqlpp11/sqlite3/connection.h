@@ -29,6 +29,7 @@
 
 #include <sqlite3.h>
 #include <sqlpp11/connection.h>
+#include <sqlpp11/transaction.h>
 #include <sqlpp11/schema.h>
 #include <sqlpp11/serialize.h>
 #include <sqlpp11/sqlite3/bind_result.h>
@@ -298,6 +299,12 @@ namespace sqlpp
         return _prepare(t, sqlpp::prepare_check_t<_serializer_context_t, T>{});
       }
 
+      //! set the transaction isolation level for this connection
+      void set_default_isolation_level(isolation_level level);
+
+      //! get the currently active transaction isolation level
+      isolation_level get_default_isolation_level();
+
       //! start transaction
       void start_transaction();
 
@@ -311,9 +318,13 @@ namespace sqlpp
       //! report a rollback failure (will be called by transactions in case of a rollback failure in the destructor)
       void report_rollback_failure(const std::string message) noexcept;
 
+      //! get the last inserted id
+      uint64_t last_insert_id() noexcept;
+
       ::sqlite3* native_handle();
 
       auto attach(const connection_config&, const std::string name) -> schema_t;
+
     };
 
     inline std::string serializer_t::escape(std::string arg)

@@ -28,8 +28,16 @@ project (sqlpp11-connector-sqlite3)
 enable_testing()
 set(CMAKE_CXX_STANDARD 11)
 
+## Setup custom location for SQlite build if needed
+# set(SQLITE3_LIBRARY "../../sqlite-amalgamation-3120200/sqlite3")
+# set(SQLITE3_INCLUDE_DIR "sqlite-amalgamation-3120200")
+
 option(SQLCIPHER "Build with sqlcipher" Off)
 option(ENABLE_TESTS "Build unit tests" On)
+
+if (NOT DEFINED SQLPP11_DYNAMIC_LOADING)
+   set(SQLPP11_DYNAMIC_LOADING Off)
+endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 if(SQLCIPHER )
@@ -39,8 +47,6 @@ if(SQLCIPHER )
 else()
 	find_package(Sqlite3 REQUIRED)
 endif()
-
-
 
 message(STATUS "Using ${CMAKE_CXX_COMPILER} (compiler id: ${CMAKE_CXX_COMPILER_ID})")
 
