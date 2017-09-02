@@ -41,9 +41,8 @@ namespace sqlpp
 {
   namespace sqlite3
   {
-
 #ifdef SQLPP_DYNAMIC_LOADING
-   using namespace dynamic;
+    using namespace dynamic;
 #endif
 
     bind_result_t::bind_result_t(const std::shared_ptr<detail::prepared_statement_handle_t>& handle) : _handle(handle)
@@ -66,7 +65,15 @@ namespace sqlpp
       if (_handle->debug)
         std::cerr << "Sqlite3 debug: binding floating_point result " << *value << " at index: " << index << std::endl;
 
-      *value = sqlite3_column_double(_handle->sqlite_statement, static_cast<int>(index));
+      switch (sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)))
+      {
+        case (SQLITE3_TEXT):
+          *value = atof(
+              reinterpret_cast<const char*>(sqlite3_column_text(_handle->sqlite_statement, static_cast<int>(index))));
+          break;
+        default:
+          *value = sqlite3_column_double(_handle->sqlite_statement, static_cast<int>(index));
+      }
       *is_null = sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)) == SQLITE_NULL;
     }
 

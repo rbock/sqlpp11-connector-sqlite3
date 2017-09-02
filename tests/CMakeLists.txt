@@ -18,6 +18,7 @@ build_and_run(AttachTest)
 build_and_run(DynamicSelectTest)
 build_and_run(AutoIncrementTest)
 build_and_run(TransactionTest)
+build_and_run(FloatingPointTest)
 
 # the dynamic loading test needs the extra option "SQLPP_DYNAMIC_LOADING" and does NOT link the sqlite libs
 get_filename_component(SQLITE3_LIB_FILE ${SQLITE3_LIBRARIES} NAME)
