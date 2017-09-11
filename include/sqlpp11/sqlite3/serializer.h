@@ -69,7 +69,7 @@ namespace sqlpp
     using _serialize_check = consistent_t;
     using T = parameter_t<ValueType, NameType>;
 
-    static sqlite3::serializer_t& _(const T& t, sqlite3::serializer_t& context)
+    static sqlite3::serializer_t& _(const T& /*t*/, sqlite3::serializer_t& context)
     {
       context << "?" << context.count();
       context.pop_count();
