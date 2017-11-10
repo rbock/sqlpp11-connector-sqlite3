@@ -136,7 +136,7 @@ int main()
 
   std::cerr << "--------------------------------------" << std::endl;
   auto tx = start_transaction(db);
-  if (const auto& row = *db(select(all_of(tab), select(max(tab.alpha)).from(tab)).from(tab).unconditionally()).begin())
+  for (const auto& row : db(select(all_of(tab), select(max(tab.alpha)).from(tab)).from(tab).unconditionally()))
   {
     int x = row.alpha;
     int a = row.max;
