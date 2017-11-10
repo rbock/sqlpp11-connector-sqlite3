@@ -2,7 +2,7 @@
 # Once done this will define
 #
 #  SQLCIPHER_FOUND - system has SqlCipher
-#  SQLCIPHER_INCLUDE_DIR - the SqlCipher include directory
+#  SQLCIPHER_INCLUDE_DIRS - the SqlCipher include directory
 #  SQLCIPHER_LIBRARIES - Link these to use SqlCipher
 #  SQLCIPHER_DEFINITIONS - Compiler switches required for using SqlCipher
 # Redistribution and use is allowed according to the terms of the BSD license.
@@ -43,7 +43,8 @@ if( NOT WIN32 )
   set(SQLCIPHER_DEFINITIONS ${PC_SQLCIPHER_CFLAGS_OTHER})
 endif( NOT WIN32 )
 
-find_path(SQLCIPHER_INCLUDE_DIR NAMES sqlcipher/sqlite3.h
+find_path(SQLCIPHER_INCLUDE_DIRS NAMES sqlite3.h
+  PATH_SUFFIXES sqlcipher
   PATHS
   ${PC_SQLCIPHER_INCLUDEDIR}
   ${PC_SQLCIPHER_INCLUDE_DIRS}
@@ -57,10 +58,11 @@ find_library(SQLCIPHER_LIBRARIES NAMES sqlcipher
 )
 
 add_definitions(-DSQLITE_HAS_CODEC)
+add_definitions(-DSQLPP_USE_SQLCIPHER)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(SqlCipher DEFAULT_MSG SQLCIPHER_INCLUDE_DIR SQLCIPHER_LIBRARIES )
+find_package_handle_standard_args(SqlCipher DEFAULT_MSG SQLCIPHER_INCLUDE_DIRS SQLCIPHER_LIBRARIES )
 
-# show the SQLCIPHER_INCLUDE_DIR and SQLCIPHER_LIBRARIES variables only in the advanced view
-mark_as_advanced(SQLCIPHER_INCLUDE_DIR SQLCIPHER_LIBRARIES )
+# show the SQLCIPHER_INCLUDE_DIRS and SQLCIPHER_LIBRARIES variables only in the advanced view
+mark_as_advanced(SQLCIPHER_INCLUDE_DIRS SQLCIPHER_LIBRARIES )
 

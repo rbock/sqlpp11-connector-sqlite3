@@ -25,16 +25,20 @@
 
 #include "TabSample.h"
 #include <sqlpp11/alias_provider.h>
-#include <sqlpp11/select.h>
-#include <sqlpp11/insert.h>
-#include <sqlpp11/update.h>
-#include <sqlpp11/remove.h>
 #include <sqlpp11/functions.h>
-#include <sqlpp11/transaction.h>
+#include <sqlpp11/insert.h>
 #include <sqlpp11/multi_column.h>
+#include <sqlpp11/remove.h>
+#include <sqlpp11/select.h>
 #include <sqlpp11/sqlite3/connection.h>
+#include <sqlpp11/transaction.h>
+#include <sqlpp11/update.h>
 
+#ifdef SQLPP_USE_SQLCIPHER
+#include <sqlcipher/sqlite3.h>
+#else
 #include <sqlite3.h>
+#endif
 #include <iostream>
 #include <vector>
 

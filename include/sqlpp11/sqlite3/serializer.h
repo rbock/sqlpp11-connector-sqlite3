@@ -27,7 +27,11 @@
 #ifndef SQLPP_SQLITE3_SERIALIZER_H
 #define SQLPP_SQLITE3_SERIALIZER_H
 
+#ifdef SQLPP_USE_SQLCIPHER
+#include <sqlcipher/sqlite3.h>
+#else
 #include <sqlite3.h>
+#endif
 #include <sqlpp11/any.h>
 #include <sqlpp11/data_types/day_point/operand.h>
 #include <sqlpp11/data_types/time_point/operand.h>
@@ -188,6 +192,6 @@ namespace sqlpp
       return context;
     }
   };
-}
+}  // namespace sqlpp
 
 #endif

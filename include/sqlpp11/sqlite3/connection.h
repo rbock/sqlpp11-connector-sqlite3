@@ -27,14 +27,18 @@
 #ifndef SQLPP_SQLITE3_CONNECTION_H
 #define SQLPP_SQLITE3_CONNECTION_H
 
+#ifdef SQLPP_USE_SQLCIPHER
+#include <sqlcipher/sqlite3.h>
+#else
 #include <sqlite3.h>
+#endif
 #include <sqlpp11/connection.h>
-#include <sqlpp11/transaction.h>
 #include <sqlpp11/schema.h>
 #include <sqlpp11/serialize.h>
 #include <sqlpp11/sqlite3/bind_result.h>
 #include <sqlpp11/sqlite3/connection_config.h>
 #include <sqlpp11/sqlite3/prepared_statement.h>
+#include <sqlpp11/transaction.h>
 #include <sqlpp11/type_traits.h>
 #include <sstream>
 #include <string>
@@ -324,15 +328,14 @@ namespace sqlpp
       ::sqlite3* native_handle();
 
       auto attach(const connection_config&, const std::string name) -> schema_t;
-
     };
 
     inline std::string serializer_t::escape(std::string arg)
     {
       return _db.escape(arg);
     }
-  }
-}
+  }  // namespace sqlite3
+}  // namespace sqlpp
 
 #include <sqlpp11/sqlite3/serializer.h>
 

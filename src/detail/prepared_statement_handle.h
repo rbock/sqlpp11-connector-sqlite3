@@ -27,7 +27,11 @@
 #ifndef SQLPP_SQLITE3_DETAIL_PREPARED_STATEMENT_HANDLE_H
 #define SQLPP_SQLITE3_DETAIL_PREPARED_STATEMENT_HANDLE_H
 
+#ifdef SQLPP_USE_SQLCIPHER
+#include <sqlcipher/sqlite3.h>
+#else
 #include <sqlite3.h>
+#endif
 
 #ifdef SQLPP_DYNAMIC_LOADING
 #include <sqlpp11/sqlite3/dynamic_libsqlite3.h>
@@ -38,7 +42,7 @@ namespace sqlpp
   namespace sqlite3
   {
 #ifdef SQLPP_DYNAMIC_LOADING
-   using namespace dynamic;
+    using namespace dynamic;
 #endif
     namespace detail
     {
@@ -85,8 +89,8 @@ namespace sqlpp
           return !sqlite_statement;
         }
       };
-    }
-  }
-}
+    }  // namespace detail
+  }    // namespace sqlite3
+}  // namespace sqlpp
 
 #endif

@@ -23,11 +23,15 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <sqlpp11/sqlpp11.h>
 #include <sqlpp11/sqlite3/connection.h>
+#include <sqlpp11/sqlpp11.h>
 
 #include "FpSample.h"
+#ifdef SQLPP_USE_SQLCIPHER
+#include <sqlcipher/sqlite3.h>
+#else
 #include <sqlite3.h>
+#endif
 #include <iostream>
 
 namespace sql = sqlpp::sqlite3;
