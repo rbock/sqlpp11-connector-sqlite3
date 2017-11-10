@@ -44,7 +44,7 @@
 
 #include <sqlpp11/sqlite3/dynamic_libsqlite3.h>
 
-SQLPP_ALIAS_PROVIDER(left);
+SQLPP_ALIAS_PROVIDER(left)
 
 namespace sql = sqlpp::sqlite3;
 int main()

@@ -45,9 +45,8 @@
 #include <vector>
 
 namespace sql = sqlpp::sqlite3;
-const auto tab = TabSample{};
 
-SQLPP_ALIAS_PROVIDER(pragma);
+SQLPP_ALIAS_PROVIDER(pragma)
 
 int main()
 {

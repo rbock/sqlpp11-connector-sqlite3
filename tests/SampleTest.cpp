@@ -37,9 +37,9 @@
 #include <iostream>
 #include <vector>
 
-SQLPP_ALIAS_PROVIDER(left);
-SQLPP_ALIAS_PROVIDER(pragma);
-SQLPP_ALIAS_PROVIDER(sub);
+SQLPP_ALIAS_PROVIDER(left)
+SQLPP_ALIAS_PROVIDER(pragma)
+SQLPP_ALIAS_PROVIDER(sub)
 
 namespace sql = sqlpp::sqlite3;
 int main()

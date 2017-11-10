@@ -42,7 +42,7 @@
 #include <iostream>
 #include <vector>
 
-SQLPP_ALIAS_PROVIDER(left);
+SQLPP_ALIAS_PROVIDER(left)
 
 namespace sql = sqlpp::sqlite3;
 int main()
