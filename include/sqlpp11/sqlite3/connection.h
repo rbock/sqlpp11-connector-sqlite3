@@ -40,8 +40,14 @@
 #include <sqlpp11/sqlite3/prepared_statement.h>
 #include <sqlpp11/transaction.h>
 #include <sqlpp11/type_traits.h>
+#include <sqlpp11/sqlite3/export.h>
 #include <sstream>
 #include <string>
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
 
 namespace sqlpp
 {
@@ -88,7 +94,7 @@ namespace sqlpp
       size_t _count;
     };
 
-    class connection : public sqlpp::connection
+    class SQLPP11_SQLITE3_EXPORT connection : public sqlpp::connection
     {
       std::unique_ptr<detail::connection_handle> _handle;
       bool _transaction_active = false;
@@ -336,6 +342,10 @@ namespace sqlpp
     }
   }  // namespace sqlite3
 }  // namespace sqlpp
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #include <sqlpp11/sqlite3/serializer.h>
 

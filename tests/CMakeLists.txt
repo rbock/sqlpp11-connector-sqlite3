@@ -1,3 +1,5 @@
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
+
 macro (build_and_run arg)
 	# Add headers to sources to enable file browsing in IDEs
 	add_executable(Sqlpp11Sqlite3${arg} ${arg}.cpp ${sqlpp_headers})
@@ -6,7 +8,7 @@ macro (build_and_run arg)
 	if (NOT MSVC)
 		target_compile_options(Sqlpp11Sqlite3${arg} INTERFACE -Wall -Wextra -pedantic)
 	endif ()
-	add_test(Sqlpp11Sqlite3${arg} Sqlpp11Sqlite3${arg})
+	add_test(NAME Sqlpp11Sqlite3${arg} COMMAND Sqlpp11Sqlite3${arg})
 endmacro ()
 
 build_and_run(DateTimeTest)
@@ -28,4 +30,4 @@ if (NOT MSVC)
     target_link_libraries(Sqlpp11Sqlite3DynamicLoadingTest dl)
     target_compile_options(Sqlpp11Sqlite3DynamicLoadingTest INTERFACE -Wall -Wextra -pedantic)
 endif ()
-add_test(Sqlpp11Sqlite3DynamicLoadingTest Sqlpp11Sqlite3DynamicLoadingTest)
+add_test(NAME Sqlpp11Sqlite3DynamicLoadingTest COMMAND Sqlpp11Sqlite3DynamicLoadingTest)

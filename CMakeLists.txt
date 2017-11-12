@@ -34,6 +34,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 option(SQLCIPHER "Build with sqlcipher" Off)
 option(ENABLE_TESTS "Build unit tests" On)
+option(BUILD_SHARED_LIBS "Build shared libraries" Off)
 
 if (NOT DEFINED SQLPP11_DYNAMIC_LOADING)
    set(SQLPP11_DYNAMIC_LOADING Off)
