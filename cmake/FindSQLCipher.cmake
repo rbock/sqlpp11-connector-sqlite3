@@ -1,10 +1,23 @@
-# - Try to find SqlCipher
+# - Try to find SQLCipher
 # Once done this will define
 #
-#  SQLCIPHER_FOUND - system has SqlCipher
-#  SQLCIPHER_INCLUDE_DIRS - the SqlCipher include directory
-#  SQLCIPHER_LIBRARIES - Link these to use SqlCipher
-#  SQLCIPHER_DEFINITIONS - Compiler switches required for using SqlCipher
+#  SQLCIPHER_FOUND - system has SQLCipher
+#  SQLCIPHER_INCLUDE_DIR - the SQLCipher include directory
+#  SQLCIPHER_LIBRARIES - Link these to use SQLCipher
+#  SQLCIPHER_DEFINITIONS - Compiler switches required for using SQLCipher
+#  SQLCIPHER_VERSION - This is set to major.minor.revision (e.g. 3.4.1)
+#
+# Hints to find SQLCipher
+#
+#  Set SQLCIPHER_ROOT_DIR to the root directory of a SQLCipher installation
+#
+# The following variables may be set
+#
+#  SQLCIPHER_USE_OPENSSL - Set to ON/OFF to specify whether to search and use OpenSSL.
+#                          Default is OFF.
+#  SQLCIPHER_OPENSSL_USE_ZLIB - Set to ON/OFF to specify whether to search and use Zlib in OpenSSL
+#                               Default is OFF.
+
 # Redistribution and use is allowed according to the terms of the BSD license.
 
 # Copyright (c) 2008, Gilles Caulier, <caulier.gilles@gmail.com>
@@ -43,25 +56,60 @@ if( NOT WIN32 )
   set(SQLCIPHER_DEFINITIONS ${PC_SQLCIPHER_CFLAGS_OTHER})
 endif( NOT WIN32 )
 
-find_path(SQLCIPHER_INCLUDE_DIRS NAMES sqlcipher/sqlite3.h
+find_path(SQLCIPHER_INCLUDE_DIR NAMES sqlcipher/sqlite3.h
   PATHS
+  ${SQLCIPHER_ROOT_DIR}
   ${PC_SQLCIPHER_INCLUDEDIR}
   ${PC_SQLCIPHER_INCLUDE_DIRS}
   ${CMAKE_INCLUDE_PATH}
+  PATH_SUFFIXES "include"
 )
 
-find_library(SQLCIPHER_LIBRARIES NAMES sqlcipher
+find_library(SQLCIPHER_LIBRARY NAMES sqlcipher
   PATHS
   ${PC_SQLCIPHER_LIBDIR}
   ${PC_SQLCIPHER_LIBRARY_DIRS}
+  ${SQLCIPHER_ROOT_DIR}
+  PATH_SUFFIXES "lib"
 )
 
-add_definitions(-DSQLITE_HAS_CODEC)
-add_definitions(-DSQLPP_USE_SQLCIPHER)
+set(SQLCIPHER_LIBRARIES ${SQLCIPHER_LIBRARY})
+set(SQLCIPHER_INCLUDE_DIRS ${SQLCIPHER_INCLUDE_DIR})
+
+if (SQLCIPHER_USE_OPENSSL)
+    find_package(OpenSSL REQUIRED COMPONENTS Crypto)
+    if (SQLCIPHER_OPENSSL_USE_ZLIB)
+        find_package(ZLIB REQUIRED)
+        # Official FindOpenSSL.cmake does not support Zlib
+        set_target_properties(OpenSSL::Crypto PROPERTIES INTERFACE_LINK_LIBRARIES ZLIB::ZLIB)
+    endif()
+
+    list(APPEND SQLCIPHER_LIBRARIES ${OPENSSL_LIBRARIES})
+    list(APPEND SQLCIPHER_INCLUDE_DIRS ${OPENSSL_INCLUDE_DIRS})
+endif()
+
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(SqlCipher DEFAULT_MSG SQLCIPHER_INCLUDE_DIRS SQLCIPHER_LIBRARIES )
 
-# show the SQLCIPHER_INCLUDE_DIRS and SQLCIPHER_LIBRARIES variables only in the advanced view
-mark_as_advanced(SQLCIPHER_INCLUDE_DIRS SQLCIPHER_LIBRARIES )
+find_package_handle_standard_args(SQLCipher
+    DEFAULT_MSG SQLCIPHER_INCLUDE_DIR SQLCIPHER_LIBRARY)
 
+# show the SQLCIPHER_INCLUDE_DIR and SQLCIPHER_LIBRARIES variables only in the advanced view
+mark_as_advanced(SQLCIPHER_INCLUDE_DIR SQLCIPHER_LIBRARY)
+
+if (NOT TARGET SQLCipher::SQLCipher)
+    add_library(SQLCipher::SQLCipher UNKNOWN IMPORTED)
+
+    set_property(TARGET SQLCipher::SQLCipher PROPERTY INTERFACE_COMPILE_DEFINITIONS SQLITE_HAS_CODEC)
+    set_property(TARGET SQLCipher::SQLCipher APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS "SQLITE_TEMPSTORE=2")
+    set_target_properties(SQLCipher::SQLCipher PROPERTIES
+                          INTERFACE_INCLUDE_DIRECTORIES "${SQLCIPHER_INCLUDE_DIRS}"
+                          IMPORTED_INTERFACE_LINK_LANGUAGES "C"
+                          IMPORTED_LOCATION "${SQLCIPHER_LIBRARY}")
+
+    if (SQLCIPHER_USE_OPENSSL)
+        set_target_properties(SQLCipher::SQLCipher PROPERTIES
+                              INTERFACE_LINK_LIBRARIES OpenSSL::Crypto)
+        set_property(TARGET SQLCipher::SQLCipher APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS "SQLCIPHER_CRYPTO_OPENSSL")
+    endif()
+endif()
