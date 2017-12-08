@@ -35,6 +35,7 @@
 #include <sqlpp11/multi_column.h>
 #include <sqlpp11/sqlite3/connection.h>
 
+
 #include <sqlite3.h>
 #include <iostream>
 #include <vector>
@@ -82,9 +83,9 @@ int main()
   testSelectAll(db, 0);
   db(insert_into(tab).default_values());
   testSelectAll(db, 1);
-  db(insert_into(tab).set(tab.gamma = true, tab.beta = "cheesecake"));
+  db(insert_into(tab).set(tab.gamma = true, tab.beta = " cheesecake"));
   testSelectAll(db, 2);
-  db(insert_into(tab).set(tab.gamma = true, tab.beta = "cheesecake"));
+  db(insert_into(tab).set(tab.gamma = true, tab.beta = " cheesecake"));
   testSelectAll(db, 3);
 
   // selecting two multicolumns
@@ -115,6 +116,9 @@ int main()
   db(select(max(tab.alpha)).from(tab).unconditionally());
   db(select(min(tab.alpha)).from(tab).unconditionally());
   db(select(exists(select(tab.alpha).from(tab).where(tab.alpha > 7))).from(tab).unconditionally());
+  db(select(trim(tab.beta)).from(tab).unconditionally());
+
+
   // db(select(not_exists(select(tab.alpha).from(tab).where(tab.alpha > 7))).from(tab));
   // db(select(all_of(tab)).from(tab).where(tab.alpha == any(select(tab.alpha).from(tab).where(tab.alpha < 3))));
 
@@ -136,12 +140,34 @@ int main()
 
   std::cerr << "--------------------------------------" << std::endl;
   auto tx = start_transaction(db);
-  for (const auto& row : db(select(all_of(tab), select(max(tab.alpha)).from(tab)).from(tab).unconditionally()))
+  if (const auto& row = *db(select(all_of(tab), select(max(tab.alpha)).from(tab)).from(tab).unconditionally()).begin())
   {
     int x = row.alpha;
     int a = row.max;
     std::cout << ">>>" << x << ", " << a << std::endl;
   }
+  for (const auto& row :
+	  db(select(tab.alpha, tab.beta, tab.gamma, trim(tab.beta), multi_column(tab.alpha, tab.beta, tab.gamma).as(left),
+		  multi_column(all_of(tab)).as(tab))
+		  .from(tab)
+		  .unconditionally()))
+  {
+	  std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma
+		  << ", row.trim: " << row.trim
+		  << std::endl;
+	  std::cerr << ">>> row.left.alpha: " << row.left.alpha << ", row.left.beta: " << row.left.beta
+		  << ", row.left.gamma: " << row.left.gamma << std::endl;
+	  std::cerr << ">>> row.tabSample.alpha: " << row.tabSample.alpha << ", row.tabSample.beta: " << row.tabSample.beta
+		  << ", row.tabSample.gamma: " << row.tabSample.gamma << std::endl;
+  };
+
+  if (const auto& row = *db(select(all_of(tab), select(trim(tab.beta)).from(tab)).from(tab).unconditionally()).begin())
+  {
+	  int x = row.alpha;
+	  std::string a = row.trim;
+	  std::cout << ">>>" << x << ", " << a << std::endl;
+  }
+
   tx.commit();
   std::cerr << "--------------------------------------" << std::endl;
 
