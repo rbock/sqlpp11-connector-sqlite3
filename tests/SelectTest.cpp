@@ -72,6 +72,26 @@ void testSelectAll(sql::connection& db, size_t expectedRowCount)
   std::cerr << "--------------------------------------" << std::endl;
 }
 
+namespace string_util
+{
+	std::string& ltrim(std::string& str, const std::string& chars = "\t\n\v\f\r ")
+	{
+		str.erase(0, str.find_first_not_of(chars));
+		return str;
+	}
+
+	std::string& rtrim(std::string& str, const std::string& chars = "\t\n\v\f\r ")
+	{
+		str.erase(str.find_last_not_of(chars) + 1);
+		return str;
+	}
+
+	std::string& trim(std::string& str, const std::string& chars = "\t\n\v\f\r ")
+	{
+		return ltrim(rtrim(str, chars), chars);
+	}
+}
+
 int main()
 {
   sql::connection db({":memory:", SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, "", true});
@@ -84,9 +104,9 @@ int main()
   testSelectAll(db, 0);
   db(insert_into(tab).default_values());
   testSelectAll(db, 1);
-  db(insert_into(tab).set(tab.gamma = true, tab.beta = " cheesecake"));
+  db(insert_into(tab).set(tab.gamma = true, tab.beta = " cheesecake "));
   testSelectAll(db, 2);
-  db(insert_into(tab).set(tab.gamma = true, tab.beta = " cheesecake"));
+  db(insert_into(tab).set(tab.gamma = true, tab.beta = " cheesecake "));
   testSelectAll(db, 3);
 
   // selecting two multicolumns
@@ -154,8 +174,11 @@ int main()
 		  .unconditionally()))
   {
 	  std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma
-		  << ", row.trim: " << row.trim
+		  << ", row.trim: '" << row.trim << "'"
 		  << std::endl;
+	  // check trim
+	  assert(string_util::trim(row.beta.value()) == row.trim.value());
+	  // end
 	  std::cerr << ">>> row.left.alpha: " << row.left.alpha << ", row.left.beta: " << row.left.beta
 		  << ", row.left.gamma: " << row.left.gamma << std::endl;
 	  std::cerr << ">>> row.tabSample.alpha: " << row.tabSample.alpha << ", row.tabSample.beta: " << row.tabSample.beta
