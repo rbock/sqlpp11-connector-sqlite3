@@ -36,7 +36,6 @@
 #include <sqlpp11/transaction.h>
 #include <sqlpp11/update.h>
 
-
 #include <iostream>
 #include <vector>
 
@@ -73,22 +72,22 @@ void testSelectAll(sql::connection& db, size_t expectedRowCount)
 
 namespace string_util
 {
-	std::string& ltrim(std::string& str, const std::string& chars = "\t\n\v\f\r ")
-	{
-		str.erase(0, str.find_first_not_of(chars));
-		return str;
-	}
+  std::string ltrim(std::string str, const std::string& chars = "\t\n\v\f\r ")
+  {
+    str.erase(0, str.find_first_not_of(chars));
+    return str;
+  }
 
-	std::string& rtrim(std::string& str, const std::string& chars = "\t\n\v\f\r ")
-	{
-		str.erase(str.find_last_not_of(chars) + 1);
-		return str;
-	}
+  std::string rtrim(std::string str, const std::string& chars = "\t\n\v\f\r ")
+  {
+    str.erase(str.find_last_not_of(chars) + 1);
+    return str;
+  }
 
-	std::string& trim(std::string& str, const std::string& chars = "\t\n\v\f\r ")
-	{
-		return ltrim(rtrim(str, chars), chars);
-	}
+  std::string trim(std::string str, const std::string& chars = "\t\n\v\f\r ")
+  {
+    return ltrim(rtrim(str, chars), chars);
+  }
 }
 
 int main()
@@ -138,7 +137,6 @@ int main()
   db(select(exists(select(tab.alpha).from(tab).where(tab.alpha > 7))).from(tab).unconditionally());
   db(select(trim(tab.beta)).from(tab).unconditionally());
 
-
   // db(select(not_exists(select(tab.alpha).from(tab).where(tab.alpha > 7))).from(tab));
   // db(select(all_of(tab)).from(tab).where(tab.alpha == any(select(tab.alpha).from(tab).where(tab.alpha < 3))));
 
@@ -167,28 +165,27 @@ int main()
     std::cout << ">>>" << x << ", " << a << std::endl;
   }
   for (const auto& row :
-	  db(select(tab.alpha, tab.beta, tab.gamma, trim(tab.beta), multi_column(tab.alpha, tab.beta, tab.gamma).as(left),
-		  multi_column(all_of(tab)).as(tab))
-		  .from(tab)
-		  .unconditionally()))
+       db(select(tab.alpha, tab.beta, tab.gamma, trim(tab.beta), multi_column(tab.alpha, tab.beta, tab.gamma).as(left),
+                 multi_column(all_of(tab)).as(tab))
+              .from(tab)
+              .unconditionally()))
   {
-	  std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma
-		  << ", row.trim: '" << row.trim << "'"
-		  << std::endl;
-	  // check trim
-	  assert(string_util::trim(row.beta.value()) == row.trim.value());
-	  // end
-	  std::cerr << ">>> row.left.alpha: " << row.left.alpha << ", row.left.beta: " << row.left.beta
-		  << ", row.left.gamma: " << row.left.gamma << std::endl;
-	  std::cerr << ">>> row.tabSample.alpha: " << row.tabSample.alpha << ", row.tabSample.beta: " << row.tabSample.beta
-		  << ", row.tabSample.gamma: " << row.tabSample.gamma << std::endl;
+    std::cerr << ">>> row.alpha: " << row.alpha << ", row.beta: " << row.beta << ", row.gamma: " << row.gamma
+              << ", row.trim: '" << row.trim << "'" << std::endl;
+    // check trim
+    assert(string_util::trim(row.beta.value()) == row.trim.value());
+    // end
+    std::cerr << ">>> row.left.alpha: " << row.left.alpha << ", row.left.beta: " << row.left.beta
+              << ", row.left.gamma: " << row.left.gamma << std::endl;
+    std::cerr << ">>> row.tabSample.alpha: " << row.tabSample.alpha << ", row.tabSample.beta: " << row.tabSample.beta
+              << ", row.tabSample.gamma: " << row.tabSample.gamma << std::endl;
   };
 
   if (const auto& row = *db(select(all_of(tab), select(trim(tab.beta)).from(tab)).from(tab).unconditionally()).begin())
   {
-	  int x = row.alpha;
-	  std::string a = row.trim;
-	  std::cout << ">>>" << x << ", " << a << std::endl;
+    int x = row.alpha;
+    std::string a = row.trim;
+    std::cout << ">>>" << x << ", " << a << std::endl;
   }
 
   tx.commit();
