@@ -28,10 +28,6 @@ project (sqlpp11-connector-sqlite3)
 enable_testing()
 set(CMAKE_CXX_STANDARD 11)
 
-## Setup custom location for SQlite build if needed
-# set(SQLITE3_LIBRARY "../../sqlite-amalgamation-3120200/sqlite3")
-# set(SQLITE3_INCLUDE_DIR "sqlite-amalgamation-3120200")
-
 option(ENABLE_TESTS "Build unit tests" On)
 option(BUILD_SHARED_LIBS "Build shared libraries" Off)
 option(SQLCIPHER "Build with SQLCipher" Off)

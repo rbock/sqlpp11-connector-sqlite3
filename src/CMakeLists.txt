@@ -35,6 +35,7 @@ if (SQLPP_DYNAMIC_LOADING)
                                PUBLIC
                                ${SQLPP11_INCLUDE_DIR}
                                ${HinnantDate_INCLUDE_DIR}
+															 ${SQLITE3_INCLUDE_DIRS}
                                $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
                                $<INSTALL_INTERFACE:include>)
 endif()
@@ -44,6 +45,7 @@ target_include_directories(sqlpp11-connector-sqlite3
                            PUBLIC
                            ${SQLPP11_INCLUDE_DIR}
                            ${HinnantDate_INCLUDE_DIR}
+													 ${SQLITE3_INCLUDE_DIRS}
                            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
                            $<INSTALL_INTERFACE:include>)
 

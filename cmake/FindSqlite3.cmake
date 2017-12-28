@@ -27,6 +27,7 @@ else()
 		PATHS ${SQLITE3_GLOB_PROGRAM}
 					${SQLITE3_GLOB_PROGRAM86}
 		)
+
 endif()
 
 include(FindPackageHandleStandardArgs)
@@ -42,3 +43,6 @@ mark_as_advanced(
 
 set(SQLITE3_INCLUDE_DIRS ${SQLITE3_INCLUDE_DIR})
 set(SQLITE3_LIBRARIES ${SQLITE3_LIBRARY})
+
+message("SQLITE3_INCLUDE_DIRS: " ${SQLITE3_INCLUDE_DIRS})
+message("SQLITE3_LIBRARIES: " ${SQLITE3_LIBRARIES})
