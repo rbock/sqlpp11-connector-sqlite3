@@ -26,7 +26,11 @@
 #ifndef DYNAMIC_LIBSQLITE3_H
 #define DYNAMIC_LIBSQLITE3_H
 
+#ifdef SQLPP_USE_SQLCIPHER
+#include <sqlcipher/sqlite3.h>
+#else
 #include <sqlite3.h>
+#endif
 #include <stdexcept>
 
 // namespace for internal sqlite function wrappers - when using this instead of sqlite3 direct linking
@@ -222,9 +226,9 @@ namespace sqlpp
       //    DYNDEFINE(sqlite3_vtab_on_conflict);
       //    DYNDEFINE(sqlite3_rtree_geometry_callback);
       //    DYNDEFINE(sqlite3_rtree_query_callback);
-    }
-  }
-}
+    }  // namespace dynamic
+  }    // namespace sqlite3
+}  // namespace sqlpp
 
 #undef DYNDEFINE
 

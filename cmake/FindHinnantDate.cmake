@@ -52,9 +52,9 @@ set(HinnantDate_ROOT_DIR "${HinnantDate_ROOT_DIR}" CACHE PATH "Root directory of
 set(HinnantDate_NOT_FOUND_MESSAGE "Could NOT find HinnantDate.
 Maybe you need to adjust the search paths or HinnantDate_ROOT_DIR.")
 
-find_file(HinnantDate_INCLUDE_FILE
-    date.h date/date.h include/date/date.h
+find_file(HinnantDate_INCLUDE_FILE date.h
     HINTS ${HinnantDate_ROOT_DIR}
+    PATH_SUFFIXES include include/date
 )
 mark_as_advanced(HinnantDate_INCLUDE_FILE)
 

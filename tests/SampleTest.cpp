@@ -28,14 +28,18 @@
 #include <sqlpp11/sqlite3/sqlite3.h>
 #include <sqlpp11/sqlpp11.h>
 
+#ifdef SQLPP_USE_SQLCIPHER
+#include <sqlcipher/sqlite3.h>
+#else
+#include <sqlite3.h>
+#endif
 #include <cassert>
 #include <iostream>
-#include <sqlite3.h>
 #include <vector>
 
-SQLPP_ALIAS_PROVIDER(left);
-SQLPP_ALIAS_PROVIDER(pragma);
-SQLPP_ALIAS_PROVIDER(sub);
+SQLPP_ALIAS_PROVIDER(left)
+SQLPP_ALIAS_PROVIDER(pragma)
+SQLPP_ALIAS_PROVIDER(sub)
 
 namespace sql = sqlpp::sqlite3;
 int main()

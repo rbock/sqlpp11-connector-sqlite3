@@ -239,12 +239,6 @@ namespace sqlpp
 #endif
 #endif
 
-// for windows, don't use the CMake provided SQLPP_DYNAMIC_LOADING_FILENAME as it will be the
-// static libs name
-#ifdef _WIN32
-#define SQLPP_DYNAMIC_LOADING_FILENAME sqlite3.dll
-#endif
-
       void init_sqlite(std::string libname)
       {
         if (libname.empty())

@@ -27,7 +27,11 @@
 #ifndef SQLPP_SQLITE3_CONNECTION_HANDLE_H
 #define SQLPP_SQLITE3_CONNECTION_HANDLE_H
 
+#ifdef SQLPP_USE_SQLCIPHER
+#include <sqlcipher/sqlite3.h>
+#else
 #include <sqlite3.h>
+#endif
 #include <sqlpp11/sqlite3/connection_config.h>
 
 namespace sqlpp
@@ -50,8 +54,8 @@ namespace sqlpp
         connection_handle& operator=(const connection_handle&) = delete;
         connection_handle& operator=(connection_handle&&) = delete;
       };
-    }
-  }
-}
+    }  // namespace detail
+  }    // namespace sqlite3
+}  // namespace sqlpp
 
 #endif

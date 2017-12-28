@@ -30,6 +30,12 @@
 #include <memory>
 #include <string>
 #include <sqlpp11/chrono.h>
+#include <sqlpp11/sqlite3/export.h>
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
 
 namespace sqlpp
 {
@@ -42,7 +48,7 @@ namespace sqlpp
       struct prepared_statement_handle_t;
     }
 
-    class prepared_statement_t
+    class SQLPP11_SQLITE3_EXPORT prepared_statement_t
     {
       friend ::sqlpp::sqlite3::connection;
       std::shared_ptr<detail::prepared_statement_handle_t> _handle;
@@ -71,4 +77,9 @@ namespace sqlpp
     };
   }
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
 #endif

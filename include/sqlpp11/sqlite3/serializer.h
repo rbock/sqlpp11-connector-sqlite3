@@ -27,7 +27,11 @@
 #ifndef SQLPP_SQLITE3_SERIALIZER_H
 #define SQLPP_SQLITE3_SERIALIZER_H
 
+#ifdef SQLPP_USE_SQLCIPHER
+#include <sqlcipher/sqlite3.h>
+#else
 #include <sqlite3.h>
+#endif
 #include <sqlpp11/any.h>
 #include <sqlpp11/data_types/day_point/operand.h>
 #include <sqlpp11/data_types/time_point/operand.h>
@@ -56,7 +60,7 @@ namespace sqlpp
     using _serialize_check = assert_no_with_t;
     using T = with_data_t<Database, Expressions...>;
 
-    static void _(const T& t, sqlite3::serializer_t& context)
+    static void _(const T&, sqlite3::serializer_t&)
     {
       _serialize_check::_();
     }
@@ -69,7 +73,7 @@ namespace sqlpp
     using _serialize_check = consistent_t;
     using T = parameter_t<ValueType, NameType>;
 
-    static sqlite3::serializer_t& _(const T& t, sqlite3::serializer_t& context)
+    static sqlite3::serializer_t& _(const T& /*t*/, sqlite3::serializer_t& context)
     {
       context << "?" << context.count();
       context.pop_count();
@@ -95,7 +99,7 @@ namespace sqlpp
     using _serialize_check = assert_no_any_or_some_t;
     using T = any_t<Select>;
 
-    static void _(const T& t, sqlite3::serializer_t& context)
+    static void _(const T&, sqlite3::serializer_t&)
     {
       _serialize_check::_();
     }
@@ -107,7 +111,7 @@ namespace sqlpp
     using _serialize_check = assert_no_any_or_some_t;
     using T = some_t<Select>;
 
-    static void _(const T& t, sqlite3::serializer_t& context)
+    static void _(const T&, sqlite3::serializer_t&)
     {
       _serialize_check::_();
     }
@@ -130,7 +134,7 @@ namespace sqlpp
     using _serialize_check = assert_no_outer_join_t;
     using T = pre_join_t<outer_join_t, Lhs, Rhs>;
 
-    static void _(const T& t, sqlite3::serializer_t& context)
+    static void _(const T&, sqlite3::serializer_t&)
     {
       _serialize_check::_();
     }
@@ -153,7 +157,7 @@ namespace sqlpp
     using _serialize_check = assert_no_outer_join_t;
     using T = pre_join_t<right_outer_join_t, Lhs, Rhs>;
 
-    static void _(const T& t, sqlite3::serializer_t& context)
+    static void _(const T&, sqlite3::serializer_t&)
     {
       _serialize_check::_();
     }
@@ -188,6 +192,6 @@ namespace sqlpp
       return context;
     }
   };
-}
+}  // namespace sqlpp
 
 #endif

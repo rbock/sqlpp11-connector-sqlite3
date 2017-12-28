@@ -27,21 +27,20 @@
 #include "TabSample.h"
 #include <cassert>
 #include <sqlpp11/alias_provider.h>
-#include <sqlpp11/select.h>
-#include <sqlpp11/insert.h>
-#include <sqlpp11/update.h>
-#include <sqlpp11/remove.h>
 #include <sqlpp11/functions.h>
-#include <sqlpp11/transaction.h>
+#include <sqlpp11/insert.h>
 #include <sqlpp11/multi_column.h>
+#include <sqlpp11/remove.h>
+#include <sqlpp11/select.h>
 #include <sqlpp11/sqlite3/connection.h>
+#include <sqlpp11/transaction.h>
+#include <sqlpp11/update.h>
 
 
-#include <sqlite3.h>
 #include <iostream>
 #include <vector>
 
-SQLPP_ALIAS_PROVIDER(left);
+SQLPP_ALIAS_PROVIDER(left)
 
 namespace sql = sqlpp::sqlite3;
 const auto tab = TabSample{};
