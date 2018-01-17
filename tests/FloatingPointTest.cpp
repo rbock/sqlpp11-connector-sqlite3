@@ -27,6 +27,11 @@
 #include <sqlpp11/sqlpp11.h>
 
 #include "FpSample.h"
+#ifdef SQLPP_USE_SQLCIPHER
+#include <sqlcipher/sqlite3.h>
+#else
+#include <sqlite3.h>
+#endif
 #include <iostream>
 #include <limits>
 #include <sqlite3.h>

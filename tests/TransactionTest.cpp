@@ -26,24 +26,27 @@
 #include "TabSample.h"
 #include <cassert>
 #include <sqlpp11/alias_provider.h>
-#include <sqlpp11/select.h>
-#include <sqlpp11/insert.h>
-#include <sqlpp11/update.h>
-#include <sqlpp11/remove.h>
-#include <sqlpp11/functions.h>
-#include <sqlpp11/transaction.h>
 #include <sqlpp11/custom_query.h>
+#include <sqlpp11/functions.h>
+#include <sqlpp11/insert.h>
 #include <sqlpp11/multi_column.h>
+#include <sqlpp11/remove.h>
+#include <sqlpp11/select.h>
 #include <sqlpp11/sqlite3/connection.h>
+#include <sqlpp11/transaction.h>
+#include <sqlpp11/update.h>
 
+#ifdef SQLPP_USE_SQLCIPHER
+#include <sqlcipher/sqlite3.h>
+#else
 #include <sqlite3.h>
+#endif
 #include <iostream>
 #include <vector>
 
 namespace sql = sqlpp::sqlite3;
-const auto tab = TabSample{};
 
-SQLPP_ALIAS_PROVIDER(pragma);
+SQLPP_ALIAS_PROVIDER(pragma)
 
 int main()
 {
@@ -55,17 +58,19 @@ int main()
   std::cout << "Expecting default isolation level = 1, is " << static_cast<int>(current_level) << std::endl;
   assert(current_level == sqlpp::isolation_level::serializable);
 
-  int pragmaValue =
-        db(custom_query(sqlpp::verbatim("PRAGMA read_uncommitted")).with_result_type_of(select(sqlpp::value(1).as(pragma))))
-            .front()
-            .pragma;
+  int pragmaValue = db(custom_query(sqlpp::verbatim("PRAGMA read_uncommitted"))
+                           .with_result_type_of(select(sqlpp::value(1).as(pragma))))
+                        .front()
+                        .pragma;
   assert(pragmaValue == 0);
 
   std::cerr << "Expecting read_uncommitted = 0, is: " << pragmaValue << std::endl;
   db.set_default_isolation_level(sqlpp::isolation_level::read_uncommitted);
   auto tx = start_transaction(db);
   pragmaValue = db(custom_query(sqlpp::verbatim("PRAGMA read_uncommitted"))
-                   .with_result_type_of(select(sqlpp::value(1).as(pragma)))).front().pragma;
+                       .with_result_type_of(select(sqlpp::value(1).as(pragma))))
+                    .front()
+                    .pragma;
   std::cerr << "Now expecting read_uncommitted = 1, is: " << pragmaValue << std::endl;
   assert(pragmaValue == 1);
 

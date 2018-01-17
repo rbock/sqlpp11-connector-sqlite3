@@ -27,14 +27,14 @@
 #ifndef SQLPP_SQLITE3_INSERT_OR_H
 #define SQLPP_SQLITE3_INSERT_OR_H
 
-#include <sqlpp11/statement.h>
-#include <sqlpp11/type_traits.h>
+#include <sqlpp11/default_value.h>
+#include <sqlpp11/insert_value_list.h>
+#include <sqlpp11/into.h>
+#include <sqlpp11/noop.h>
 #include <sqlpp11/parameter_list.h>
 #include <sqlpp11/prepared_insert.h>
-#include <sqlpp11/default_value.h>
-#include <sqlpp11/noop.h>
-#include <sqlpp11/into.h>
-#include <sqlpp11/insert_value_list.h>
+#include <sqlpp11/statement.h>
+#include <sqlpp11/type_traits.h>
 
 namespace sqlpp
 {
@@ -144,7 +144,7 @@ namespace sqlpp
     using _serialize_check = consistent_t;
     using T = sqlite3::insert_or_replace_name_t;
 
-    static Context& _(const T& t, Context& context)
+    static Context& _(const T&, Context& context)
     {
       context << "INSERT OR REPLACE ";
 
@@ -158,7 +158,7 @@ namespace sqlpp
     using _serialize_check = consistent_t;
     using T = sqlite3::insert_or_ignore_name_t;
 
-    static Context& _(const T& t, Context& context)
+    static Context& _(const T&, Context& context)
     {
       context << "INSERT OR IGNORE ";
 

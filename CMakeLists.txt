@@ -28,12 +28,9 @@ project (sqlpp11-connector-sqlite3)
 enable_testing()
 set(CMAKE_CXX_STANDARD 11)
 
-## Setup custom location for SQlite build if needed
-# set(SQLITE3_LIBRARY "../../sqlite-amalgamation-3120200/sqlite3")
-# set(SQLITE3_INCLUDE_DIR "sqlite-amalgamation-3120200")
-
-option(SQLCIPHER "Build with sqlcipher" Off)
 option(ENABLE_TESTS "Build unit tests" On)
+option(BUILD_SHARED_LIBS "Build shared libraries" Off)
+option(SQLCIPHER "Build with SQLCipher" Off)
 
 if (NOT DEFINED SQLPP11_DYNAMIC_LOADING)
    set(SQLPP11_DYNAMIC_LOADING Off)
@@ -43,26 +40,15 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 if(SQLCIPHER )
 	find_package(SQLCipher REQUIRED)
 	set (SQLITE3_LIBRARIES "${SQLCIPHER_LIBRARIES}" )
-	set (SQLITE3_INCLUDE_DIRS "${SQLCIPHER_INCLUDE_DIR}" )
+	set (SQLITE3_INCLUDE_DIRS "${SQLCIPHER_INCLUDE_DIRS}" )
+    set (SQLITE3_LIBRARY "${SQLCIPHER_LIBRARY}")
 else()
 	find_package(Sqlite3 REQUIRED)
 endif()
 
+find_package(HinnantDate REQUIRED)
+
 message(STATUS "Using ${CMAKE_CXX_COMPILER} (compiler id: ${CMAKE_CXX_COMPILER_ID})")
-
-set(DATE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../date" CACHE FILEPATH "Path to Howard Hinnant's date library")
-
-if(NOT EXISTS ${DATE_INCLUDE_DIR}/date.h)
-	message(SEND_ERROR "Can't find file date.h")
-	message("Can't find date.h in ${DATE_INCLUDE_DIR} ")
-	message("Please either")
-	message("  - git clone https://github.com/howardhinnant/date ${DATE_INCLUDE_DIR}")
-	message("  - download and unzip a current version from https://github.com/howardhinnant/date to ${DATE_INCLUDE_DIR}")
-	message("  - set DATE_INCLUDE_DIR to point to the dir containing date.h from the date library")
-	message("")
-else()
-	message("including date from ${DATE_INCLUDE_DIR}")
-endif()
 
 set(SQLPP11_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../sqlpp11/include" CACHE FILEPATH "Path to sqlpp11 includes")
 
@@ -72,18 +58,14 @@ if(NOT EXISTS ${SQLPP11_INCLUDE_DIR}/sqlpp11/sqlpp11.h)
 	message("Please either")
 	message("  - git clone https://github.com/rbock/sqlpp11 ${SQLPP11_INCLUDE_DIR}")
 	message("  - download and unzip a current version from https://github.com/rbock/sqlpp11 to ${SQLPP11_INCLUDE_DIR}")
-	message("  - set DATE_INCLUDE_DIR to point to the dir containing sqlpp11/sqlpp11.h")
+	message("  - set SQLPP11_INCLUDE_DIR to point to the dir containing sqlpp11/sqlpp11.h")
 	message("")
 else()
 	message("including sqlpp11 from ${SQLPP11_INCLUDE_DIR}")
 endif()
 
-include_directories("${SQLPP11_INCLUDE_DIR}")
-include_directories("${DATE_INCLUDE_DIR}")
-include_directories("${SQLITE3_INCLUDE_DIRS}")
 set(include_dir "${PROJECT_SOURCE_DIR}/include")
 file(GLOB_RECURSE sqlpp_headers ${include_dir}/*.h ${SQLPP11_INCLUDE_DIR}/*.h)
-include_directories(${include_dir})
 
 add_subdirectory(src)
 
