@@ -116,7 +116,19 @@ namespace sqlpp
 
       int result;
       if (not is_null)
-        result = sqlite3_bind_double(_handle->sqlite_statement, static_cast<int>(index + 1), *value);
+      {
+        if (std::isnan(*value))
+          result = sqlite3_bind_text(_handle->sqlite_statement, static_cast<int>(index + 1), "NaN", 3, SQLITE_STATIC);
+        else if (std::isinf(*value))
+        {
+          if (*value > std::numeric_limits<double>::max())
+            result = sqlite3_bind_text(_handle->sqlite_statement, static_cast<int>(index + 1), "Inf", 3, SQLITE_STATIC);
+          else
+            result = sqlite3_bind_text(_handle->sqlite_statement, static_cast<int>(index + 1), "-Inf", 4, SQLITE_STATIC);
+        }
+        else
+          result = sqlite3_bind_double(_handle->sqlite_statement, static_cast<int>(index + 1), *value);
+      }
       else
         result = sqlite3_bind_null(_handle->sqlite_statement, static_cast<int>(index + 1));
       check_bind_result(result, "floating_point");
