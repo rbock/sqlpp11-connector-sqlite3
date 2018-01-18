@@ -33,6 +33,8 @@
 #include <sqlite3.h>
 #endif
 #include <iostream>
+#include <limits>
+#include <sqlite3.h>
 
 namespace sql = sqlpp::sqlite3;
 
@@ -77,16 +79,49 @@ int main()
   db.execute("INSERT into fp_sample (id, fp) values(NULL, 'Inf')");
   db.execute("INSERT into fp_sample (id, fp) values(NULL, 'Nan')");
   db.execute("INSERT into fp_sample (id, fp) values(NULL, 'SomeString')");
+  db(insert_into(fp).set(fp.fp = std::numeric_limits<double>::quiet_NaN()));
+  db(insert_into(fp).set(fp.fp = std::numeric_limits<double>::infinity()));
+  db(insert_into(fp).set(fp.fp = -std::numeric_limits<double>::infinity()));
+
+  auto prepared_insert = db.prepare(insert_into(fp).set(fp.fp = parameter(fp.fp)));
+  prepared_insert.params.fp = std::numeric_limits<double>::quiet_NaN();
+  db(prepared_insert);
+  prepared_insert.params.fp = std::numeric_limits<double>::infinity();
+  db(prepared_insert);
+  prepared_insert.params.fp = -std::numeric_limits<double>::infinity();
+  db(prepared_insert);
 
   auto q = select(fp.fp).from(fp).unconditionally();
   auto rows = db(q);
+
+  // raw string inserts
   require_equal(__LINE__, rows.front().fp, 1.0);
   rows.pop_front();
-  require(__LINE__, !std::isfinite(rows.front().fp.value()));
+  require(__LINE__, std::isinf(rows.front().fp.value()));
   rows.pop_front();
   require(__LINE__, std::isnan(rows.front().fp.value()));
   rows.pop_front();
   require_equal(__LINE__, rows.front().fp, 0.0);
+  rows.pop_front();
+
+  // dsl inserts
+  require(__LINE__, std::isnan(rows.front().fp.value()));
+  rows.pop_front();
+  require(__LINE__, std::isinf(rows.front().fp.value()));
+  require(__LINE__, rows.front().fp.value() > std::numeric_limits<double>::max());
+  rows.pop_front();
+  require(__LINE__, std::isinf(rows.front().fp.value()));
+  require(__LINE__, rows.front().fp.value() < std::numeric_limits<double>::lowest());
+
+  // prepared dsl inserts
+  rows.pop_front();
+  require(__LINE__, std::isnan(rows.front().fp.value()));
+  rows.pop_front();
+  require(__LINE__, std::isinf(rows.front().fp.value()));
+  require(__LINE__, rows.front().fp.value() > std::numeric_limits<double>::max());
+  rows.pop_front();
+  require(__LINE__, std::isinf(rows.front().fp.value()));
+  require(__LINE__, rows.front().fp.value() < std::numeric_limits<double>::lowest());
 
   return 0;
 }

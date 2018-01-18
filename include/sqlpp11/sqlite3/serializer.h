@@ -34,11 +34,14 @@
 #endif
 #include <sqlpp11/any.h>
 #include <sqlpp11/data_types/day_point/operand.h>
+#include <sqlpp11/data_types/floating_point/operand.h>
 #include <sqlpp11/data_types/time_point/operand.h>
 #include <sqlpp11/parameter.h>
 #include <sqlpp11/pre_join.h>
 #include <sqlpp11/some.h>
 #include <sqlpp11/with.h>
+
+#include <cmath>
 
 namespace sqlpp
 {
@@ -192,6 +195,29 @@ namespace sqlpp
       return context;
     }
   };
-}  // namespace sqlpp
+
+  template <>
+  struct serializer_t<sqlite3::serializer_t, floating_point_operand>
+  {
+    using _serialize_check = consistent_t;
+    using Operand = floating_point_operand;
+
+    static sqlite3::serializer_t& _(const Operand& t, sqlite3::serializer_t& context)
+    {
+      if (std::isnan(t._t))
+        context << "'NaN'";
+      else if (std::isinf(t._t))
+      {
+        if (t._t > std::numeric_limits<double>::max())
+          context << "'Inf'";
+        else
+          context << "'-Inf'";
+      }
+      else
+        context << t._t;
+      return context;
+    }
+  };
+}
 
 #endif
