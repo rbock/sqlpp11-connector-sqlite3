@@ -26,7 +26,7 @@
 
 #include "detail/prepared_statement_handle.h"
 #include <ciso646>
-#include <date.h>
+#include <date/date.h>
 #include <iostream>
 #include <sqlpp11/exception.h>
 #include <sqlpp11/sqlite3/prepared_statement.h>

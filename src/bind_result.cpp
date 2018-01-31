@@ -28,7 +28,7 @@
 #include <cctype>
 #include <iostream>
 #include <vector>
-#include <date.h>  // Howard Hinnant's date library
+#include <date/date.h>  // Howard Hinnant's date library
 #include <sqlpp11/exception.h>
 #include <sqlpp11/sqlite3/bind_result.h>
 #include "detail/prepared_statement_handle.h"
