@@ -13,7 +13,7 @@
 #
 # and the following imported targets::
 #
-#   HinnantDate::Date   - The target to use date.h
+#   HinnantDate::Date   - The target to use date/date.h
 #
 # You can set HinnantDate_ROOT_DIR as hint to the location of the library.
 #
@@ -52,9 +52,11 @@ set(HinnantDate_ROOT_DIR "${HinnantDate_ROOT_DIR}" CACHE PATH "Root directory of
 set(HinnantDate_NOT_FOUND_MESSAGE "Could NOT find HinnantDate.
 Maybe you need to adjust the search paths or HinnantDate_ROOT_DIR.")
 
-find_file(HinnantDate_INCLUDE_FILE date.h
-    HINTS ${HinnantDate_ROOT_DIR}
-    PATH_SUFFIXES include include/date
+find_file(HinnantDate_INCLUDE_FILE
+    date/date.h include/date/date.h
+    HINTS
+      ${HinnantDate_ROOT_DIR}
+      ${HinnantDate_ROOT_DIR}/include
 )
 mark_as_advanced(HinnantDate_INCLUDE_FILE)
 
@@ -70,7 +72,8 @@ if (HinnantDate_INCLUDE_FILE)
         unset(HinnantDate_INCLUDE_FILE CACHE)
     else()
         # Check succeeded, create target
-        get_filename_component(HinnantDate_INCLUDE_DIR "${HinnantDate_INCLUDE_FILE}" DIRECTORY CACHE)
+        get_filename_component(HinnantDate_INCLUDE_DIR "${HinnantDate_INCLUDE_FILE}" DIRECTORY)
+        get_filename_component(HinnantDate_INCLUDE_DIR "${HinnantDate_INCLUDE_DIR}" DIRECTORY)
         mark_as_advanced(HinnantDate_INCLUDE_DIR)
         set(HinnantDate_ROOT_DIR "${HinnantDate_INCLUDE_DIR}")
         unset(HinnantDate_NOT_FOUND_MESSAGE)
