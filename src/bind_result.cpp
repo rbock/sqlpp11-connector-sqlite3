@@ -95,6 +95,15 @@ namespace sqlpp
       *len = sqlite3_column_bytes(_handle->sqlite_statement, static_cast<int>(index));
     }
 
+    void bind_result_t::_bind_blob_result(size_t index, const uint8_t** value, size_t* len)
+    {
+      if (_handle->debug)
+        std::cerr << "Sqlite3 debug: binding text result at index: " << index << std::endl;
+
+      *value = (reinterpret_cast<const uint8_t*>(sqlite3_column_blob(_handle->sqlite_statement, static_cast<int>(index))));
+      *len = sqlite3_column_bytes(_handle->sqlite_statement, static_cast<int>(index));
+    }
+
     namespace
     {
       const auto date_digits = std::vector<char>{1, 1, 1, 1, 0, 1, 1, 0, 1, 1};  // 2015-10-28
