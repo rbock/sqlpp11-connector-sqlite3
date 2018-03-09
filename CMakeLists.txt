@@ -31,10 +31,7 @@ set(CMAKE_CXX_STANDARD 11)
 option(ENABLE_TESTS "Build unit tests" On)
 option(BUILD_SHARED_LIBS "Build shared libraries" Off)
 option(SQLCIPHER "Build with SQLCipher" Off)
-
-if (NOT DEFINED SQLPP11_DYNAMIC_LOADING)
-   set(SQLPP11_DYNAMIC_LOADING Off)
-endif()
+option(DYNAMIC_LOADING "Use dynamic loading of libraries" Off)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 if(SQLCIPHER )
