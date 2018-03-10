@@ -7,7 +7,7 @@ add_library(sqlpp11-connector-sqlite3
 		detail/connection_handle.cpp
       )
 
-if (DYNAMIC_LOADING)
+    if (SQLPP_DYNAMIC_LOADING)
     add_library(sqlpp11-connector-sqlite3-dynamic
                     connection.cpp
                     bind_result.cpp
@@ -49,7 +49,7 @@ target_include_directories(sqlpp11-connector-sqlite3
 
 if (BUILD_SHARED_LIBS)
     target_compile_definitions(sqlpp11-connector-sqlite3 PUBLIC SQLPP11_SHARED)
-    if (DYNAMIC_LOADING)
+    if (SQLPP_DYNAMIC_LOADING)
         target_compile_definitions(sqlpp11-connector-sqlite3-dynamic PUBLIC SQLPP11_SHARED)
     endif()
 endif()
@@ -57,7 +57,7 @@ endif()
 if (SQLCIPHER)
     target_compile_definitions(sqlpp11-connector-sqlite3 PUBLIC SQLPP_USE_SQLCIPHER)
     target_link_libraries(sqlpp11-connector-sqlite3 sqlpp11::sqlpp11 SQLCipher::SQLCipher)
-    if (DYNAMIC_LOADING)
+    if (SQLPP_DYNAMIC_LOADING)
         target_compile_definitions(sqlpp11-connector-sqlite3-dynamic PUBLIC SQLPP_USE_SQLCIPHER)
         target_include_directories(sqlpp11-connector-sqlite3-dynamic PUBLIC ${SQLCIPHER_INCLUDE_DIRS})
     endif()
@@ -100,7 +100,7 @@ install(
     ${ConfigPackageLocation}
 )
 
-if (DYNAMIC_LOADING)
+if (SQLPP_DYNAMIC_LOADING)
     install(TARGETS sqlpp11-connector-sqlite3-dynamic
             EXPORT Sqlpp11ConnectorSqlite3DynamicTargets
             ARCHIVE DESTINATION lib

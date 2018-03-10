@@ -31,7 +31,7 @@ set(CMAKE_CXX_STANDARD 11)
 option(ENABLE_TESTS "Build unit tests" On)
 option(BUILD_SHARED_LIBS "Build shared libraries" Off)
 option(SQLCIPHER "Build with SQLCipher" Off)
-option(DYNAMIC_LOADING "Use dynamic loading of libraries" Off)
+option(SQLPP_DYNAMIC_LOADING "Use dynamic loading of libraries" Off)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 find_package(Sqlpp11 REQUIRED)
