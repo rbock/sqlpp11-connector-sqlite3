@@ -24,7 +24,7 @@
 
 cmake_minimum_required(VERSION 3.2)
 include(CheckCXXSymbolExists)
-project (sqlpp11-connector-sqlite3 VERSION 0.28 LANGUAGES CXX)
+project (sqlpp11-connector-sqlite3)
 enable_testing()
 set(CMAKE_CXX_STANDARD 11)
 

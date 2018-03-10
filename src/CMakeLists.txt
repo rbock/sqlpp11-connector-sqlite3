@@ -73,12 +73,6 @@ install(TARGETS sqlpp11-connector-sqlite3
 
 include(CMakePackageConfigHelpers)
 
-write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/cmake/Sqlpp11ConnectorSqlite3ConfigVersion.cmake"
-  VERSION ${PROJECT_VERSION}
-  COMPATIBILITY AnyNewerVersion
-)
-
 export(EXPORT Sqlpp11ConnectorSqlite3Targets
   FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/Sqlpp11ConnectorSqlite3Targets.cmake"
 )
@@ -99,7 +93,6 @@ install(EXPORT Sqlpp11ConnectorSqlite3Targets
 
 install(
   FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/cmake/Sqlpp11ConnectorSqlite3ConfigVersion.cmake"
     "${PROJECT_SOURCE_DIR}/cmake/Sqlpp11ConnectorSqlite3Config.cmake"
     "${PROJECT_SOURCE_DIR}/cmake/Modules/FindSQLCipher.cmake"
     "${PROJECT_SOURCE_DIR}/cmake/Modules/FindSqlite3.cmake"
@@ -113,12 +106,6 @@ if (DYNAMIC_LOADING)
             ARCHIVE DESTINATION lib
             LIBRARY DESTINATION lib
             RUNTIME DESTINATION bin)
-
-    write_basic_package_version_file(
-      "${CMAKE_CURRENT_BINARY_DIR}/cmake/Sqlpp11ConnectorSqlite3DynamicConfigVersion.cmake"
-      VERSION ${PROJECT_VERSION}
-      COMPATIBILITY AnyNewerVersion
-    )
 
     export(EXPORT Sqlpp11ConnectorSqlite3DynamicTargets
       FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/Sqlpp11ConnectorSqlite3DynamicTargets.cmake"
@@ -140,7 +127,6 @@ if (DYNAMIC_LOADING)
 
     install(
       FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/cmake/Sqlpp11ConnectorSqlite3DynamicConfigVersion.cmake"
         "${PROJECT_SOURCE_DIR}/cmake/Sqlpp11ConnectorSqlite3DynamicConfig.cmake"
         "${PROJECT_SOURCE_DIR}/cmake/Modules/FindSQLCipher.cmake"
         "${PROJECT_SOURCE_DIR}/cmake/Modules/FindSqlite3.cmake"
