@@ -50,7 +50,7 @@ before_script:
    - mkdir build
    - cd build
    - if [[ "$CXX" = "g++" && "$CONFIG" = "Debug" && "$TRAVIS_OS_NAME" = "linux" ]]; then export CXXFLAGS="--coverage"; fi
-   - cmake .. -DCMAKE_BUILD_TYPE=$CONFIG -DHinnantDate_ROOT_DIR="../../date"
+   - cmake .. -DCMAKE_BUILD_TYPE=$CONFIG -DHinnantDate_ROOT_DIR="../../date" -DSqlpp11_ROOT_DIR="../../sqlpp11"
 
 script:
    - make VERBOSE=1
