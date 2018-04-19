@@ -76,7 +76,8 @@ namespace sqlpp
           case SQLITE_DONE:
             return;
           default:
-            std::cerr << "Sqlite3 debug: sqlite3_step return code: " << rc << std::endl;
+            if(handle.config.debug)
+              std::cerr << "Sqlite3 debug: sqlite3_step return code: " << rc << std::endl;
             throw sqlpp::exception("Sqlite3 error: Could not execute statement: " +
                                    std::string(sqlite3_errmsg(handle.sqlite)));
         }
