@@ -305,7 +305,7 @@ namespace sqlpp
       auto prepare(const T& t)
           -> decltype(this->_prepare(t, typename sqlpp::prepare_check_t<_serializer_context_t, T>::type{}))
       {
-        sqlpp::prepare_check_t<_serializer_context_t, T>::_();
+        sqlpp::prepare_check_t<_serializer_context_t, T>{};
         return _prepare(t, sqlpp::prepare_check_t<_serializer_context_t, T>{});
       }
 
