@@ -32,6 +32,7 @@
 #include <sqlpp11/sqlite3/prepared_statement.h>
 #include <sstream>
 #include <string>
+#include <cmath>
 
 #if defined(__CYGWIN__)
 #include <sstream>

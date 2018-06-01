@@ -53,7 +53,6 @@ before_script:
    - cmake .. -DCMAKE_BUILD_TYPE=$CONFIG -DHinnantDate_ROOT_DIR="../../date"
 
 script:
-   - make VERBOSE=1
    - cmake --build . --config $CONFIG
    - ctest --output-on-failure
 
