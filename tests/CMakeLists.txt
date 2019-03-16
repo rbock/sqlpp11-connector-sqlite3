@@ -21,6 +21,7 @@ build_and_run(DynamicSelectTest)
 build_and_run(AutoIncrementTest)
 build_and_run(TransactionTest)
 build_and_run(FloatingPointTest)
+build_and_run(BlobTest)
 
 # the dynamic loading test needs the extra option "SQLPP_DYNAMIC_LOADING" and does NOT link the sqlite libs
 if (SQLPP_DYNAMIC_LOADING)

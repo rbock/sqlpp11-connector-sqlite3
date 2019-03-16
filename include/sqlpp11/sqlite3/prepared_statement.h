@@ -29,6 +29,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 #include <sqlpp11/chrono.h>
 #include <sqlpp11/sqlite3/export.h>
 
@@ -74,6 +75,7 @@ namespace sqlpp
       void _bind_text_parameter(size_t index, const std::string* value, bool is_null);
       void _bind_date_parameter(size_t index, const ::sqlpp::chrono::day_point* value, bool is_null);
       void _bind_date_time_parameter(size_t index, const ::sqlpp::chrono::microsecond_point* value, bool is_null);
+      void _bind_blob_parameter(size_t index, const std::vector<uint8_t>* value, bool is_null);
     };
   }
 }
