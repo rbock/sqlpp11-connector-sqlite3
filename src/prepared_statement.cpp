@@ -91,7 +91,7 @@ namespace sqlpp
     void prepared_statement_t::_reset()
     {
       if (_handle->debug)
-        std::cerr << "Sqlite3 debug: reseting prepared statement" << std::endl;
+        std::cerr << "Sqlite3 debug: resetting prepared statement" << std::endl;
       sqlite3_reset(_handle->sqlite_statement);
     }
 
