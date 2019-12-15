@@ -264,8 +264,8 @@ namespace sqlpp
         return prepare_impl(context.str());
       }
 
-      template <typename PreparedInsert>
-      void run_prepared_execute(const PreparedInsert& x)
+      template <typename PreparedExecute>
+      size_t run_prepared_execute(const PreparedExecute& x)
       {
         x._prepared_statement._reset();
         x._bind_params();
