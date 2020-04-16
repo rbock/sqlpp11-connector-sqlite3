@@ -26,7 +26,10 @@ cmake_minimum_required(VERSION 3.2)
 include(CheckCXXSymbolExists)
 project (sqlpp11-connector-sqlite3)
 enable_testing()
-set(CMAKE_CXX_STANDARD 11)
+
+if ((NOT CMAKE_CXX_STANDARD) OR (CMAKE_CXX_STANDARD LESS 11))
+    set(CMAKE_CXX_STANDARD 11)
+endif((NOT CMAKE_CXX_STANDARD) OR (CMAKE_CXX_STANDARD LESS 11))
 
 option(ENABLE_TESTS "Build unit tests" On)
 option(BUILD_SHARED_LIBS "Build shared libraries" Off)
