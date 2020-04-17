@@ -71,7 +71,7 @@ int main()
 
   sql::connection db(config);
   db.execute(R"(CREATE TABLE fp_sample (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id INTEGER,
       fp REAL
   ))");
 

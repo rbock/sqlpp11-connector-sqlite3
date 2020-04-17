@@ -221,7 +221,7 @@ namespace sqlpp
     }
   };
 
-  // sqlite3 receives only signed integers,
+  // sqlite3 accepts only signed integers,
   // so we MUST perform a conversion from unsigned to signed
   template <>
   struct serializer_t<sqlite3::serializer_t, unsigned_integral_operand>
