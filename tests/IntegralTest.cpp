@@ -92,19 +92,19 @@ int main()
   auto rows = db(q);
 
   // dsl inserts
-  require_equal(__LINE__, rows.front().id, v);
-  require_equal(__LINE__, rows.front().id, v2);
+  require_equal(__LINE__, rows.front().id.value(), v);
+  require_equal(__LINE__, rows.front().id.value(), v2);
   rows.pop_front();
-  require_equal(__LINE__, rows.front().id, v);
-  require_equal(__LINE__, rows.front().id, v2);
+  require_equal(__LINE__, rows.front().id.value(), v);
+  require_equal(__LINE__, rows.front().id.value(), v2);
   rows.pop_front();
 
   // prepared dsl inserts
-  require_equal(__LINE__, rows.front().id, v);
-  require_equal(__LINE__, rows.front().id, v2);
+  require_equal(__LINE__, rows.front().id.value(), v);
+  require_equal(__LINE__, rows.front().id.value(), v2);
   rows.pop_front();
-  require_equal(__LINE__, rows.front().id, v);
-  require_equal(__LINE__, rows.front().id, v2);
+  require_equal(__LINE__, rows.front().id.value(), v);
+  require_equal(__LINE__, rows.front().id.value(), v2);
   rows.pop_front();
 
   return 0;
