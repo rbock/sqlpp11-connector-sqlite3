@@ -89,6 +89,9 @@ namespace sqlpp
     {
     }
 
+    connection::connection(connection&&) noexcept = default;
+    connection& connection::operator=(connection&&) noexcept = default;
+
     connection::~connection()
     {
     }

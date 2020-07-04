@@ -137,11 +137,11 @@ namespace sqlpp
       }
 
       connection(connection_config config);
+      connection(connection&&) noexcept;
+      connection& operator=(connection&&) noexcept;
       ~connection();
       connection(const connection&) = delete;
-      connection(connection&&) = delete;
       connection& operator=(const connection&) = delete;
-      connection& operator=(connection&&) = delete;
 
       //! select returns a result (which can be iterated row by row)
       template <typename Select>
