@@ -97,7 +97,14 @@ namespace sqlpp
     class SQLPP11_SQLITE3_EXPORT connection : public sqlpp::connection
     {
       std::unique_ptr<detail::connection_handle> _handle;
-      bool _transaction_active = false;
+      enum class transaction_status_type
+      {
+        none,
+        maybe,
+        active
+      };
+
+      transaction_status_type _transaction_status = transaction_status_type::none;
 
       // direct execution
       bind_result_t select_impl(const std::string& statement);
