@@ -123,6 +123,7 @@ namespace sqlpp
       DYNDEFINE(sqlite3_column_text);
       DYNDEFINE(sqlite3_column_type);
       DYNDEFINE(sqlite3_column_value);
+      DYNDEFINE(sqlite3_column_blob);
       DYNDEFINE(sqlite3_finalize);
       DYNDEFINE(sqlite3_reset);
       DYNDEFINE(sqlite3_create_function);
@@ -345,6 +346,7 @@ namespace sqlpp
         DYNLOAD(handle, sqlite3_column_text);
         DYNLOAD(handle, sqlite3_column_type);
         DYNLOAD(handle, sqlite3_column_value);
+        DYNLOAD(handle, sqlite3_column_blob);
         DYNLOAD(handle, sqlite3_finalize);
         DYNLOAD(handle, sqlite3_reset);
         DYNLOAD(handle, sqlite3_create_function);

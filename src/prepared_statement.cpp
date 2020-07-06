@@ -74,6 +74,8 @@ namespace sqlpp
             throw sqlpp::exception("Sqlite3 error: " + std::string(type) + " bind value out of range");
           case SQLITE_NOMEM:
             throw sqlpp::exception("Sqlite3 error: " + std::string(type) + " bind out of memory");
+          case SQLITE_TOOBIG:
+            throw sqlpp::exception("Sqlite3 error: " + std::string(type) + " bind too big");
           default:
             throw sqlpp::exception("Sqlite3 error: " + std::string(type) + " bind returned unexpected value: " +
                                    std::to_string(result));
@@ -208,6 +210,20 @@ namespace sqlpp
       else
         result = sqlite3_bind_null(_handle->sqlite_statement, static_cast<int>(index + 1));
       check_bind_result(result, "date");
+    }
+    void prepared_statement_t::_bind_blob_parameter(size_t index, const std::vector<uint8_t>* value, bool is_null)
+    {
+      if (_handle->debug)
+        std::cerr << "Sqlite3 debug: binding vector parameter size of " << value->size() << " at index: " << index
+                  << ", being " << (is_null ? "" : "not ") << "null" << std::endl;
+
+      int result;
+      if (not is_null)
+        result = sqlite3_bind_blob(_handle->sqlite_statement, static_cast<int>(index + 1), value->data(),
+                                     static_cast<int>(value->size()), SQLITE_STATIC);
+      else
+        result = sqlite3_bind_null(_handle->sqlite_statement, static_cast<int>(index + 1));
+      check_bind_result(result, "blob");
     }
   }
 }

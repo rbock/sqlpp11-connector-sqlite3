@@ -35,7 +35,9 @@
 #include <sqlpp11/any.h>
 #include <sqlpp11/data_types/day_point/operand.h>
 #include <sqlpp11/data_types/floating_point/operand.h>
+#include <sqlpp11/data_types/integral/operand.h>
 #include <sqlpp11/data_types/time_point/operand.h>
+#include <sqlpp11/data_types/unsigned_integral/operand.h>
 #include <sqlpp11/parameter.h>
 #include <sqlpp11/pre_join.h>
 #include <sqlpp11/some.h>
@@ -215,6 +217,21 @@ namespace sqlpp
       }
       else
         context << t._t;
+      return context;
+    }
+  };
+
+  // sqlite3 accepts only signed integers,
+  // so we MUST perform a conversion from unsigned to signed
+  template <>
+  struct serializer_t<sqlite3::serializer_t, unsigned_integral_operand>
+  {
+    using _serialize_check = consistent_t;
+    using Operand = unsigned_integral_operand;
+
+    static sqlite3::serializer_t& _(const Operand& t, sqlite3::serializer_t& context)
+    {
+      context << static_cast<typename integral_operand::_value_t>(t._t);
       return context;
     }
   };

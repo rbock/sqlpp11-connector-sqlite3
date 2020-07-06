@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Volker Aßmann
+ * Copyright (c) 2017, Volker AÃŸmann
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -122,6 +122,7 @@ namespace sqlpp
       DYNDEFINE(sqlite3_column_text);
       DYNDEFINE(sqlite3_column_type);
       DYNDEFINE(sqlite3_column_value);
+      DYNDEFINE(sqlite3_column_blob);
       DYNDEFINE(sqlite3_finalize);
       DYNDEFINE(sqlite3_reset);
       DYNDEFINE(sqlite3_create_function);

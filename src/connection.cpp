@@ -59,7 +59,8 @@ namespace sqlpp
         if (rc != SQLITE_OK)
         {
           throw sqlpp::exception("Sqlite3 error: Could not prepare statement: " +
-                                 std::string(sqlite3_errmsg(handle.sqlite)) + " (statement was >>" + statement +
+                                 std::string(sqlite3_errmsg(handle.sqlite)) + " (statement was >>" +
+                                 (rc == SQLITE_TOOBIG ? statement.substr(0, 128) + "..." : statement) +
                                  "<<\n");
         }
 
@@ -87,6 +88,9 @@ namespace sqlpp
     connection::connection(connection_config config) : _handle(new detail::connection_handle(std::move(config)))
     {
     }
+
+    connection::connection(connection&&) noexcept = default;
+    connection& connection::operator=(connection&&) noexcept = default;
 
     connection::~connection()
     {

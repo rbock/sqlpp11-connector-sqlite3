@@ -144,11 +144,11 @@ namespace sqlpp
       }
 
       connection(connection_config config);
+      connection(connection&&) noexcept;
+      connection& operator=(connection&&) noexcept;
       ~connection();
       connection(const connection&) = delete;
-      connection(connection&&) = delete;
       connection& operator=(const connection&) = delete;
-      connection& operator=(connection&&) = delete;
 
       //! select returns a result (which can be iterated row by row)
       template <typename Select>
@@ -271,8 +271,8 @@ namespace sqlpp
         return prepare_impl(context.str());
       }
 
-      template <typename PreparedInsert>
-      void run_prepared_execute(const PreparedInsert& x)
+      template <typename PreparedExecute>
+      size_t run_prepared_execute(const PreparedExecute& x)
       {
         x._prepared_statement._reset();
         x._bind_params();
