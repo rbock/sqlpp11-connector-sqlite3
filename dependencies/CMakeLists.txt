@@ -1,4 +1,5 @@
-# Copyright (c) 2013 - 2016, Roland Bock
+# Copyright (c) 2013-2016, Roland Bock
+# Copyright (c) 2016 Christian Dávid
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
@@ -22,41 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required(VERSION 3.14)
-include(CheckCXXSymbolExists)
-project (sqlpp11-connector-sqlite3)
+include(FetchContent)
 
-include(CTest)
+FetchContent_Declare(sqlpp11
+    GIT_REPOSITORY https://github.com/Leon0402/sqlpp11
+    GIT_TAG        origin/feature/fetchContent
+) 
 
-if ((NOT CMAKE_CXX_STANDARD) OR (CMAKE_CXX_STANDARD LESS 11))
-    set(CMAKE_CXX_STANDARD 11)
-endif((NOT CMAKE_CXX_STANDARD) OR (CMAKE_CXX_STANDARD LESS 11))
-
-
-option(BUILD_SHARED_LIBS "Build shared libraries" Off)
-option(SQLCIPHER "Build with SQLCipher" Off)
-
-if (NOT DEFINED SQLPP11_DYNAMIC_LOADING)
-   set(SQLPP11_DYNAMIC_LOADING Off)
-endif()
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-if(SQLCIPHER )
-	find_package(SQLCipher REQUIRED)
-    set (SQLite3_LIBRARY "${SQLCIPHER_LIBRARY}") # TO DO: Needed because of l. 19 in src/CmakeLists.txt?
-else()
-	find_package(SQLite3 REQUIRED)
-endif()
-
-add_subdirectory(dependencies)
-
-message(STATUS "Using ${CMAKE_CXX_COMPILER} (compiler id: ${CMAKE_CXX_COMPILER_ID})")
-
-add_subdirectory(src)
-
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
-	add_subdirectory(tests)
-endif()
-
-install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/sqlpp11" DESTINATION include)
-
+add_subdirectory(sqlpp11)
