@@ -34,7 +34,6 @@
 #endif
 #include <iostream>
 #include <limits>
-#include <sqlite3.h>
 
 namespace sql = sqlpp::sqlite3;
 
