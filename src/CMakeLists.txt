@@ -24,13 +24,17 @@
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
-add_library(sqlpp11-connector-sqlite3
-		connection.cpp
+add_library(sqlpp11-connector-sqlite3)
+add_library(sqlpp11::sqlite3 ALIAS sqlpp11-connector-sqlite3)
+
+target_sources(sqlpp11-connector-sqlite3 
+    PRIVATE 
+        connection.cpp
 		bind_result.cpp
 		prepared_statement.cpp
-		detail/connection_handle.cpp
-      )
-add_library(sqlpp11::sqlite3 ALIAS sqlpp11-connector-sqlite3)
+        detail/connection_handle.cpp
+)
+target_link_libraries(sqlpp11-connector-sqlite3 PUBLIC sqlpp11::sqlpp11)
 
 if (SQLPP_DYNAMIC_LOADING)
     add_library(sqlpp11-connector-sqlite3-dynamic
@@ -61,10 +65,10 @@ if (SQLPP_DYNAMIC_LOADING)
                                $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
                                $<INSTALL_INTERFACE:include>)
 
-    target_link_libraries(sqlpp11-connector-sqlite3-dynamic PUBLIC sqlpp11:sqlpp11)
+    target_link_libraries(sqlpp11-connector-sqlite3-dynamic PUBLIC sqlpp11::sqlpp11)
 endif()
 
-target_include_directories(sqlpp11-connector-sqlite3 PUBLIC sqlpp11:sqlpp11
+target_include_directories(sqlpp11-connector-sqlite3 PUBLIC
                            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
                            $<INSTALL_INTERFACE:include>)
 
