@@ -22,4 +22,4 @@ build_script:
   - cd build 
   - dir
   - type sqlpp11-connector-sqlite3.sln
-  - cmake --build build --config %configuration% --target Test
+  - cmake --build build --config %configuration% --target RUN_TESTS
