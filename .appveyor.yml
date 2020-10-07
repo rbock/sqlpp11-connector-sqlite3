@@ -14,24 +14,14 @@ build_script:
   - CD
   - SET
   - C:\"Program Files (x86)"\"Microsoft Visual Studio 14.0"\VC\vcvarsall.bat amd64
-  - choco install wget
-  - wget http://www.sqlite.org/2016/sqlite-amalgamation-3120200.zip
-  - unzip sqlite-amalgamation-3120200.zip
-  - cd sqlite-amalgamation-3120200
-  - cl /c /EHsc sqlite3.c
-  - lib sqlite3.obj
-  - cd ..
-  - wget https://sqlite.org/2017/sqlite-dll-win64-x64-3190200.zip
-  - unzip sqlite-dll-win64-x64-3190200.zip
-  - cd ..
-  - CD
+  - vcpkg install sqlite3:x64-windows
   - cd sqlpp11-connector-sqlite3
   - CD
   - echo %configuration%
   - mkdir build
   - cd build
   - cmake --version
-  - cmake .. -DCMAKE_PREFIX_PATH="C:/projects/sqlpp11-connector-sqlite3/sqlite-amalgamation-3120200" -DCMAKE_CXX_FLAGS="/EHsc /wd4503" -DCMAKE_GENERATOR_PLATFORM=x64
+  - cmake .. -DCMAKE_CXX_FLAGS="/EHsc /wd4503" -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
   - cmake --build . --config %configuration%
   - copy ..\sqlite3.dll tests\
   - ctest . --output-on-failure --build-config %configuration%
