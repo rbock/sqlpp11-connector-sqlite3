@@ -25,11 +25,13 @@ build_script:
   - unzip sqlite-dll-win64-x64-3190200.zip
   - cd ..
   - CD
+  - cd sqlpp11-connector-sqlite3
+  - CD
   - echo %configuration%
   - mkdir build
   - cd build
   - cmake --version
-  - cmake .. -DCMAKE_PREFIX_PATH="C:/projects/sqlpp11-connector-sqlite3/sqlite-amalgamation-3120200" -DCMAKE_CXX_FLAGS="/EHsc /wd4503" -DCMAKE_GENERATOR_PLATFORM=x64 -DHinnantDate_ROOT_DIR="../../date"
+  - cmake .. -DCMAKE_PREFIX_PATH="C:/projects/sqlpp11-connector-sqlite3/sqlite-amalgamation-3120200" -DCMAKE_CXX_FLAGS="/EHsc /wd4503" -DCMAKE_GENERATOR_PLATFORM=x64
   - cmake --build . --config %configuration%
   - copy ..\sqlite3.dll tests\
   - ctest . --output-on-failure --build-config %configuration%
