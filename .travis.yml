@@ -5,7 +5,7 @@ os:
   - osx
 
 sudo: required
-dist: trusty
+dist: focal
 addons:
   apt:
     packages:
