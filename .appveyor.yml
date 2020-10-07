@@ -10,6 +10,8 @@ configuration:
 matrix:
   fast_finish: true
 
+cache: c:\tools\vcpkg\installed\
+
 build_script:
   - CD
   - SET
