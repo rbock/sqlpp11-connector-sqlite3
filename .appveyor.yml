@@ -19,7 +19,4 @@ build_script:
   - cmake --version
   - cmake -B build -DCMAKE_CXX_FLAGS="/EHsc /wd4503" -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
   - cmake --build build --config %configuration%
-  - cd build 
-  - dir
-  - type sqlpp11-connector-sqlite3.sln
   - cmake --build build --config %configuration% --target RUN_TESTS
