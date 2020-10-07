@@ -15,14 +15,8 @@ build_script:
   - SET
   - C:\"Program Files (x86)"\"Microsoft Visual Studio 14.0"\VC\vcvarsall.bat amd64
   - vcpkg install sqlite3:x64-windows
-  - cd sqlpp11-connector-sqlite3
-  - CD
-  - echo %configuration%
-  - mkdir build
-  - cd build
   - cmake --version
-  - cmake .. -DCMAKE_CXX_FLAGS="/EHsc /wd4503" -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
-  - cmake --build . --config %configuration%
-  - copy ..\sqlite3.dll tests\
+  - cmake -B build -DCMAKE_CXX_FLAGS="/EHsc /wd4503" -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
+  - cmake --build build --config %configuration%
   - ctest . --output-on-failure --build-config %configuration%
 
