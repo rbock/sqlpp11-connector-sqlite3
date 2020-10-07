@@ -17,6 +17,5 @@ build_script:
   - vcpkg install sqlite3:x64-windows
   - cmake --version
   - cmake -B build -DCMAKE_CXX_FLAGS="/EHsc /wd4503" -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
-  - cmake --build build --config %configuration%
-  - ctest . --output-on-failure --build-config %configuration%
+  - cmake --build build --config %configuration% --target test
 
