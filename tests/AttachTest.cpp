@@ -69,7 +69,7 @@ int main()
   db(insert_into(left).default_values());
 
   // selecting from the other tab_sample
-  if (!db(select(all_of(right)).from(right).unconditionally()).empty())
+  if (db(select(all_of(right)).from(right).unconditionally()).empty())
     return 1;
 
   return 0;
