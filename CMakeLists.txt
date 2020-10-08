@@ -34,12 +34,10 @@ endif((NOT CMAKE_CXX_STANDARD) OR (CMAKE_CXX_STANDARD LESS 11))
 option(ENABLE_TESTS "Build unit tests" On)
 option(BUILD_SHARED_LIBS "Build shared libraries" Off)
 option(SQLCIPHER "Build with SQLCipher" Off)
+option(SQLPP_DYNAMIC_LOADING "Use dynamic loading of libraries" Off)
 
-if (NOT DEFINED SQLPP11_DYNAMIC_LOADING)
-   set(SQLPP11_DYNAMIC_LOADING Off)
-endif()
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
+find_package(Sqlpp11 REQUIRED)
 if(SQLCIPHER )
 	find_package(SQLCipher REQUIRED)
 	set (SQLITE3_LIBRARIES "${SQLCIPHER_LIBRARIES}" )
@@ -52,23 +50,6 @@ endif()
 find_package(HinnantDate REQUIRED)
 
 message(STATUS "Using ${CMAKE_CXX_COMPILER} (compiler id: ${CMAKE_CXX_COMPILER_ID})")
-
-set(SQLPP11_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../sqlpp11/include" CACHE FILEPATH "Path to sqlpp11 includes")
-
-if(NOT EXISTS ${SQLPP11_INCLUDE_DIR}/sqlpp11/sqlpp11.h)
-	message(SEND_ERROR "Can't find file sqlpp11/sqlpp11.h")
-	message("Can't find sqlpp11/sqlpp11.h in ${SQLPP11_INCLUDE_DIR} ")
-	message("Please either")
-	message("  - git clone https://github.com/rbock/sqlpp11 ${SQLPP11_INCLUDE_DIR}")
-	message("  - download and unzip a current version from https://github.com/rbock/sqlpp11 to ${SQLPP11_INCLUDE_DIR}")
-	message("  - set SQLPP11_INCLUDE_DIR to point to the dir containing sqlpp11/sqlpp11.h")
-	message("")
-else()
-	message("including sqlpp11 from ${SQLPP11_INCLUDE_DIR}")
-endif()
-
-set(include_dir "${PROJECT_SOURCE_DIR}/include")
-file(GLOB_RECURSE sqlpp_headers ${include_dir}/*.h ${SQLPP11_INCLUDE_DIR}/*.h)
 
 add_subdirectory(src)
 
