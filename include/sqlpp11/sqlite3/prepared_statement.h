@@ -28,14 +28,14 @@
 #define SQLPP_SQLITE3_PREPARED_STATEMENT_H
 
 #include <memory>
-#include <string>
-#include <vector>
 #include <sqlpp11/chrono.h>
 #include <sqlpp11/sqlite3/export.h>
+#include <string>
+#include <vector>
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 #endif
 
 namespace sqlpp
@@ -72,13 +72,14 @@ namespace sqlpp
       void _bind_boolean_parameter(size_t index, const signed char* value, bool is_null);
       void _bind_floating_point_parameter(size_t index, const double* value, bool is_null);
       void _bind_integral_parameter(size_t index, const int64_t* value, bool is_null);
+      void _bind_unsigned_integral_parameter(size_t index, const uint64_t* value, bool is_null);
       void _bind_text_parameter(size_t index, const std::string* value, bool is_null);
       void _bind_date_parameter(size_t index, const ::sqlpp::chrono::day_point* value, bool is_null);
       void _bind_date_time_parameter(size_t index, const ::sqlpp::chrono::microsecond_point* value, bool is_null);
       void _bind_blob_parameter(size_t index, const std::vector<uint8_t>* value, bool is_null);
     };
-  }
-}
+  }  // namespace sqlite3
+}  // namespace sqlpp
 
 #ifdef _MSC_VER
 #pragma warning(pop)

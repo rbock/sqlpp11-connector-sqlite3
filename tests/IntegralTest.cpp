@@ -26,7 +26,7 @@
 #include <sqlpp11/sqlite3/connection.h>
 #include <sqlpp11/sqlpp11.h>
 
-#include "FpSample.h"
+#include "IntegralSample.h"
 #ifdef SQLPP_USE_SQLCIPHER
 #include <sqlcipher/sqlite3.h>
 #else
@@ -37,7 +37,7 @@
 
 namespace sql = sqlpp::sqlite3;
 
-const auto fp = FpSample{};
+const auto intSample = IntegralSample{};
 
 template <typename L, typename R>
 auto require_equal(int line, const L& l, const R& r) -> void
@@ -52,15 +52,6 @@ auto require_equal(int line, const L& l, const R& r) -> void
   }
 }
 
-static auto require(int line, bool condition) -> void
-{
-  if (!condition)
-  {
-    std::cerr << line << " condition violated";
-    throw std::runtime_error("Unexpected result");
-  }
-}
-
 int main()
 {
   sql::connection_config config;
@@ -69,42 +60,30 @@ int main()
   config.debug = true;
 
   sql::connection db(config);
-  db.execute(R"(CREATE TABLE fp_sample (
-      id INTEGER,
-      fp REAL
+  db.execute(R"(CREATE TABLE integral_sample (
+      signed_value INTEGER,
+      unsigned_value INTEGER
   ))");
 
-  // check for automatic conversion in serializer
-  uint64_t v = 17032080461028570721ULL;
-  auto v2 = static_cast<int64_t>(v);
+  uint64_t unsignedVal = 17032080461028570721ULL;
+  auto signedVal = static_cast<int64_t>(unsignedVal);
 
-  db(insert_into(fp).set(fp.id = v));
-  db(insert_into(fp).set(fp.id = v2));
+  db(insert_into(intSample).set(intSample.signedValue = unsignedVal, intSample.unsignedValue = signedVal));
 
-  auto prepared_insert = db.prepare(insert_into(fp).set(fp.id = parameter(fp.id)));
-  prepared_insert.params.id = v;
+  auto prepared_insert =
+      db.prepare(insert_into(intSample).set(intSample.signedValue = parameter(intSample.signedValue),
+                                            intSample.unsignedValue = parameter(intSample.unsignedValue)));
+  prepared_insert.params.signedValue = signedVal;
+  prepared_insert.params.unsignedValue = unsignedVal;
   db(prepared_insert);
-  prepared_insert.params.id = v2;
-  db(prepared_insert);
 
-  auto q = select(fp.id).from(fp).unconditionally();
-  auto rows = db(q);
+  auto q = select(intSample.signedValue, intSample.unsignedValue).from(intSample).unconditionally();
 
-  // dsl inserts
-  require_equal(__LINE__, rows.front().id.value(), v);
-  require_equal(__LINE__, rows.front().id.value(), v2);
-  rows.pop_front();
-  require_equal(__LINE__, rows.front().id.value(), v);
-  require_equal(__LINE__, rows.front().id.value(), v2);
-  rows.pop_front();
-
-  // prepared dsl inserts
-  require_equal(__LINE__, rows.front().id.value(), v);
-  require_equal(__LINE__, rows.front().id.value(), v2);
-  rows.pop_front();
-  require_equal(__LINE__, rows.front().id.value(), v);
-  require_equal(__LINE__, rows.front().id.value(), v2);
-  rows.pop_front();
+  for (const auto& row : db(q))
+  {
+    require_equal(__LINE__, row.signedValue.value(), signedVal);
+    require_equal(__LINE__, row.unsignedValue.value(), unsignedVal);
+  }
 
   return 0;
 }

@@ -33,7 +33,7 @@
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 #endif
 
 namespace sqlpp
@@ -90,6 +90,7 @@ namespace sqlpp
       void _bind_boolean_result(size_t index, signed char* value, bool* is_null);
       void _bind_floating_point_result(size_t index, double* value, bool* is_null);
       void _bind_integral_result(size_t index, int64_t* value, bool* is_null);
+      void _bind_unsigned_integral_result(size_t index, uint64_t* value, bool* is_null);
       void _bind_text_result(size_t index, const char** text, size_t* len);
       void _bind_blob_result(size_t index, const uint8_t** text, size_t* len);
       void _bind_date_result(size_t index, ::sqlpp::chrono::day_point* value, bool* is_null);
@@ -98,8 +99,8 @@ namespace sqlpp
     private:
       bool next_impl();
     };
-  }
-}
+  }  // namespace sqlite3
+}  // namespace sqlpp
 
 #ifdef _MSC_VER
 #pragma warning(pop)
