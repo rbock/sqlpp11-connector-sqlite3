@@ -86,12 +86,12 @@ int main()
 
   auto rows = db(q);
 
-  require_equal(__LINE__, rows.front().signedValue, signedVal);
-  require_equal(__LINE__, rows.front().unsignedValue, unsignedVal);
+  require_equal(__LINE__, rows.front().signedValue.value(), signedVal);
+  require_equal(__LINE__, rows.front().unsignedValue.value(), unsignedVal);
   rows.pop_front();
 
-  require_equal(__LINE__, rows.front().signedValue, signedValNeg);
-  require_equal(__LINE__, rows.front().unsignedValue, unsignedValUnsupported);
+  require_equal(__LINE__, rows.front().signedValue.value(), signedValNeg);
+  require_equal(__LINE__, rows.front().unsignedValue.value(), unsignedValUnsupported);
   rows.pop_front();
 
   return 0;
