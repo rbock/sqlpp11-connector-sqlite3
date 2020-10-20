@@ -160,7 +160,8 @@ namespace sqlpp
 
       int result;
       if (not is_null)
-        result = sqlite3_bind_int64(_handle->sqlite_statement, static_cast<int>(index + 1), *value);
+        result =
+            sqlite3_bind_int64(_handle->sqlite_statement, static_cast<int>(index + 1), static_cast<int64_t>(*value));
       else
         result = sqlite3_bind_null(_handle->sqlite_statement, static_cast<int>(index + 1));
       check_bind_result(result, "integral");

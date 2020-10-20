@@ -55,7 +55,7 @@ auto require_equal(int line, const L& l, const R& r) -> void
 int main()
 {
   sql::connection_config config;
-  config.path_to_database = "test.sqlite3";
+  config.path_to_database = ":memory:";
   config.flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
   config.debug = true;
 
@@ -68,14 +68,12 @@ int main()
   // Supported range for unsigned value (as int64 is the maximum)
   uint64_t unsignedVal = std::numeric_limits<int64_t>::max();
   auto signedVal = std::numeric_limits<int64_t>::max();
-  std::cout << "Unsigned Value Supported Before: " << unsignedVal << "\n";
 
   db(insert_into(intSample).set(intSample.signedValue = unsignedVal, intSample.unsignedValue = signedVal));
 
-  // Supported range for unsigned value (as int64 is the maximum)
-  uint64_t unsignedValUnsupported = std::numeric_limits<uint64_t>::max();
+  // Unsupported range for unsigned value (as int64 is the maximum)
+  std::size_t unsignedValUnsupported = std::numeric_limits<uint64_t>::max();
   auto signedValNeg = std::numeric_limits<int64_t>::min();
-  std::cout << "Unsigned Value Unsupported Before: " << unsignedValUnsupported << "\n";
 
   auto prepared_insert =
       db.prepare(insert_into(intSample).set(intSample.signedValue = parameter(intSample.signedValue),
@@ -90,12 +88,10 @@ int main()
 
   require_equal(__LINE__, rows.front().signedValue, signedVal);
   require_equal(__LINE__, rows.front().unsignedValue, unsignedVal);
-  std::cout << "Unsigned Value Supported After: " << rows.front().unsignedValue << "\n";
   rows.pop_front();
 
   require_equal(__LINE__, rows.front().signedValue, signedValNeg);
   require_equal(__LINE__, rows.front().unsignedValue, unsignedValUnsupported);
-  std::cout << "Unsigned Value Unsupported After: " << rows.front().unsignedValue << "\n";
   rows.pop_front();
 
   return 0;

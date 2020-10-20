@@ -92,7 +92,7 @@ namespace sqlpp
         std::cerr << "Sqlite3 debug: binding unsigned integral result " << *value << " at index: " << index
                   << std::endl;
 
-      *value = sqlite3_column_int64(_handle->sqlite_statement, static_cast<int>(index));
+      *value = static_cast<uint64_t>(sqlite3_column_int64(_handle->sqlite_statement, static_cast<int>(index)));
       *is_null = sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)) == SQLITE_NULL;
     }
 
