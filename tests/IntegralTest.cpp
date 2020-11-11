@@ -76,6 +76,8 @@ int main()
   uint64_t unsignedValUnsupported = std::numeric_limits<uint64_t>::max();
   auto signedValNeg = std::numeric_limits<int64_t>::min();
 
+  std::size_t size_t_value = std::numeric_limits<std::size_t>::max();
+
   db(insert_into(intSample).set(intSample.signedValue = unsignedVal, intSample.unsignedValue = signedVal));
 
   auto prepared_insert =
@@ -85,16 +87,22 @@ int main()
   prepared_insert.params.unsignedValue = unsignedValUnsupported;
   db(prepared_insert);
 
+  db(insert_into(intSample).set(intSample.signedValue = size_t_value, intSample.unsignedValue = size_t_value));
+
   auto q = select(intSample.signedValue, intSample.unsignedValue).from(intSample).unconditionally();
 
   auto rows = db(q);
 
-  require_equal(__LINE__, rows.front().signedValue.value(), signedVal);
-  require_equal(__LINE__, rows.front().unsignedValue.value(), unsignedVal);
+  require_equal(__LINE__, rows.front().signedValue, signedVal);
+  require_equal(__LINE__, rows.front().unsignedValue, unsignedVal);
   rows.pop_front();
 
-  require_equal(__LINE__, rows.front().signedValue.value(), signedValNeg);
-  require_equal(__LINE__, rows.front().unsignedValue.value(), unsignedValUnsupported);
+  require_equal(__LINE__, rows.front().signedValue, signedValNeg);
+  require_equal(__LINE__, rows.front().unsignedValue, unsignedValUnsupported);
+  rows.pop_front();
+
+  require_equal(__LINE__, rows.front().signedValue, size_t_value);
+  require_equal(__LINE__, rows.front().unsignedValue, size_t_value);
   rows.pop_front();
 
   return 0;
