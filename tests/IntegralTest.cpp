@@ -65,15 +65,18 @@ int main()
       unsigned_value INTEGER
   ))");
 
-  // Supported range for unsigned value (as int64 is the maximum)
+  // The connector supports uint64_t values and will always retrieve the correct value from the database.
+  // Sqlite3 stores the values as int64_t internally though, so big uint64_t values will be converted
+  // and the library has to intepret the int64_t values correctly as uint64_t.
+  // Therefore, we test uint64_t values in an out of the range of int64_t and test if they are retrieved
+  // correctly from the database in both cases.
   uint64_t unsignedVal = std::numeric_limits<int64_t>::max();
   auto signedVal = std::numeric_limits<int64_t>::max();
 
-  db(insert_into(intSample).set(intSample.signedValue = unsignedVal, intSample.unsignedValue = signedVal));
-
-  // Unsupported range for unsigned value (as int64 is the maximum)
-  std::size_t unsignedValUnsupported = std::numeric_limits<uint64_t>::max();
+  uint64_t unsignedValUnsupported = std::numeric_limits<uint64_t>::max();
   auto signedValNeg = std::numeric_limits<int64_t>::min();
+
+  db(insert_into(intSample).set(intSample.signedValue = unsignedVal, intSample.unsignedValue = signedVal));
 
   auto prepared_insert =
       db.prepare(insert_into(intSample).set(intSample.signedValue = parameter(intSample.signedValue),
