@@ -70,39 +70,49 @@ int main()
   // and the library has to intepret the int64_t values correctly as uint64_t.
   // Therefore, we test uint64_t values in an out of the range of int64_t and test if they are retrieved
   // correctly from the database in both cases.
-  uint64_t unsignedVal = std::numeric_limits<int64_t>::max();
-  auto signedVal = std::numeric_limits<int64_t>::max();
+  uint64_t uint64_t_value_supported = std::numeric_limits<int64_t>::max();
+  int64_t int64_t_value_max = std::numeric_limits<int64_t>::max();
 
-  uint64_t unsignedValUnsupported = std::numeric_limits<uint64_t>::max();
-  auto signedValNeg = std::numeric_limits<int64_t>::min();
+  uint64_t uint64_t_value_unsupported = std::numeric_limits<uint64_t>::max();
+  int64_t int64_t_value_min = std::numeric_limits<int64_t>::min();
 
-  std::size_t size_t_value = std::numeric_limits<std::size_t>::max();
+  std::size_t size_t_value_max = std::numeric_limits<std::size_t>::max();
+  std::size_t size_t_value_min = std::numeric_limits<std::size_t>::min();
 
-  db(insert_into(intSample).set(intSample.signedValue = unsignedVal, intSample.unsignedValue = signedVal));
+  uint32_t uint32_t_value = std::numeric_limits<uint32_t>::max();
+  int32_t int32_t_value = std::numeric_limits<int32_t>::max();
+
+  db(insert_into(intSample).set(intSample.signedValue = int64_t_value_min,
+                                intSample.unsignedValue = uint64_t_value_supported));
 
   auto prepared_insert =
       db.prepare(insert_into(intSample).set(intSample.signedValue = parameter(intSample.signedValue),
                                             intSample.unsignedValue = parameter(intSample.unsignedValue)));
-  prepared_insert.params.signedValue = signedValNeg;
-  prepared_insert.params.unsignedValue = unsignedValUnsupported;
+  prepared_insert.params.signedValue = int64_t_value_min;
+  prepared_insert.params.unsignedValue = uint64_t_value_unsupported;
   db(prepared_insert);
 
-  db(insert_into(intSample).set(intSample.signedValue = size_t_value, intSample.unsignedValue = size_t_value));
+  db(insert_into(intSample).set(intSample.signedValue = size_t_value_min, intSample.unsignedValue = size_t_value_max));
+  db(insert_into(intSample).set(intSample.signedValue = int32_t_value, intSample.unsignedValue = uint32_t_value));
 
   auto q = select(intSample.signedValue, intSample.unsignedValue).from(intSample).unconditionally();
 
   auto rows = db(q);
 
-  require_equal(__LINE__, rows.front().signedValue, signedVal);
-  require_equal(__LINE__, rows.front().unsignedValue, unsignedVal);
+  require_equal(__LINE__, rows.front().signedValue, int64_t_value_min);
+  require_equal(__LINE__, rows.front().unsignedValue, uint64_t_value_supported);
   rows.pop_front();
 
-  require_equal(__LINE__, rows.front().signedValue, signedValNeg);
-  require_equal(__LINE__, rows.front().unsignedValue, unsignedValUnsupported);
+  require_equal(__LINE__, rows.front().signedValue, int64_t_value_min);
+  require_equal(__LINE__, rows.front().unsignedValue, uint64_t_value_unsupported);
   rows.pop_front();
 
-  require_equal(__LINE__, rows.front().signedValue, size_t_value);
-  require_equal(__LINE__, rows.front().unsignedValue, size_t_value);
+  require_equal(__LINE__, rows.front().signedValue, size_t_value_min);
+  require_equal(__LINE__, rows.front().unsignedValue, size_t_value_max);
+  rows.pop_front();
+
+  require_equal(__LINE__, rows.front().signedValue, int32_t_value);
+  require_equal(__LINE__, rows.front().unsignedValue, uint32_t_value);
   rows.pop_front();
 
   return 0;
