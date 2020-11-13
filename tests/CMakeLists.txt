@@ -26,7 +26,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
 macro (build_and_run arg)
 	# Add headers to sources to enable file browsing in IDEs
-	add_executable(Sqlpp11Sqlite3${arg} ${arg}.cpp)
+    add_executable(Sqlpp11Sqlite3${arg} ${arg}.cpp)
 
 	target_link_libraries(Sqlpp11Sqlite3${arg} PRIVATE sqlpp11-connector-sqlite3)
 	if (NOT MSVC)

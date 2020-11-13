@@ -82,7 +82,7 @@ int main()
   uint32_t uint32_t_value = std::numeric_limits<uint32_t>::max();
   int32_t int32_t_value = std::numeric_limits<int32_t>::max();
 
-  db(insert_into(intSample).set(intSample.signedValue = int64_t_value_min,
+  db(insert_into(intSample).set(intSample.signedValue = int64_t_value_max,
                                 intSample.unsignedValue = uint64_t_value_supported));
 
   auto prepared_insert =
@@ -99,20 +99,20 @@ int main()
 
   auto rows = db(q);
 
-  require_equal(__LINE__, rows.front().signedValue, int64_t_value_min);
-  require_equal(__LINE__, rows.front().unsignedValue, uint64_t_value_supported);
+  require_equal(__LINE__, rows.front().signedValue.value(), int64_t_value_max);
+  require_equal(__LINE__, rows.front().unsignedValue.value(), uint64_t_value_supported);
   rows.pop_front();
 
-  require_equal(__LINE__, rows.front().signedValue, int64_t_value_min);
-  require_equal(__LINE__, rows.front().unsignedValue, uint64_t_value_unsupported);
+  require_equal(__LINE__, rows.front().signedValue.value(), int64_t_value_min);
+  require_equal(__LINE__, rows.front().unsignedValue.value(), uint64_t_value_unsupported);
   rows.pop_front();
 
-  require_equal(__LINE__, rows.front().signedValue, size_t_value_min);
-  require_equal(__LINE__, rows.front().unsignedValue, size_t_value_max);
+  require_equal(__LINE__, rows.front().signedValue.value(), size_t_value_min);
+  require_equal(__LINE__, rows.front().unsignedValue.value(), size_t_value_max);
   rows.pop_front();
 
-  require_equal(__LINE__, rows.front().signedValue, int32_t_value);
-  require_equal(__LINE__, rows.front().unsignedValue, uint32_t_value);
+  require_equal(__LINE__, rows.front().signedValue.value(), int32_t_value);
+  require_equal(__LINE__, rows.front().unsignedValue.value(), uint32_t_value);
   rows.pop_front();
 
   return 0;
