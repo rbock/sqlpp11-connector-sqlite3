@@ -26,7 +26,7 @@
 #include <sqlpp11/sqlite3/connection.h>
 #include <sqlpp11/sqlpp11.h>
 
-#include "FpSample.h"
+#include "IntegralSample.h"
 #ifdef SQLPP_USE_SQLCIPHER
 #include <sqlcipher/sqlite3.h>
 #else
@@ -34,11 +34,10 @@
 #endif
 #include <iostream>
 #include <limits>
-#include <sqlite3.h>
 
 namespace sql = sqlpp::sqlite3;
 
-const auto fp = FpSample{};
+const auto intSample = IntegralSample{};
 
 template <typename L, typename R>
 auto require_equal(int line, const L& l, const R& r) -> void
@@ -53,15 +52,6 @@ auto require_equal(int line, const L& l, const R& r) -> void
   }
 }
 
-static auto require(int line, bool condition) -> void
-{
-  if (!condition)
-  {
-    std::cerr << line << " condition violated";
-    throw std::runtime_error("Unexpected result");
-  }
-}
-
 int main()
 {
   sql::connection_config config;
@@ -70,41 +60,59 @@ int main()
   config.debug = true;
 
   sql::connection db(config);
-  db.execute(R"(CREATE TABLE fp_sample (
-      id INTEGER,
-      fp REAL
+  db.execute(R"(CREATE TABLE integral_sample (
+      signed_value INTEGER,
+      unsigned_value INTEGER
   ))");
 
-  // check for automatic conversion in serializer
-  uint64_t v = 17032080461028570721ULL;
-  auto v2 = static_cast<int64_t>(v);
+  // The connector supports uint64_t values and will always retrieve the correct value from the database.
+  // Sqlite3 stores the values as int64_t internally though, so big uint64_t values will be converted
+  // and the library has to intepret the int64_t values correctly as uint64_t.
+  // Therefore, we test uint64_t values in an out of the range of int64_t and test if they are retrieved
+  // correctly from the database in both cases.
+  uint64_t uint64_t_value_supported = std::numeric_limits<int64_t>::max();
+  int64_t int64_t_value_max = std::numeric_limits<int64_t>::max();
 
-  db(insert_into(fp).set(fp.id = v));
-  db(insert_into(fp).set(fp.id = v2));
+  uint64_t uint64_t_value_unsupported = std::numeric_limits<uint64_t>::max();
+  int64_t int64_t_value_min = std::numeric_limits<int64_t>::min();
 
-  auto prepared_insert = db.prepare(insert_into(fp).set(fp.id = parameter(fp.id)));
-  prepared_insert.params.id = v;
+  std::size_t size_t_value_max = std::numeric_limits<std::size_t>::max();
+  std::size_t size_t_value_min = std::numeric_limits<std::size_t>::min();
+
+  uint32_t uint32_t_value = std::numeric_limits<uint32_t>::max();
+  int32_t int32_t_value = std::numeric_limits<int32_t>::max();
+
+  db(insert_into(intSample).set(intSample.signedValue = int64_t_value_max,
+                                intSample.unsignedValue = uint64_t_value_supported));
+
+  auto prepared_insert =
+      db.prepare(insert_into(intSample).set(intSample.signedValue = parameter(intSample.signedValue),
+                                            intSample.unsignedValue = parameter(intSample.unsignedValue)));
+  prepared_insert.params.signedValue = int64_t_value_min;
+  prepared_insert.params.unsignedValue = uint64_t_value_unsupported;
   db(prepared_insert);
-  prepared_insert.params.id = v2;
-  db(prepared_insert);
 
-  auto q = select(fp.id).from(fp).unconditionally();
+  db(insert_into(intSample).set(intSample.signedValue = size_t_value_min, intSample.unsignedValue = size_t_value_max));
+  db(insert_into(intSample).set(intSample.signedValue = int32_t_value, intSample.unsignedValue = uint32_t_value));
+
+  auto q = select(intSample.signedValue, intSample.unsignedValue).from(intSample).unconditionally();
+
   auto rows = db(q);
 
-  // dsl inserts
-  require_equal(__LINE__, rows.front().id.value(), v);
-  require_equal(__LINE__, rows.front().id.value(), v2);
-  rows.pop_front();
-  require_equal(__LINE__, rows.front().id.value(), v);
-  require_equal(__LINE__, rows.front().id.value(), v2);
+  require_equal(__LINE__, rows.front().signedValue.value(), int64_t_value_max);
+  require_equal(__LINE__, rows.front().unsignedValue.value(), uint64_t_value_supported);
   rows.pop_front();
 
-  // prepared dsl inserts
-  require_equal(__LINE__, rows.front().id.value(), v);
-  require_equal(__LINE__, rows.front().id.value(), v2);
+  require_equal(__LINE__, rows.front().signedValue.value(), int64_t_value_min);
+  require_equal(__LINE__, rows.front().unsignedValue.value(), uint64_t_value_unsupported);
   rows.pop_front();
-  require_equal(__LINE__, rows.front().id.value(), v);
-  require_equal(__LINE__, rows.front().id.value(), v2);
+
+  require_equal(__LINE__, rows.front().signedValue.value(), size_t_value_min);
+  require_equal(__LINE__, rows.front().unsignedValue.value(), size_t_value_max);
+  rows.pop_front();
+
+  require_equal(__LINE__, rows.front().signedValue.value(), int32_t_value);
+  require_equal(__LINE__, rows.front().unsignedValue.value(), uint32_t_value);
   rows.pop_front();
 
   return 0;

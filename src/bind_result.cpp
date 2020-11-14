@@ -24,14 +24,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <ciso646>
+#include "detail/prepared_statement_handle.h"
 #include <cctype>
-#include <iostream>
-#include <vector>
+#include <ciso646>
 #include <date/date.h>  // Howard Hinnant's date library
+#include <iostream>
 #include <sqlpp11/exception.h>
 #include <sqlpp11/sqlite3/bind_result.h>
-#include "detail/prepared_statement_handle.h"
+#include <vector>
 
 #ifdef SQLPP_DYNAMIC_LOADING
 #include <sqlpp11/sqlite3/dynamic_libsqlite3.h>
@@ -86,6 +86,16 @@ namespace sqlpp
       *is_null = sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)) == SQLITE_NULL;
     }
 
+    void bind_result_t::_bind_unsigned_integral_result(size_t index, uint64_t* value, bool* is_null)
+    {
+      if (_handle->debug)
+        std::cerr << "Sqlite3 debug: binding unsigned integral result " << *value << " at index: " << index
+                  << std::endl;
+
+      *value = static_cast<uint64_t>(sqlite3_column_int64(_handle->sqlite_statement, static_cast<int>(index)));
+      *is_null = sqlite3_column_type(_handle->sqlite_statement, static_cast<int>(index)) == SQLITE_NULL;
+    }
+
     void bind_result_t::_bind_text_result(size_t index, const char** value, size_t* len)
     {
       if (_handle->debug)
@@ -100,7 +110,8 @@ namespace sqlpp
       if (_handle->debug)
         std::cerr << "Sqlite3 debug: binding text result at index: " << index << std::endl;
 
-      *value = (reinterpret_cast<const uint8_t*>(sqlite3_column_blob(_handle->sqlite_statement, static_cast<int>(index))));
+      *value =
+          (reinterpret_cast<const uint8_t*>(sqlite3_column_blob(_handle->sqlite_statement, static_cast<int>(index))));
       *len = sqlite3_column_bytes(_handle->sqlite_statement, static_cast<int>(index));
     }
 
@@ -132,7 +143,7 @@ namespace sqlpp
         }
         return true;
       }
-    }
+    }  // namespace
 
     void bind_result_t::_bind_date_result(size_t index, ::sqlpp::chrono::day_point* value, bool* is_null)
     {
@@ -234,5 +245,5 @@ namespace sqlpp
           throw sqlpp::exception("Sqlite3 error: Unexpected return value for sqlite3_step()");
       }
     }
-  }
-}
+  }  // namespace sqlite3
+}  // namespace sqlpp

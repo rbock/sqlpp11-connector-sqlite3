@@ -26,13 +26,13 @@
 
 #include "detail/prepared_statement_handle.h"
 #include <ciso646>
+#include <cmath>
 #include <date/date.h>
 #include <iostream>
 #include <sqlpp11/exception.h>
 #include <sqlpp11/sqlite3/prepared_statement.h>
 #include <sstream>
 #include <string>
-#include <cmath>
 
 #if defined(__CYGWIN__)
 #include <sstream>
@@ -48,7 +48,7 @@ namespace std
     stream << t;
     return stream.str();
   }
-}
+}  // namespace std
 #endif
 
 #ifdef SQLPP_DYNAMIC_LOADING
@@ -60,7 +60,7 @@ namespace sqlpp
   namespace sqlite3
   {
 #ifdef SQLPP_DYNAMIC_LOADING
-   using namespace dynamic;
+    using namespace dynamic;
 #endif
     namespace
     {
@@ -77,11 +77,11 @@ namespace sqlpp
           case SQLITE_TOOBIG:
             throw sqlpp::exception("Sqlite3 error: " + std::string(type) + " bind too big");
           default:
-            throw sqlpp::exception("Sqlite3 error: " + std::string(type) + " bind returned unexpected value: " +
-                                   std::to_string(result));
+            throw sqlpp::exception("Sqlite3 error: " + std::string(type) +
+                                   " bind returned unexpected value: " + std::to_string(result));
         }
       }
-    }
+    }  // namespace
 
     prepared_statement_t::prepared_statement_t(std::shared_ptr<detail::prepared_statement_handle_t>&& handle)
         : _handle(std::move(handle))
@@ -127,7 +127,8 @@ namespace sqlpp
           if (*value > std::numeric_limits<double>::max())
             result = sqlite3_bind_text(_handle->sqlite_statement, static_cast<int>(index + 1), "Inf", 3, SQLITE_STATIC);
           else
-            result = sqlite3_bind_text(_handle->sqlite_statement, static_cast<int>(index + 1), "-Inf", 4, SQLITE_STATIC);
+            result =
+                sqlite3_bind_text(_handle->sqlite_statement, static_cast<int>(index + 1), "-Inf", 4, SQLITE_STATIC);
         }
         else
           result = sqlite3_bind_double(_handle->sqlite_statement, static_cast<int>(index + 1), *value);
@@ -146,6 +147,21 @@ namespace sqlpp
       int result;
       if (not is_null)
         result = sqlite3_bind_int64(_handle->sqlite_statement, static_cast<int>(index + 1), *value);
+      else
+        result = sqlite3_bind_null(_handle->sqlite_statement, static_cast<int>(index + 1));
+      check_bind_result(result, "integral");
+    }
+
+    void prepared_statement_t::_bind_unsigned_integral_parameter(size_t index, const uint64_t* value, bool is_null)
+    {
+      if (_handle->debug)
+        std::cerr << "Sqlite3 debug: binding unsigned integral parameter " << *value << " at index: " << index
+                  << ", being " << (is_null ? "" : "not ") << "null" << std::endl;
+
+      int result;
+      if (not is_null)
+        result =
+            sqlite3_bind_int64(_handle->sqlite_statement, static_cast<int>(index + 1), static_cast<int64_t>(*value));
       else
         result = sqlite3_bind_null(_handle->sqlite_statement, static_cast<int>(index + 1));
       check_bind_result(result, "integral");
@@ -220,10 +236,10 @@ namespace sqlpp
       int result;
       if (not is_null)
         result = sqlite3_bind_blob(_handle->sqlite_statement, static_cast<int>(index + 1), value->data(),
-                                     static_cast<int>(value->size()), SQLITE_STATIC);
+                                   static_cast<int>(value->size()), SQLITE_STATIC);
       else
         result = sqlite3_bind_null(_handle->sqlite_statement, static_cast<int>(index + 1));
       check_bind_result(result, "blob");
     }
-  }
-}
+  }  // namespace sqlite3
+}  // namespace sqlpp
