@@ -3,8 +3,8 @@ sqlpp11-connector-sqlite
 
 A C++ wrapper for sqlite3 meant to be used in combination with sqlpp11.
 
-Branch / Compiler | clang-3.4,  gcc-4.9, Xcode-7   |  MSVC 2015
-------------------| -------------------------------|-----------
+Branch / Compiler | clang,  gcc |  MSVC
+------------------| ------------|-----------
 master | [![Build Status](https://travis-ci.org/rbock/sqlpp11-connector-sqlite3.svg?branch=master)](https://travis-ci.org/rbock/sqlpp11-connector-sqlite3?branch=master) | [![Build status](https://ci.appveyor.com/api/projects/status/bhg5pbocv316583v/branch/master?svg=true)](https://ci.appveyor.com/project/rbock/sqlpp11-connector-sqlite3/branch/master)
 develop | [![Build Status](https://travis-ci.org/rbock/sqlpp11-connector-sqlite3.svg?branch=develop)](https://travis-ci.org/rbock/sqlpp11-connector-sqlite3?branch=develop) | [![Build status](https://ci.appveyor.com/api/projects/status/bhg5pbocv316583v/branch/develop?svg=true)](https://ci.appveyor.com/project/rbock/sqlpp11-connector-sqlite3/branch/develop) |
 

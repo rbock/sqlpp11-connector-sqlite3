@@ -2,7 +2,6 @@ language: cpp
 
 os:
   - linux
-  - osx
 
 sudo: required
 dist: focal
@@ -10,7 +9,6 @@ addons:
   apt:
     packages:
     - sqlite3
-    - libboost-dev
 
 compiler:
   - clang
