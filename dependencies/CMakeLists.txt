@@ -22,11 +22,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-include(FetchContent)
+if (NOT TARGET sqlpp11::sqlpp11)
+    include(FetchContent)
 
-FetchContent_Declare(sqlpp11_core
-    GIT_REPOSITORY https://github.com/rbock/sqlpp11
-    GIT_TAG        origin/master
-) 
+    FetchContent_Declare(sqlpp11_core
+        GIT_REPOSITORY https://github.com/rbock/sqlpp11
+        GIT_TAG        origin/master
+    )
 
-add_subdirectory(sqlpp11)
+    add_subdirectory(sqlpp11)
+endif()
