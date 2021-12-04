@@ -1,7 +1,13 @@
-sqlpp11-connector-sqlite
-========================
+sqlpp11-connector-sqlite3
+=========================
 
 A C++ wrapper for sqlite3 meant to be used in combination with sqlpp11.
+
+```diff
+!If you are using the develop branch of sqlpp11 or version 0.61 or later:
+!The sqlite3 connector is included in the sqlpp11 library directly and
+!you do not need this repository.
+```
 
 Branch / Compiler | clang-3.4,  gcc-4.9, Xcode-7   |  MSVC 2015
 ------------------| -------------------------------|-----------
